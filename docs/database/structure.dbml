@@ -1,14 +1,15 @@
 Table auth_user {
     id integer [pk, increment]
-    username varchar [unique, not null]
-    email varchar [unique, not null]
-    password varchar [not null]
-    first_name varchar
-    last_name varchar
+    username varchar(150) [unique, not null]
+    email varchar(254) [unique, not null]
+    password varchar(255) [not null]
+    first_name varchar(150)
+    last_name varchar(150)
     is_active boolean [default: true]
     is_staff boolean [default: false]
     is_superuser boolean [default: false]
-    created_at timestamp [default: `now()`]
+    last_login timestamp
+    date_joined timestamp [default: `now()`]
 }
 
 Table Project {
