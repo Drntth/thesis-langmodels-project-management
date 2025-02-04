@@ -1,0 +1,73 @@
+Table auth_user {
+    id integer [pk, increment]
+    username varchar(150) [unique, not null]
+    email varchar(254) [unique, not null]
+    password varchar(255) [not null]
+    first_name varchar(150)
+    last_name varchar(150)
+    is_active boolean [default: true]
+    is_staff boolean [default: false]
+    is_superuser boolean [default: false]
+    last_login timestamp
+    date_joined timestamp [default: `now()`]
+}
+
+Table Project {
+    id integer [pk, increment]
+    name varchar [not null, unique]
+    created_at timestamp [default: `now()`]
+    updated_at timestamp [default: `now()`]
+    owner_id integer [not null, ref: > auth_user.id]
+    status_id integer [not null, ref: > ProjectStatus.id]
+}
+
+Table ProjectStatus {
+    id integer [pk, increment]
+    name varchar [unique, not null]
+
+    Note: "Draft | In Progress | Completed"
+}
+
+Table ProjectMember {
+    id integer [pk, increment]
+    user_id integer [not null, ref: > auth_user.id]
+    project_id integer [not null, ref: > Project.id]
+    role_id integer [not null, ref: > ProjectRole.id]
+    
+    Note: "UNIQUE(user_id, project_id)"
+}
+
+Table ProjectRole {
+    id integer [pk, increment]
+    name varchar [unique, not null]
+
+    Note: "Owner | Project Manager | Developer | Tester | Viewer"
+}
+
+Table DocumentType {
+    id integer [pk, increment]
+    name varchar [unique, not null]
+
+    Note: "Specification | SRS"
+}
+
+Table AIModel {
+    id integer [pk, increment]
+    name varchar [unique, not null]
+    model_identifier varchar [unique, not null]
+
+     Note: "Bloom (BigScience) -> bigscience/bloom-560m | Bert (Google) -> bert-base-uncased | GPT-Neo (EleutherAI) -> EleutherAI/gpt-neo-2.7B | GPT-J (EleutherAI) -> EleutherAI/gpt-j-6b | LLAMA (Meta AI) -> meta-llama/Llama-2-7b-hf | DeepSeek-R1 -> deepseek-ai/DeepSeek-R1"
+}
+
+Table AIDocument {
+    id integer [pk, increment]
+    title varchar [not null]
+    content text [not null]
+    project_id integer [not null, ref: > Project.id]
+    created_by integer [not null, ref: > auth_user.id]
+    created_at timestamp [default: `now()`]
+    updated_at timestamp [default: `now()`]
+    version integer [not null, default: 1]
+    type_id integer [not null, ref: > DocumentType.id]
+    ai_model_id integer [not null, ref: > AIModel.id]
+}
