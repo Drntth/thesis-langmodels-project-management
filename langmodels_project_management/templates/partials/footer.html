@@ -1,10 +1,12 @@
+{% load static %}
+
 <footer class="footer mt-auto py-3 bg-dark">
     <div class="container text-light d-flex justify-content-center">
         <p class="mb-0">
             &copy; {% now "Y" %} Language Models in Project Management
         </p>
-        <a href="/" class="text-decoration-none mx-2">
-            <img src="{% static 'images/favicon.ico' %}" alt="Logo" width="40" height="40" class="me-2" style="transition: opacity 0.3s;">
+        <a href="/" class="text-decoration-none mx-2 text-light">
+            <i class="fa-solid fa-robot me-2 fs-3"></i>
         </a>
     </div>
 </footer>

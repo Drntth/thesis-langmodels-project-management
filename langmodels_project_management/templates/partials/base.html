@@ -16,7 +16,7 @@
 </head>
 <body class="d-flex flex-column h-100 bg-light">
     <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between mb-auto border-bottom">
-        {% include 'navbar.html' %}
+        {% include 'partials/navbar.html' %}
     </header>
 
     <main class="container-fluid flex-grow-1 d-flex my-5">
@@ -30,8 +30,8 @@
             </div>
 
             <div class="col-12 col-md-6 col-lg-8">
-                <div class="container">
-                    {% include 'messages.html' %}
+                <div class="container my-3">
+                    {% include 'partials/messages.html' %}
 
                     {% block content %}
                     {% endblock %}
@@ -48,7 +48,7 @@
         </div>
     </main>
 
-    {% include 'footer.html' %}
+    {% include 'partials/footer.html' %}
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
