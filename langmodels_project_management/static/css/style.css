@@ -1,0 +1,13 @@
+body {
+    font-family: 'Times New Roman', Times, serif !important;
+}
+
+.card-title {
+    font-variant: small-caps;
+    font-weight: bold;
+    border: 10 solid red;
+}
+
+label {
+    font-variant: small-caps;
+}
