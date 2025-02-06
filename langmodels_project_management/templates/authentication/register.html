@@ -1,0 +1,140 @@
+{% extends "partials/base_authentication.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="card shadow-lg border-0">
+    <div class="card-header shadow-lg bg-dark text-center py-4">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+            <h1 class="text-light fw-bold mb-0">Register</h1>
+            <i class="fa-solid fa-user-plus fa-3x text-light"></i>
+        </div>
+    </div>
+    <form method="post" action="{% url 'authentication:register' %}">
+        <div class="card-body px-5 py-4">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <div class="mb-2 text-dark">
+                <label for="username">Username</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-light border-0"><i class="fa-regular fa-user text-dark"></i></span>
+                    {{ form.username }}
+                </div>
+                {% if form.username.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-2 text-dark">
+                <label for="email">Email</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-light border-0">
+                        <i class="fa-regular fa-envelope text-dark"></i>
+                    </span>
+                    {{ form.email }}
+                </div>
+                {% if form.email.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-2 text-dark">
+                <label for="first_name">First Name</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-light border-0">
+                        <i class="fa-solid fa-address-card text-dark"></i>
+                    </span>
+                    {{ form.first_name }}
+                </div>
+                {% if form.first_name.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.first_name.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-2 text-dark">
+                <label for="last_name">Last Name</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-light border-0">
+                        <i class="fa-regular fa-address-card text-dark"></i>
+                    </span>
+                    {{ form.last_name }}
+                </div>
+                {% if form.last_name.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.last_name.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-2 text-dark">
+                <label for="password1">Password</label>
+                <div class="input-group mb-4">
+                    <span class="input-group-text bg-light border-0"><i class="fa-solid fa-lock text-dark"></i></span>
+                    {{ form.password1 }}
+                </div>
+                {% if form.password1.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.password1.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-2 text-dark">
+                <label for="password2">Confirm Password</label>
+                <div class="input-group mb-4">
+                    <span class="input-group-text bg-light border-0"><i class="fa-solid fa-lock-open text-dark"></i></span>
+                    {{ form.password2 }}
+                </div>
+                {% if form.password2.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.password2.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-dark shadow rounded-pill">Register</button>
+            </div>
+        </div>
+        <div class="card-footer bg-dark border-0 text-center py-3 text-light">
+            <p class="small mb-0">
+                Already have an account?
+                <a href="{% url 'authentication:login' %}" class="text-light fw-bold">Login</a>
+            </p>
+        </div>
+    </form>
+</div>
+{% endblock %}

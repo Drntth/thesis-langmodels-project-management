@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Authentication{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100 text-light" style="background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(0,0,0,1) 85%);">
+    <main class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-7 col-lg-4">
+                {% include 'partials/messages.html' %}
+                {% block content %}
+                
+                {% endblock %}
+            </div>
+        </div>
+    </main>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
