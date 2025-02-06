@@ -21,6 +21,13 @@
 
     <main class="container-fluid flex-grow-1 d-flex my-5">
         <div class="row flex-grow-1 w-100">
+
+            <div class="row w-100">
+                <div class="col-12 text-center my-3">
+                    <h1 class="display-5 fw-bold">{% block page_title %}Default Title{% endblock %}</h1>
+                </div>
+            </div>
+
             <div class="col-12 col-md-3 col-lg-2">
                 <div class="container">
                     {% block sidebar_left %}
