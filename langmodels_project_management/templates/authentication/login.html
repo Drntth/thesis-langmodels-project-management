@@ -1,0 +1,69 @@
+{% extends "partials/base_authentication.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="card shadow-lg border-0">
+    <div class="card-header shadow-lg bg-dark text-center py-4">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+            <h1 class="text-light fw-bold mb-0">Login</h1>
+            <i class="fa-solid fa-arrow-right-to-bracket fa-3x text-light"></i>
+        </div>
+    </div>
+    <form method="post" action="{% url 'authentication:login' %}">
+        <div class="card-body px-5 py-4">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <div class="mb-2 text-dark">
+                <label for="username">Username</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-light border-0"><i class="fa-solid fa-user text-dark"></i></span>
+                    {{ form.username }}
+                </div>
+                {% if form.username.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-2 text-dark">
+                <label for="password">Password</label>
+                <div class="input-group mb-4">
+                    <span class="input-group-text bg-light border-0"><i class="fa-solid fa-lock-open text-dark"></i></span>
+                    {{ form.password }}
+                </div>
+                {% if form.password.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-dark shadow rounded-pill">Login</button>
+            </div>
+        </div>
+        <div class="card-footer bg-dark border-0 text-center py-3 text-light">
+            <p class="small mb-0">
+                Don't have an account?
+                <a href="{% url 'authentication:register' %}" class="text-light fw-bold">Register</a>
+            </p>
+        </div>
+    </form>
+</div>
+{% endblock %}
