@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView
+from django.views.generic import CreateView, View
 from .forms import CustomLoginForm, CustomRegisterForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login
@@ -38,3 +38,8 @@ class CustomLogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         messages.success(request, "You have been logged out.")
         return super().dispatch(request, *args, **kwargs)
+
+class UseAsGuestView(View):
+    def post(self, request, *args, **kwargs):
+        messages.warning(request, "You are browsing as a guest. Some features may be unavailable.")
+        return redirect(reverse_lazy("home:index"))

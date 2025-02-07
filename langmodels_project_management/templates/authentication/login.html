@@ -8,6 +8,7 @@
             <i class="fa-solid fa-arrow-right-to-bracket fa-3x text-light"></i>
         </div>
     </div>
+
     <form method="post" action="{% url 'authentication:login' %}">
         <div class="card-body px-5 py-4">
             {% csrf_token %}
@@ -55,15 +56,21 @@
                 {% endif %}
             </div>
             <div class="d-grid">
-                <button type="submit" class="btn btn-dark shadow rounded-pill">Login</button>
+                <button type="submit" class="btn btn-outline-dark shadow rounded-pill">Login</button>
             </div>
         </div>
-        <div class="card-footer bg-dark border-0 text-center py-3 text-light">
-            <p class="small mb-0">
-                Don't have an account?
-                <a href="{% url 'authentication:register' %}" class="text-light fw-bold">Register</a>
-            </p>
-        </div>
     </form>
+    <div class="card-footer bg-dark border-0 text-center py-3 text-light">
+        <p class="small mb-2">
+            Don't have an account?
+            <a href="{% url 'authentication:register' %}" class="text-light fw-bold">Register</a>
+        </p>
+        <form method="post" action="{% url 'authentication:use_as_guest' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light rounded-pill">
+                <i class="fa-solid fa-house me-2"></i> Use as Guest
+            </button>
+        </form>
+    </div>
 </div>
 {% endblock %}
