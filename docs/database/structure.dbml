@@ -12,6 +12,12 @@ Table auth_user {
     date_joined timestamp [default: `now()`]
 }
 
+Table UserProfile {
+    id integer [pk, increment]
+    user_id int [unique, not null, ref: > auth_user.id]
+    profile_picture varchar(255) [null]
+}
+
 Table Project {
     id integer [pk, increment]
     name varchar [not null, unique]

@@ -14,6 +14,10 @@
         <i class="fa-solid fa-circle-info fs-2"></i>
     </div>
     <div class="card-body">
+        <div class="my-2">
+            <img src="{{ user.userprofile.get_default_profile_picture }}" alt="Profile Picture" width="448" height="512">
+        </div>
+
         <div class="mb-2">
             <label for="username">Username</label>
             <div class="input-group shadow-sm">

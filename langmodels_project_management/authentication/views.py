@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib import messages
+from users.models import UserProfile
 
 class CustomLoginView(LoginView):
     template_name = "authentication/login.html"
@@ -24,6 +25,7 @@ class CustomRegisterView(CreateView):
     
     def form_valid(self, form):
         user = form.save()
+        UserProfile.objects.create(user=user)
         login(self.request, user) 
         messages.success(self.request, "Your account has been created successfully!")
         return super().form_valid(form)
