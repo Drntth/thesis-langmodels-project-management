@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView
+from django.views.generic import CreateView, View
 from .forms import CustomLoginForm, CustomRegisterForm
 from django.urls import reverse_lazy
-from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib import messages
+from users.models import UserProfile
 
 class CustomLoginView(LoginView):
     template_name = "authentication/login.html"
@@ -19,14 +19,18 @@ class CustomLoginView(LoginView):
 class CustomRegisterView(CreateView):
     template_name = "authentication/register.html"
     form_class = CustomRegisterForm
-    model = User
-    success_url = reverse_lazy("home:index")
     
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user) 
-        messages.success(self.request, "Your account has been created successfully!")
-        return super().form_valid(form)
+        if user:
+            login(self.request, user)
+            UserProfile.objects.create(user=user)
+            messages.success(self.request, "Your account has been created successfully!")
+            messages.success(self.request, "You have successfully logged in!")
+            return redirect("home:index")
+        else:
+            messages.warning(self.request, "Authentication failed. Please try logging in manually.")
+            return redirect("authentication:login")
 
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy("authentication:login")
@@ -34,3 +38,8 @@ class CustomLogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         messages.success(request, "You have been logged out.")
         return super().dispatch(request, *args, **kwargs)
+
+class UseAsGuestView(View):
+    def post(self, request, *args, **kwargs):
+        messages.warning(request, "You are browsing as a guest. Some features may be unavailable.")
+        return redirect(reverse_lazy("home:index"))

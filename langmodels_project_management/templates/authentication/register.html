@@ -126,15 +126,21 @@
             </div>
 
             <div class="d-grid">
-                <button type="submit" class="btn btn-dark shadow rounded-pill">Register</button>
+                <button type="submit" class="btn btn-outline-dark shadow rounded-pill">Register</button>
             </div>
         </div>
-        <div class="card-footer bg-dark border-0 text-center py-3 text-light">
-            <p class="small mb-0">
-                Already have an account?
-                <a href="{% url 'authentication:login' %}" class="text-light fw-bold">Login</a>
-            </p>
-        </div>
     </form>
+    <div class="card-footer bg-dark border-0 text-center py-3 text-light">
+        <p class="small mb-2">
+            Already have an account?
+            <a href="{% url 'authentication:login' %}" class="text-light fw-bold">Login</a>
+        </p>
+        <form method="post" action="{% url 'authentication:use_as_guest' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light rounded-pill">
+                <i class="fa-solid fa-house me-2"></i> Use as Guest
+            </button>
+        </form>
+    </div>
 </div>
 {% endblock %}
