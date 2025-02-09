@@ -5,6 +5,7 @@ class Command(BaseCommand):
     help = "Seed static data (AI models, document types, project roles, project statuses)"
 
     def handle(self, *args, **kwargs):
+        call_command("seed_predefined_users")
         call_command("seed_ai_models")
         call_command("seed_document_types")
         call_command("seed_project_roles")
