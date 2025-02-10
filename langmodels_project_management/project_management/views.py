@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, ListView
-from .models import Project
+from django.views.generic import CreateView, ListView, DetailView
+from .models import Project, ProjectMember
 from .forms import ProjectCreationForm
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -32,3 +32,13 @@ class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
     template_name = "project_management/list_projects.html"
     context_object_name = "projects"
+
+class ProjectDetailView(LoginRequiredMixin, DetailView):
+    model = Project
+    template_name = "project_management/detail_project.html"
+    context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["members"] = ProjectMember.objects.filter(project=self.object)
+        return context
