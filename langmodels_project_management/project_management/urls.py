@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectCreateView, ProjectListView, ProjectDetailView, ProjectDeleteView
+from .views import ProjectCreateView, ProjectListView, ProjectDetailView, ProjectDeleteView, ProjectUpdateView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -10,6 +10,7 @@ urlpatterns = [
     path('list', ProjectListView.as_view(), name='list_projects'),
     path('<int:pk>/', ProjectDetailView.as_view(), name='detail_project'),
     path('<int:pk>/delete', ProjectDeleteView.as_view(), name='delete_project'),
+    path('<int:pk>/update', ProjectUpdateView.as_view(), name='update_project'),
 ]
 
 if settings.DEBUG:

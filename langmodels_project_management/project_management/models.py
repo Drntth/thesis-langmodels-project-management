@@ -5,7 +5,7 @@ class ProjectStatus(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return f'Status: {self.name}'
+        return f'{self.name}'
 
 class Project(models.Model):
     name = models.CharField(max_length=255, unique=True)
