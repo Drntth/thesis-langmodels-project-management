@@ -6,6 +6,11 @@
 
 {% block content %}
 <div class="row">
+    <div class="col-12 d-flex justify-content-end align-items-end mb-4">
+        <a href="{% url 'projects:create_project' %}" class="btn btn-success shadow-lg btn-lg">
+            <i class="fa-solid fa-folder-plus me-2"></i> Create New Project
+        </a>
+    </div>
     {% for project in projects %}
     <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
         <div class="card shadow-lg border-dark m-2">
@@ -72,7 +77,7 @@
             </div>
             </div>
             <div class="card-footer text-center bg-dark justify-content-center px-4">
-                <a href="{% url 'projects:project_detail' project.id %}" class="btn btn-md btn-secondary shadow-lg">
+                <a href="{% url 'projects:detail_project' project.id %}" class="btn btn-md btn-secondary shadow-lg">
                     <i class="fa-regular fa-eye me-2"></i> View
                 </a>
             </div>

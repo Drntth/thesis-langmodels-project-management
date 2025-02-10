@@ -8,6 +8,6 @@ body {
     border: 10 solid red;
 }
 
-label, h1, h2, button {
+label, h1, h2, h3, button {
     font-variant: small-caps;
 }
