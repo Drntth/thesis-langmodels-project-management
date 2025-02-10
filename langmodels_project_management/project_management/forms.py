@@ -1,5 +1,6 @@
 from django import forms
-from .models import Project, ProjectStatus
+from .models import Project, ProjectStatus, ProjectMember, ProjectRole
+from django.contrib.auth.models import User
 import datetime
 
 class ProjectCreationForm(forms.ModelForm):
@@ -94,3 +95,31 @@ class ProjectUpdateForm(forms.ModelForm):
         if deadline and deadline < datetime.date.today():
             raise forms.ValidationError("The deadline cannot be in the past.")
         return deadline
+
+class ProjectMemberForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        super().__init__(*args, **kwargs)
+        
+        if project:
+            existing_members = ProjectMember.objects.filter(project=project).values_list('user_id', flat=True)
+            self.fields['user'].queryset = User.objects.exclude(id__in=existing_members)
+
+    user = forms.ModelChoiceField(
+        queryset=User.objects.none(),
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-control border-0 shadow-sm',
+        })
+    )
+    role = forms.ModelChoiceField(
+        required=True,
+        queryset=ProjectRole.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control border-0 shadow-sm',
+        })
+    )
+
+    class Meta:
+        model = ProjectMember
+        fields = ['user', 'role']

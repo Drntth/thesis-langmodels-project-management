@@ -1,8 +1,8 @@
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, ListView, DetailView, DeleteView, UpdateView
 from .models import Project, ProjectMember
-from .forms import ProjectCreationForm, ProjectUpdateForm
+from .forms import ProjectCreationForm, ProjectUpdateForm, ProjectMemberForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 from pathlib import Path
@@ -100,3 +100,41 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
         project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
         return project_root_folder / project_folder_name
+
+class ProjectMemberCreateView(LoginRequiredMixin, CreateView):
+    model = ProjectMember
+    form_class = ProjectMemberForm
+    template_name = "project_management/add_member.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['project'] = get_object_or_404(Project, id=self.kwargs['pk'])
+        return kwargs
+
+    def form_valid(self, form):
+        project = get_object_or_404(Project, id=self.kwargs['pk'])
+        form.instance.project = project
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('projects:detail_project', kwargs={'pk': self.kwargs['pk']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['project'] = get_object_or_404(Project, id=self.kwargs['pk'])
+        return context
+
+class ProjectMemberRemoveView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = ProjectMember
+    template_name = "project_management/detail_project.html"
+
+    def get_success_url(self):
+        return reverse_lazy('projects:detail_project', kwargs={'pk': self.object.project.id})
+
+    def test_func(self):
+        project = self.get_object().project
+        return self.request.user == project.owner
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You do not have permission to remove this member.")
+        return redirect('projects:detail_project', pk=self.get_object().project.id)

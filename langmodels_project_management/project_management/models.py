@@ -29,7 +29,7 @@ class ProjectRole(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return f'Role: {self.name}'
+        return f'{self.name}'
 
 class ProjectMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
