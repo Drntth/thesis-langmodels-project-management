@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectCreateView
+from .views import ProjectCreateView, ProjectListView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -7,6 +7,7 @@ app_name = 'projects'
 
 urlpatterns = [
     path('create', ProjectCreateView.as_view(), name='create_project'),
+    path('list', ProjectListView.as_view(), name='list_projects'),
 ]
 
 if settings.DEBUG:

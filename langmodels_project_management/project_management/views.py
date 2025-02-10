@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 from .models import Project
 from .forms import ProjectCreationForm
 from django.urls import reverse_lazy
@@ -12,8 +12,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
     form_class = ProjectCreationForm
     template_name = "project_management/create_project.html"
-    # success_url = reverse_lazy('project_management:list_project')
-    success_url = reverse_lazy('home:index')
+    success_url = reverse_lazy('projects:list_projects')
 
     def form_valid(self, form):
         form.instance.owner = self.request.user 
@@ -28,3 +27,8 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 
         messages.success(self.request, f"Project '{form.instance.name}' successfully created!")
         return response
+
+class ProjectListView(LoginRequiredMixin, ListView):
+    model = Project
+    template_name = "project_management/list_projects.html"
+    context_object_name = "projects"
