@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 from .models import AIDocument
 from .forms import DocumentCreationForm
 from django.urls import reverse_lazy
@@ -44,3 +44,8 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
                 messages.error(self.request, f"Error saving document file: {e}")
 
         return response
+
+class DocumentListView(LoginRequiredMixin, ListView):
+    model = AIDocument
+    template_name = "ai_documentation/list_documents.html"
+    context_object_name = "documents"

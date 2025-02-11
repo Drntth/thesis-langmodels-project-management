@@ -13,7 +13,7 @@
                 {% if request.user.is_authenticated %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProjects" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-folder-open me-2"></i>Projects
+                        <i class="fa-solid fa-folder-open me-2"></i>Projects
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownProjects">
                         <li><a class="dropdown-item" href="{% url 'projects:list_projects' %}">
@@ -26,10 +26,10 @@
                 </li>                
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDocuments" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-folder-open me-2"></i>Documents
+                        <i class="fa-solid fa-file me-2"></i>Documents
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownDocuments">
-                        <li><a class="dropdown-item" href="#">
+                        <li><a class="dropdown-item" href="{% url 'ai-docs:list_documents' %}">
                             <i class="fas fa-list me-2"></i>List Documents
                         </a></li>
                         <li><a class="dropdown-item" href="{% url 'ai-docs:create_document' %}">
