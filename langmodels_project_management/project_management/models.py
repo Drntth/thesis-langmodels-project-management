@@ -17,7 +17,7 @@ class Project(models.Model):
     status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
-        return f'Project: {self.name} (Owner: {self.owner.username})'
+        return f'{self.name} (Owner: {self.owner.username})'
     
     def save(self, *args, **kwargs):
         if not self.status_id:

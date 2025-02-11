@@ -1,19 +1,35 @@
 from django.db import models
 from django.contrib.auth.models import User
 from project_management.models import Project
+from django.templatetags.static import static
+import os
+from django.conf import settings
 
 class DocumentType(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return f'Type: {self.name}'
+        return f'{self.name}'
+
+    def get_template_file_content(self):
+        template_filename = f"{self.name.replace(' ', '_').lower()}.md"
+        template_path = os.path.join(settings.STATICFILES_DIRS[0], "document", template_filename)
+
+        if os.path.exists(template_path):
+            try:
+                with open(template_path, 'r', encoding='utf-8') as file:
+                    return file.read()
+            except Exception as e:
+                return f"Error reading template file: {e}"
+
+        return "Template file not found."
 
 class AIModel(models.Model):
     name = models.CharField(max_length=255, unique=True)
     model_identifier = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return f'Model: {self.name}'
+        return f'{self.name}'
 
 class AIDocument(models.Model):
     title = models.CharField(max_length=255)
