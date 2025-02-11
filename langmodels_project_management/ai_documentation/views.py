@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from .models import AIDocument
 from .forms import DocumentCreationForm, DocumentUpdateForm
 from django.urls import reverse_lazy
@@ -115,3 +115,37 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
         return project_root_folder / project_folder_name
 
+class DocumentDeleteView(LoginRequiredMixin, DeleteView):
+    model = AIDocument
+    template_name = "ai_documentation/delete_document.html"
+    success_url = reverse_lazy("ai-docs:list_documents") 
+
+    def get_queryset(self):
+        return AIDocument.objects.filter(created_by=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['document'] = self.object 
+        return context
+
+    def form_valid(self, form):
+        document = self.get_object()
+        project_folder_path = self.get_project_folder_path(document.project)
+        file_name = f"{document.title}".replace(' ', '_').lower() + ".md"
+        file_path = project_folder_path / file_name
+
+        if file_path.exists():
+            try:
+                file_path.unlink()
+                messages.success(self.request, f"Document '{file_name}' successfully deleted from project folder.")
+            except Exception as e:
+                messages.error(self.request, f"Failed to delete document '{file_name}': {e}")
+        else:
+            messages.warning(self.request, f"Document '{file_name}' not found in project folder.")
+
+        return super().form_valid(form)
+
+    def get_project_folder_path(self, project):
+        project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
+        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        return project_root_folder / project_folder_name

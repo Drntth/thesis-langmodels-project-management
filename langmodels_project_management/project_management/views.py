@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import CreateView, ListView, DetailView, DeleteView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from .models import Project, ProjectMember
 from .forms import ProjectCreationForm, ProjectUpdateForm, ProjectMemberForm
 from django.urls import reverse_lazy
