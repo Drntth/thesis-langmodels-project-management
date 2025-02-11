@@ -1,0 +1,89 @@
+{% extends "partials/base.html" %}
+
+{% load markdown_extras %}
+
+{% block title %}Document Details{% endblock %}
+
+{% block page_title %}{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg border-dark m-2">
+    {% if document %}
+    <div class="card-header bg-dark text-light shadow-lg d-flex justify-content-between align-items-center">
+        <i class="fa-regular fa-file fs-2 text-dark"></i>
+        <h2 class="card-title text-center fw-bold my-2 flex-grow-1">{{ document.title }}</h2>
+        <i class="fa-regular fa-file fs-2"></i>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="card-text">
+                    <i class="fa-solid fa-gear me-2 text-secondary"></i>
+                    <strong>Version:</strong> 
+                    <span class="badge bg-secondary">{{ document.version }}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fa-solid fa-file me-2 text-info"></i>
+                    <strong>Type:</strong> 
+                    {{ document.type }}
+                </p>
+                <p class="card-text">
+                    <i class="fa-solid fa-robot me-2 text-danger"></i>
+                    <strong>AI Model:</strong> 
+                    {{ document.ai_model }}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p class="card-text">
+                    <i class="fa-solid fa-user me-2 text-secondary"></i>
+                    <strong>Created by:</strong> 
+                    <span class="text-dark">{{ document.created_by }}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fa-solid fa-calendar me-2 text-success"></i>
+                    <strong>Created At:</strong> 
+                    <span class="text-muted">{{ document.created_at|date:"Y-m-d" }}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fa-solid fa-calendar me-2 text-warning"></i>
+                    <strong>Updated At:</strong> 
+                    <span class="text-muted">{{ document.updated_at|date:"Y-m-d" }}</span>
+                </p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12">
+                <h5 class="card-title">Content</h5>
+                <div class="card-text text-dark p-5 m-5 shadow-lg border rounded-3">
+                    {{ document.content | markdown | safe | linebreaks  }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center bg-dark d-flex flex-column justify-content-between px-4 gap-3">
+        {% if document.created_by == request.user %}
+            {% comment %}
+            <a href="{% url 'ai-docs:update_document' document.id %}" class="btn btn-warning shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+                <i class="fa-regular fa-pen-to-square me-2"></i> Update
+            </a>
+            <a href="{% url 'ai-docs:delete_document' document.id %}" class="btn btn-danger shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+                <i class="fa-solid fa-trash me-2"></i> Delete
+            </a>
+            {% endcomment %}
+        {% endif %}
+        <a href="{% url 'ai-docs:list_documents' %}" class="btn btn-secondary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+            <i class="fa-solid fa-arrow-left me-2"></i> Back to Documents
+        </a>
+    </div>
+    {% else %}
+    <p class="text-muted">No document found.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar_left %}
+{% endblock %}
+
+{% block siderbar_right %}
+{% endblock %}

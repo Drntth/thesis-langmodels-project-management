@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, DetailView
 from .models import AIDocument
 from .forms import DocumentCreationForm
 from django.urls import reverse_lazy
@@ -49,3 +49,13 @@ class DocumentListView(LoginRequiredMixin, ListView):
     model = AIDocument
     template_name = "ai_documentation/list_documents.html"
     context_object_name = "documents"
+
+class DocumentDetailView(LoginRequiredMixin, DetailView):
+    model = AIDocument
+    template_name = "ai_documentation/detail_document.html"
+    context_object_name = "document"
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["members"] = ProjectMember.objects.filter(project=self.object)
+    #     return context
