@@ -90,7 +90,7 @@
             </div>
         </div>
     </div>
-    <div class="card-footer text-center bg-dark d-flex flex-column justify-content-between px-4 gap-3">
+    <div class="card-footer bg-dark text-center bg-dark d-flex flex-column justify-content-between px-4 gap-3">
         {% if project.owner == request.user %}
             <a href="{% url 'projects:add_member' project.id %}" class="btn btn-primary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
                 <i class="fa-solid fa-user-plus me-2"></i> Add Member

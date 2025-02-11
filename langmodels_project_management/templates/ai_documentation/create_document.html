@@ -111,8 +111,11 @@
                 {% endif %}                           
             </div>
         </div>
-        <div class="card-footer text-center">
-            <button type="submit" class="btn btn-success shadow-lg rounded-pill btn-lg w-40">
+        <div class="card-footer bg-dark text-center bg-dark d-flex flex-column flex-md-row justify-content-between px-4 gap-3">
+            <a href="{% url 'ai-docs:list_documents' %}" class="btn btn-secondary shadow-lg rounded-pill btn-md w-100 flex-grow-1 w-md-auto">
+                <i class="fa-solid fa-xmark me-2"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-success shadow-lg rounded-pill btn-md w-100 w-md-auto">
                 <i class="fas fa-check-circle me-2"></i>Create
             </button>
         </div>
