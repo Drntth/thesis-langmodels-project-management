@@ -4,6 +4,8 @@ from django_seed import Seed
 from ai_documentation.models import AIDocument, AIModel, DocumentType
 from project_management.models import Project
 from django.contrib.auth.models import User
+from pathlib import Path
+from django.conf import settings
 
 class Command(BaseCommand):
     help = "Seed AI-generated documents"
@@ -21,19 +23,42 @@ class Command(BaseCommand):
             return
 
         num_documents = 10 
-        seeder.add_entity(AIDocument, num_documents, {
-            'title': lambda x: seeder.faker.sentence(),
-            'content': lambda x: seeder.faker.paragraph(nb_sentences=5),
-            'project': lambda x: random.choice(projects),
-            'created_by': lambda x: random.choice(users),
-            'version': 1,
-            'type': lambda x: random.choice(document_types),
-            'ai_model': lambda x: random.choice(ai_models),
-        })
+        documents = []
 
-        inserted_pks = seeder.execute()
-        created_documents = AIDocument.objects.filter(id__in=[pk for pk_list in inserted_pks.values() for pk in pk_list])
+        for _ in range(num_documents):
+            document_type = random.choice(document_types)
+            project = random.choice(projects)
+            created_by = random.choice(users)
+            ai_model = random.choice(ai_models)
+            title = seeder.faker.sentence()
+            content = document_type.get_template_file_content()
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded {num_documents} AI-generated documents:"))
-        for doc in created_documents:
+            document = AIDocument.objects.create(
+                title=title,
+                content=content,
+                project=project,
+                created_by=created_by,
+                version=1,
+                type=document_type,
+                ai_model=ai_model,
+            )
+
+            project_folder_name = f"{project.owner}_{project.name}".replace(' ', '_').lower()
+            project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+            document_filename = f"{document.title}".replace(' ', '_').lower() + ".md"
+            document_file_path = project_folder_path / document_filename
+
+            if not project_folder_path.exists():
+                project_folder_path.mkdir(parents=True, exist_ok=True)
+
+            try:
+                with open(document_file_path, 'w', encoding='utf-8') as md_file:
+                    md_file.write(document.content)
+
+                documents.append(document)
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"Error saving document file: {e}"))
+
+        self.stdout.write(self.style.SUCCESS(f"Seeded {len(documents)} AI-generated documents:"))
+        for doc in documents:
             self.stdout.write(f" - {doc.title} (Project: {doc.project.name}, Created by: {doc.created_by.username})")

@@ -1,8 +1,11 @@
 import random
 from django.core.management.base import BaseCommand
 from django_seed import Seed
-from project_management.models import Project, ProjectStatus, ProjectRole, ProjectMember
+from project_management.models import Project, ProjectStatus
 from django.contrib.auth.models import User
+import datetime
+from pathlib import Path
+from django.conf import settings
 
 class Command(BaseCommand):
     help = "Seed the database with projects"
@@ -13,13 +16,19 @@ class Command(BaseCommand):
         users = list(User.objects.all())
         statuses = list(ProjectStatus.objects.all())
 
-        if not users or not statuses:
-            self.stdout.write(self.style.ERROR("No users or statuses found! Run seed_users first."))
+        if not users:
+            self.stdout.write(self.style.ERROR("No users found! Run seed_users first."))
+            return
+        
+        if not statuses:
+            self.stdout.write(self.style.ERROR("No statuses found! Run seed_project_statuses first."))
             return
 
         num_projects = 5
         seeder.add_entity(Project, num_projects, {
             'name': lambda x: seeder.faker.company(),
+            'description': lambda x: seeder.faker.text(max_nb_chars=200),
+            'deadline': lambda x: self.generate_future_date(),
             'owner': lambda x: random.choice(users),
             'status': lambda x: random.choice(statuses),
         })
@@ -30,4 +39,20 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Seeded {total_created} projects:"))
         for project in created_projects:
-            self.stdout.write(f" - {project.name}")
+            self.create_project_folder(project)
+            self.stdout.write(f" - {project.name} (Folder Created)")
+
+    def generate_future_date(self):
+        today = datetime.date.today()
+        future_days = random.randint(1, 365)
+        return today + datetime.timedelta(days=future_days)
+
+    def create_project_folder(self, project):
+        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+
+        if not project_folder_path.exists():
+            project_folder_path.mkdir(parents=True, exist_ok=True)
+            self.stdout.write(self.style.SUCCESS(f"Created folder: {project_folder_path}"))
+        else:
+            self.stdout.write(self.style.WARNING(f"Folder already exists: {project_folder_path}"))

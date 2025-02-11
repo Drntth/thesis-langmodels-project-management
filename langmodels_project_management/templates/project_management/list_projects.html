@@ -1,0 +1,98 @@
+{% extends "partials/base.html" %}
+
+{% block title %}List Projects{% endblock %}
+
+{% block page_title %}List Projects{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 d-flex justify-content-end align-items-end mb-4">
+        <a href="{% url 'projects:create_project' %}" class="btn btn-success shadow-lg btn-lg">
+            <i class="fa-solid fa-folder-plus me-2"></i> Create New Project
+        </a>
+    </div>
+    {% for project in projects %}
+    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+        <div class="card h-100 shadow-lg border-dark m-2">
+            <div class="card-header bg-dark text-light shadow-lg d-flex justify-content-between align-items-center">
+                <i class="fa-solid fa-folder fs-2 text-dark"></i>
+                <h2 class="card-title text-center fw-bold my-2 flex-grow-1">{{ project.name }}</h2>
+                <i class="fa-solid fa-folder fs-2"></i>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if project.description %}
+                    <div class="col-md-6">
+                        <h6 class="card-title">Description</h6>
+                        <p class="card-text">
+                            {% if project.description|length > 150 %}
+                                {{ project.description|slice:":150" }}...
+                            {% else %}
+                                {{ project.description }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                    {% else %}
+                    <div class="col-md-12">
+                    {% endif %}
+                    <p class="card-text">
+                        <i class="fa-solid fa-user-gear me-2 text-secondary"></i>
+                        <strong>Owner:</strong> 
+                        {{ project.owner.username }}
+                    </p>
+                    <p class="card-text">
+                        <i class="fa-solid fa-calendar me-2 text-success"></i>
+                        <strong>Created At:</strong> 
+                        {{ project.created_at|date:"Y-m-d" }}
+                    </p>
+                    <p class="card-text">
+                        <i class="fa-solid fa-calendar me-2 text-warning"></i>
+                        <strong>Updated At:</strong> 
+                        {{ project.updated_at|date:"Y-m-d" }}
+                    </p>
+                    
+                    {% if project.deadline %}
+                        <p class="card-text">
+                            <i class="fa-solid fa-calendar me-2 text-danger"></i>
+                            <strong>Deadline:</strong> 
+                            {{ project.deadline|date:"Y-m-d" }}
+                        </p>
+                    {% endif %}
+
+                    <p class="card-text">
+                        <i class="fa-solid fa-toggle-on me-2 text-info"></i>
+                        <strong>Status:</strong> 
+                        {% if project.status.name == "Draft" %}
+                            <span class="badge bg-secondary">Draft</span>
+                        {% elif project.status.name == "In Progress" %}
+                            <span class="badge bg-warning text-dark">In Progress</span>
+                        {% elif project.status.name == "Completed" %}
+                            <span class="badge bg-success">Completed</span>
+                        {% else %}
+                            <span class="badge bg-info">Unknown</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            </div>
+            <div class="card-footer text-center bg-dark justify-content-center px-4">
+                <a href="{% url 'projects:detail_project' project.id %}" class="btn btn-md btn-secondary shadow-lg">
+                    <i class="fa-regular fa-eye me-2"></i> View
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+        <p class="text-muted">No projects available.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block sidebar_left %}
+{% endblock %}
+
+{% block siderbar_right %}
+{% endblock %}
