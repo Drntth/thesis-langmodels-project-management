@@ -1,0 +1,87 @@
+{% extends "partials/base.html" %}
+
+{% block title %}List Documents{% endblock %}
+
+{% block page_title %}List Documents{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 d-flex justify-content-end align-items-end mb-4">
+        <a href="{% url 'ai-docs:create_document' %}" class="btn btn-success shadow-lg btn-lg">
+            <i class="fa-regular fa-square-plus me-2"></i> Create New Document
+        </a>
+    </div>
+    {% for document in documents %}
+    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+        <div class="card h-100 shadow-lg border-dark m-2">
+            <div class="card-header bg-dark text-light shadow-lg d-flex justify-content-between align-items-center">
+                <i class="fa-solid fa-file fs-2 text-dark"></i>
+                <h2 class="card-title text-center fw-bold my-2 flex-grow-1">{{ document.title }}</h2>
+                <i class="fa-solid fa-file fs-2"></i>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 text-center mb-3">
+                        <h3>
+                            <i class="fa-solid fa-folder-open me-2 text-dark"></i>
+                            {{ document.project.name }}
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="card-text">
+                            <i class="fa-solid fa-gear me-2 text-secondary"></i>
+                            <strong>Version:</strong> 
+                            <span class="badge bg-secondary">{{ document.version }}</span>
+                        </p>
+                        <p class="card-text">
+                            <i class="fa-solid fa-file me-2 text-info"></i>
+                            <strong>Type:</strong> 
+                            {{ document.type }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fa-solid fa-robot me-2 text-danger"></i>
+                            <strong>AI Model:</strong> 
+                            {{ document.ai_model }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="card-text">
+                            <i class="fa-solid fa-user me-2 text-secondary"></i>
+                            <strong>Created by:</strong> 
+                            <span class="text-dark">{{ document.created_by }}</span>
+                        </p>
+                        <p class="card-text">
+                            <i class="fa-solid fa-calendar me-2 text-success"></i>
+                            <strong>Created At:</strong> 
+                            <span class="text-muted">{{ document.created_at|date:"Y-m-d" }}</span>
+                        </p>
+                        <p class="card-text">
+                            <i class="fa-solid fa-calendar me-2 text-warning"></i>
+                            <strong>Updated At:</strong> 
+                            <span class="text-muted">{{ document.updated_at|date:"Y-m-d" }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-dark text-center bg-dark justify-content-center px-4">
+                <a href="{% url 'ai-docs:detail_document' document.id %}" class="btn btn-md btn-secondary shadow-lg">
+                    <i class="fa-regular fa-eye me-2"></i> View
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+        <p class="text-muted">No documents available.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block sidebar_left %}
+{% endblock %}
+
+{% block siderbar_right %}
+{% endblock %}

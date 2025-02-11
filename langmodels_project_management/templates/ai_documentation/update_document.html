@@ -1,6 +1,6 @@
 {% extends "partials/base.html" %}
 
-{% block title %}Update Project{% endblock %}
+{% block title %}Update Document{% endblock %}
 
 {% block page_title %}{% endblock %}
 
@@ -8,7 +8,7 @@
 <div class="card shadow-lg border-warning m-2">
     <div class="card-header bg-warning text-light shadow-lg d-flex justify-content-between align-items-center">
         <i class="fa-regular fa-pen-to-square fs-2 text-warning"></i>
-        <h2 class="card-title text-center fw-bold my-2 flex-grow-1 text-dark">Update Project</h2>
+        <h2 class="card-title text-center fw-bold my-2 flex-grow-1 text-dark">Update Document</h2>
         <i class="fa-regular fa-pen-to-square fs-2 text-dark"></i>
     </div>
     <form method="POST">
@@ -27,15 +27,15 @@
             </div>
 
             <div class="mb-2">
-                <label for="name">Name</label>
+                <label for="title">Title</label>
                 <div class="input-group shadow-sm">
                     <span class="input-group-text"><i class="fas fa-comment text-warning"></i></span>
-                    {{ form.name }}
+                    {{ form.title }}
                 </div>     
-                {% if form.name.errors %}
+                {% if form.title.errors %}
                 <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
                     <i class="fas fa-exclamation-circle"></i>
-                    {% for error in form.name.errors %}
+                    {% for error in form.title.errors %}
                         {{ error }}
                     {% endfor %}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -44,15 +44,15 @@
             </div>
 
             <div class="mb-2">
-                <label for="description">Description</label>
+                <label for="content">Content</label>
                 <div class="input-group shadow-sm">
                     <span class="input-group-text"><i class="fa-solid fa-paragraph text-warning"></i></span>
-                    {{ form.description }}
+                    {{ form.content }}
                 </div>     
-                {% if form.description.errors %}
+                {% if form.content.errors %}
                 <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
                     <i class="fas fa-exclamation-circle"></i>
-                    {% for error in form.description.errors %}
+                    {% for error in form.content.errors %}
                         {{ error }}
                     {% endfor %}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -61,15 +61,15 @@
             </div>
 
             <div class="mb-2">
-                <label for="deadline">Deadline</label>
+                <label for="project">Project</label>
                 <div class="input-group shadow-sm">
-                    <span class="input-group-text"><i class="fa-regular fa-calendar text-warning"></i></span>
-                    {{ form.deadline }}
+                    <span class="input-group-text"><i class="fa-solid fa-folder-open text-warning"></i></span>
+                    {{ form.project }}
                 </div>     
-                {% if form.deadline.errors %}
+                {% if form.project.errors %}
                 <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
                     <i class="fas fa-exclamation-circle"></i>
-                    {% for error in form.deadline.errors %}
+                    {% for error in form.project.errors %}
                         {{ error }}
                     {% endfor %}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -78,24 +78,41 @@
             </div>
 
             <div class="mb-2">
-                <label for="status">Status</label>
+                <label for="type">Type</label>
                 <div class="input-group shadow-sm">
-                    <span class="input-group-text"><i class="fa-solid fa-list-ul text-warning"></i></span>
-                    {{ form.status }}
-                </div> 
-                {% if form.status.errors %}
+                    <span class="input-group-text"><i class="fa-solid fa-file text-warning"></i></span>
+                    {{ form.type }}
+                </div>     
+                {% if form.type.errors %}
                 <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
                     <i class="fas fa-exclamation-circle"></i>
-                    {% for error in form.status.errors %}
+                    {% for error in form.type.errors %}
                         {{ error }}
                     {% endfor %}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                {% endif %}     
+                {% endif %}                           
+            </div>
+
+            <div class="mb-2">
+                <label for="ai_model">Ai Model</label>
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text"><i class="fa-solid fa-robot text-warning"></i></span>
+                    {{ form.ai_model }}
+                </div>     
+                {% if form.ai_model.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.ai_model.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}                           
             </div>
         </div>
         <div class="card-footer bg-dark text-center bg-dark d-flex flex-column flex-md-row justify-content-between px-4 gap-3">
-            <a href="{% url 'projects:detail_project' project.id %}" class="btn btn-secondary shadow-lg rounded-pill btn-md w-100 flex-grow-1 w-md-auto">
+            <a href="{% url 'ai-docs:detail_document' document.id %}" class="btn btn-secondary shadow-lg rounded-pill btn-md w-100 flex-grow-1 w-md-auto">
                 <i class="fa-solid fa-xmark me-2"></i> Cancel
             </a>
             <button type="submit" class="btn btn-warning shadow-lg rounded-pill btn-md w-100 w-md-auto">

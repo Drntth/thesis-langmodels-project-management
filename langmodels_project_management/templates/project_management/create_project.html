@@ -11,7 +11,7 @@
         <h2 class="card-title text-center fw-bold my-2 flex-grow-1">Create Project</h2>
         <i class="fa-solid fa-folder-plus fs-2"></i>
     </div>
-    <form method="POST" action="{% url 'projects:create_project' %}" enctype="multipart/form-data">
+    <form method="POST" action="{% url 'projects:create_project' %}">
         <div class="card-body">
             {% csrf_token %}
             <div class="m-2">
@@ -77,8 +77,11 @@
                 {% endif %}                           
             </div>
         </div>
-        <div class="card-footer text-center">
-            <button type="submit" class="btn btn-success shadow-lg rounded-pill btn-lg w-40">
+        <div class="card-footer bg-dark text-center bg-dark d-flex flex-column flex-md-row justify-content-between px-4 gap-3">
+            <a href="{% url 'projects:list_projects' %}" class="btn btn-secondary shadow-lg rounded-pill btn-md w-100 flex-grow-1 w-md-auto">
+                <i class="fa-solid fa-xmark me-2"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-success shadow-lg rounded-pill btn-md w-100 w-md-auto">
                 <i class="fas fa-check-circle me-2"></i>Create
             </button>
         </div>

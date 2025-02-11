@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import CreateView, ListView, DetailView, DeleteView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from .models import Project, ProjectMember
 from .forms import ProjectCreationForm, ProjectUpdateForm, ProjectMemberForm
 from django.urls import reverse_lazy
@@ -44,6 +44,37 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         context["members"] = ProjectMember.objects.filter(project=self.object)
         return context
 
+class ProjectUpdateView(LoginRequiredMixin, UpdateView):
+    model = Project
+    form_class = ProjectUpdateForm
+    template_name = 'project_management/update_project.html'
+
+    def get_success_url(self):
+        return reverse_lazy('projects:detail_project', kwargs={'pk': self.object.pk})
+
+    def get_queryset(self):
+        return Project.objects.filter(owner=self.request.user)
+    
+    def form_valid(self, form):
+        project = self.get_object()
+        old_folder_path = self.get_project_folder_path(project)
+        response = super().form_valid(form)
+
+        if project.name != form.cleaned_data['name']:
+            new_folder_path = self.get_project_folder_path(form.instance)
+
+            if old_folder_path.exists():
+                os.rename(old_folder_path, new_folder_path)
+                messages.success(self.request, f"Project folder renamed to '{new_folder_path.name}'")
+
+        messages.success(self.request, f"Project details for '{form.instance.name}' successfully updated!")
+        return response
+
+    def get_project_folder_path(self, project):
+        project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
+        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        return project_root_folder / project_folder_name
+
 class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project_management/delete_project.html"
@@ -66,35 +97,6 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
             messages.warning(self.request, f"Project '{project.name}' deleted, but no associated data was found.")
 
         return super().form_valid(form)
-
-    def get_project_folder_path(self, project):
-        project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
-        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
-        return project_root_folder / project_folder_name
-
-class ProjectUpdateView(LoginRequiredMixin, UpdateView):
-    model = Project
-    form_class = ProjectUpdateForm
-    template_name = 'project_management/update_project.html'
-    success_url = reverse_lazy('projects:list_projects')
-
-    def get_queryset(self):
-        return Project.objects.filter(owner=self.request.user)
-    
-    def form_valid(self, form):
-        project = self.get_object()
-        old_folder_path = self.get_project_folder_path(project)
-        response = super().form_valid(form)
-
-        if project.name != form.cleaned_data['name']:
-            new_folder_path = self.get_project_folder_path(form.instance)
-
-            if old_folder_path.exists():
-                os.rename(old_folder_path, new_folder_path)
-                messages.success(self.request, f"Project folder renamed to '{new_folder_path.name}'")
-
-        messages.success(self.request, f"Project details for '{form.instance.name}' successfully updated!")
-        return response
 
     def get_project_folder_path(self, project):
         project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
