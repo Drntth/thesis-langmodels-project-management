@@ -24,4 +24,5 @@ urlpatterns = [
     path('users/', include('users.urls', namespace="users")),
     path('projects/', include('project_management.urls', namespace="project_management")),
     path('ai-docs/', include('ai_documentation.urls',namespace="ai_documentation")),
+    path('ai-models/', include('ai_models.urls',namespace="ai_models")),
 ]

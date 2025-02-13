@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'users',
     'project_management',
     'ai_documentation',
+    'ai_models',
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,5 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+AI_MODEL_STORAGE = BASE_DIR, 'ai_models/storage/'

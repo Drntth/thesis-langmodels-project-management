@@ -4,6 +4,7 @@ from project_management.models import Project
 from django.templatetags.static import static
 import os
 from django.conf import settings
+from ai_models.models import AIModel
 
 class DocumentType(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -23,13 +24,6 @@ class DocumentType(models.Model):
                 return f"Error reading template file: {e}"
 
         return "Template file not found."
-
-class AIModel(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    model_identifier = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return f'{self.name}'
 
 class AIDocument(models.Model):
     title = models.CharField(max_length=255)

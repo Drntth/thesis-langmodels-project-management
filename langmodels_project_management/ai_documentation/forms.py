@@ -1,5 +1,6 @@
 from django import forms
-from .models import AIDocument, DocumentType, AIModel
+from .models import AIDocument, DocumentType
+from ai_models.models import AIModel
 from project_management.models import Project
 
 class DocumentCreationForm(forms.ModelForm):
