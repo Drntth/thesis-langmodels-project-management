@@ -146,4 +146,6 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-AI_MODEL_STORAGE = BASE_DIR, 'ai_models/storage/'
+import os
+
+AI_MODEL_STORAGE = os.path.join(BASE_DIR, 'ai_models/storage')
