@@ -9,7 +9,6 @@ from pathlib import Path
 from django.conf import settings
 import os
 from pathlib import Path
-from django.conf import settings
 
 class DocumentCreateView(LoginRequiredMixin, CreateView):
     model = AIDocument

@@ -1,17 +1,18 @@
 from django.core.management.base import BaseCommand
-from ai_documentation.models import AIModel
+from ai_models.models import AIModel
 
 class Command(BaseCommand):
     help = "Seed the databse with AI models"
 
     def handle(self, *args, **kwargs):
         ai_models = [
-            ("Bloom (BigScience)", "bigscience/bloom-560m"),
-            ("Bert (Google)", "bert-base-uncased"),
-            ("GPT-Neo (EleutherAI)", "EleutherAI/gpt-neo-2.7B"),
-            ("GPT-J (EleutherAI)", "EleutherAI/gpt-j-6b"),
-            ("LLAMA (Meta AI)", "meta-llama/Llama-2-7b-hf"),
-            ("DeepSeek-R1", "deepseek-ai/DeepSeek-R1"),
+            ("DistilGPT2", "distilbert/distilgpt2"), # 88.2M
+            
+            ("GPT-Neo 125M", "EleutherAI/gpt-neo-125m"), # 150M
+            ("Facebook OPT 125M", "facebook/opt-125m"), # 125M
+
+            ("GPT-2 Medium", "openai-community/gpt2-medium"), # 380M
+            ("Facebook OPT 350M", "facebook/opt-350m"), # 350M
         ]
 
         created_models = []

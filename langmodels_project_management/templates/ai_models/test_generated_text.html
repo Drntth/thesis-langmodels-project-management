@@ -1,0 +1,55 @@
+{% extends "partials/base.html" %}
+
+{% block title %}Test Models Generated Text{% endblock %}
+
+{% block page_title %}{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg border-secondary m-2">
+    {% if not error %}
+    <div class="card-header bg-secondary text-light shadow-lg d-flex justify-content-between align-items-center">
+        <i class="fa-solid fa-robot fs-2 text-secondary"></i>
+        <h2 class="card-title text-center fw-bold my-2 flex-grow-1">Test Models Generated Text</h2>
+        <i class="fa-solid fa-robot fs-2"></i>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <p class="card-text">
+                    <i class="fa-solid fa-robot me-2 text-danger"></i>
+                    <strong>Model:</strong>
+                    <span class="badge bg-secondary">{{ model }}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fa-solid fa-comment-dots me-2 text-secondary"></i>
+                    <strong>Prompt:</strong>
+                    {{ prompt }}
+                </p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12">
+                <h5 class="card-title">Generated text</h5>
+                <div class="card-text text-secondary p-5 m-5 shadow-lg border rounded-3">
+                    {{ generated_text|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-dark text-center bg-secondary d-flex flex-column justify-content-between px-4 gap-3">
+        <a href="{% url 'ai-models:test_models' %}" class="btn btn-secondary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+            <i class="fa-solid fa-arrow-left me-2"></i> Back to Generation
+        </a>
+    </div>
+    {% else %}
+    <p class="text-muted">{{ error }}</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar_left %}
+{% endblock %}
+
+{% block siderbar_right %}
+{% endblock %}
