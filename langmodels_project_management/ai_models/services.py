@@ -1,23 +1,37 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-from huggingface_hub import snapshot_download
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from accelerate.test_utils.testing import get_backend
 
 class BaseModel:
     def __init__(self, model_identifier):
         self.model_identifier = model_identifier
 
-        self.pipeline = pipeline(
-            "text-generation", 
-            model=self.model_identifier, 
+        self.tokenizer = AutoTokenizer.from_pretrained(model_identifier)
+        self.tokenizer.pad_token = self.tokenizer.eos_token
+
+        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_identifier, 
+            device_map="auto", 
+            quantization_config=quantization_config
         )
 
+        self.DEVICE, _, _ = get_backend()
+
     def generate_text(self, prompt):
-        return self.pipeline(
-            prompt,
-            # max_length=100, # a teljes generált szöveg hossza: input + output
-            # max_new_tokens=50, # generált új tokenek száma
-            # do_sample=True, # véletlenszerű mintavételezés 
-            # temperature=0.7, # kreativitás 0-1
-            # repetition_penalty=1.5, # Ismétlődés büntetése (1.0 = nincs büntetés, >1.0 = ismétlődés elkerülése)
-            num_return_sequences=1, # válaszok száma
-            return_full_text=False, # prompt + generált szöveg
-        )[0]["generated_text"]
+        model_inputs = self.tokenizer(
+            [prompt],
+            return_tensors="pt"
+        ).to(self.DEVICE)
+
+        generated_ids = self.model.generate(
+            **model_inputs, 
+            do_sample=True,
+            min_new_tokens=50, # 200
+            max_new_tokens=150 # 500
+            # max_time=float  
+        )
+
+        return (self.tokenizer.batch_decode(
+            generated_ids, 
+            skip_special_tokens=True
+            )[0])
