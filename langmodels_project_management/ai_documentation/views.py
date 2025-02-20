@@ -14,7 +14,7 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
     model = AIDocument
     form_class = DocumentCreationForm
     template_name = "ai_documentation/create_document.html"
-    success_url = reverse_lazy('home:index')
+    success_url = reverse_lazy('ai-docs:list_documents')
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user 

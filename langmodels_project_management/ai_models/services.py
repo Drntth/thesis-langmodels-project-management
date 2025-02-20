@@ -17,9 +17,12 @@ class BaseModel:
 
         self.DEVICE, _, _ = get_backend()
 
-    def generate_text(self, prompt):
+    def generate_text(self, prompt, content=None):
+        full_prompt = f"Prompt: {prompt}\nInput: {content}\nOutput:"
+        print(f"[DEBUG] Full prompt sent to AI:\n{full_prompt}")
+
         model_inputs = self.tokenizer(
-            [prompt],
+            [full_prompt],
             return_tensors="pt"
         ).to(self.DEVICE)
 
@@ -31,7 +34,11 @@ class BaseModel:
             # max_time=float  
         )
 
-        return (self.tokenizer.batch_decode(
+        output_text = self.tokenizer.batch_decode(
             generated_ids, 
             skip_special_tokens=True
-            )[0])
+        )[0]
+
+        modified_text = output_text.split("Output:")[-1].strip()
+
+        return modified_text

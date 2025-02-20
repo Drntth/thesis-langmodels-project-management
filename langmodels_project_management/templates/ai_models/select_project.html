@@ -1,0 +1,62 @@
+{% extends "partials/base.html" %}
+
+{% block title %}Select Project to Generate Document{% endblock %}
+
+{% block page_title %}Select Project to Generate Document{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg border-secondary m-2">
+    <div class="card-header bg-secondary text-light shadow-lg d-flex justify-content-between align-items-center">
+        <i class="fa-solid fa-folder fs-2 text-secondary"></i>
+        <h2 class="card-title text-center fw-bold my-2 flex-grow-1">Select Project</h2>
+        <i class="fa-solid fa-folder fs-2"></i>
+    </div>
+    <form method="POST" action="{% url 'ai-models:select_project' %}">
+        <div class="card-body">
+            {% csrf_token %}
+            <div class="m-2">
+                {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ error }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="mb-2">
+                <label for="project">Project</label>
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text"><i class="fa-solid fa-folder-open text-secondary"></i></span>
+                    {{ form.project }}
+                </div>     
+                {% if form.project.errors %}
+                <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in form.project.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}                           
+            </div>
+        </div>
+        <div class="card-footer bg-dark text-center bg-dark d-flex flex-column flex-md-row justify-content-between px-4 gap-3">
+            <a href="{% url 'home:index' %}" class="btn btn-secondary shadow-lg rounded-pill btn-md w-100 flex-grow-1 w-md-auto">
+                <i class="fa-solid fa-xmark me-2"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-success shadow-lg rounded-pill btn-md w-100 w-md-auto">
+                <i class="fas fa-check-circle me-2"></i>Select
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block sidebar_left %}
+{% endblock %}
+
+{% block siderbar_right %}
+{% endblock %}

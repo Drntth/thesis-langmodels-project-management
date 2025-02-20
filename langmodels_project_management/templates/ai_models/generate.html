@@ -1,0 +1,76 @@
+{% extends "partials/base.html" %}
+
+{% load markdown_extras %}
+
+{% block title %}Generate Content{% endblock %}
+
+{% block page_title %}{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg border-dark m-2">
+    {% if document %}
+    <div class="card-header bg-dark text-light shadow-lg d-flex justify-content-between align-items-center">
+        <i class="fa-regular fa-file fs-2 text-dark"></i>
+        <h2 class="card-title text-center fw-bold my-2 flex-grow-1">{{ document.title }}</h2>
+        <i class="fa-regular fa-file fs-2"></i>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <h6 class="card-title">Project Description</h6>
+                <p class="card-text">
+                    {{ project_description }}
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% for section_title, section_content in sections %}
+                <form method="post" action="{% url 'ai-models:generate_section_content' %}">
+                    {% csrf_token %}
+                    <div class="card my-4 shadow-md border">
+                        <div class="card-header bg-secondary text-light fw-bold text-uppercase p-3">
+                            <h4 class="m-0">{{ section_title }}</h4>
+                            <input type="hidden" name="section_title" value="{{ section_title }}">
+                        </div>
+                        <div class="card-body bg-light text-dark p-4">
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text"><i class="fas fa-align-left text-secondary"></i></span>
+                                <textarea class="form-control" name="section_content" id="section_content" rows="10" minlength="10" maxlength="500" required>{{ section_content }}</textarea>
+                            </div>  
+                        </div>
+                        <div class="card-footer bg-secondary text-light px-4">
+                            <div class="mb-3">
+                                <label for="prompt">Prompt (Optional)</label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text"><i class="fas fa-comment text-info"></i></span>
+                                    <input type="text" class="form-control" placeholder="Enter a prompt here to adjust the models output..." name="prompt" id="prompt">
+                                </div>                                
+                            </div>
+                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                                <button type="submit" name="action" value="generate" class="btn btn-info shadow-lg rounded-pill btn-md w-100 w-md-auto">
+                                    <i class="fas fa-magic me-2"></i> Generate
+                                </button>
+                                <button type="submit" name="action" value="save" class="btn btn-success shadow-lg rounded-pill btn-md w-100 w-md-auto">
+                                    <i class="fas fa-save me-2"></i> Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-muted">No document found.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar_left %}
+{% endblock %}
+
+{% block siderbar_right %}
+{% endblock %}
