@@ -9,6 +9,7 @@ from ai_documentation.models import AIDocument
 from ai_models.models import AIModel
 from pathlib import Path
 from django.conf import settings
+from utils.clean_filename import clean_filename
 
 class TestModellsView(FormView):
     template_name="ai_models/test_models.html"
@@ -204,9 +205,9 @@ class GenerateSectionContentView(View):
                 document.content = "\n".join(new_lines)
                 document.save()
 
-                project_folder_name = f"{project.owner}_{project.name}".replace(' ', '_').lower()
+                project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
                 project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
-                document_filename = f"{document.title}".replace(' ', '_').lower() + ".md"
+                document_filename = clean_filename(document.title) + ".md"
                 document_file_path = project_folder_path / document_filename
 
                 if not project_folder_path.exists():

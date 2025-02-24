@@ -70,6 +70,10 @@
                 <i class="fa-solid fa-trash me-2"></i> Delete
             </a>
         {% endif %}
+
+        <a href="{% url 'ai-docs:download_document' document.id %}" class="btn btn-primary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+            <i class="fa-solid fa-download me-2"></i> Download
+        </a>
         <a href="{% url 'ai-docs:list_documents' %}" class="btn btn-secondary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
             <i class="fa-solid fa-arrow-left me-2"></i> Back to Documents
         </a>

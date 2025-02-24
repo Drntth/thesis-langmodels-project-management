@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 import datetime
 from pathlib import Path
 from django.conf import settings
+from utils.clean_filename import clean_filename
 
 class Command(BaseCommand):
     help = "Seed the database with projects"
@@ -48,7 +49,7 @@ class Command(BaseCommand):
         return today + datetime.timedelta(days=future_days)
 
     def create_project_folder(self, project):
-        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
 
         if not project_folder_path.exists():
