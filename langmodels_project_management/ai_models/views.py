@@ -1,16 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .services import BaseModel
-from .forms import TestModelForm, ProjectSelectionForm, DocumentSelectionForm
+from .services import PipelineTextGenerator
+from .forms import TestModelForm, ProjectSelectionForm, DocumentSelectionForm, GenerateDescriptionForm, GenerateTitleForm
 from django.views.generic import FormView, TemplateView, View
 from django.contrib import messages
 from django.urls import reverse
 from project_management.models import Project
 from ai_documentation.models import AIDocument
+from ai_models.models import AIModel
 from pathlib import Path
 from django.conf import settings
-
-def generate_ai_text(ai_model, prompt, content):
-    return BaseModel(ai_model.model_identifier).generate_text(prompt, content)
 
 class TestModellsView(FormView):
     template_name="ai_models/test_models.html"
@@ -22,7 +20,7 @@ class TestModellsView(FormView):
         model_identifier = ai_model.model_identifier
 
         try:
-            ai_model_instance = BaseModel(model_identifier)
+            ai_model_instance = PipelineTextGenerator(model_identifier)
             generated_text = ai_model_instance.generate_text(prompt=prompt)
 
         except Exception as e:
@@ -128,7 +126,7 @@ class GenerateView(View):
                 section_content.append(line)
 
         return render(request, self.template_name, {"document": document, "sections": sections, "project_description": project.description})
-    
+
 class GenerateSectionContentView(View):
     def post(self, request):
         project_id = request.session.get("selected_project_id")
@@ -147,7 +145,8 @@ class GenerateSectionContentView(View):
 
         if action == "generate":
             try:
-                generated_content = generate_ai_text(document.ai_model, prompt, section_content)
+                full_prompt = f"{prompt}\n{section_content}"
+                generated_content = PipelineTextGenerator(document.ai_model).generate_text(full_prompt)
 
                 lines = document.content.split("\n")
                 new_lines = []
@@ -194,3 +193,89 @@ class GenerateSectionContentView(View):
                     messages.error(self.request, f"Error saving document file: {e}")
 
             return redirect(reverse("ai-models:generate"))
+
+class GenerateDescriptionView(FormView):
+    template_name="ai_models/generate_description.html"
+    form_class = GenerateDescriptionForm
+
+    def form_valid(self, form):
+        ai_models = AIModel.objects.all()
+        title = form.cleaned_data["title"]
+
+        results=[]
+
+        for ai_model in ai_models:
+            try:
+                ai_model_instance = PipelineTextGenerator(ai_model.model_identifier)
+                prompt = f"Please write a professional and structured project description of an '{title}' project title. Include key features, benefits, and possible applications in the workplace."
+                generated_text = ai_model_instance.generate_text(
+                    prompt=prompt,
+                    min_new_tokens=50,
+                    max_new_tokens=150,
+                    )
+
+                results.append({
+                    "model": ai_model.model_identifier,
+                    "generated_text": generated_text
+                })
+
+            except Exception as e:
+                messages.error(self.request, f"Error while generating text: {str(e)}")
+                return self.form_invalid(form)
+
+        self.request.session["generated_results"] = {
+            "title": title,
+            "results": results
+        }
+
+        messages.success(self.request, "Text generated successfully!")
+        return redirect(reverse("ai-models:results"))
+
+class GenerateTitleView(FormView):
+    template_name="ai_models/generate_title.html"
+    form_class = GenerateTitleForm
+
+    def form_valid(self, form):
+        ai_models = AIModel.objects.all()
+        description = form.cleaned_data["description"]
+
+        results=[]
+
+        for ai_model in ai_models:
+            try:
+                ai_model_instance = PipelineTextGenerator(ai_model.model_identifier)
+                prompt = f"Given the following project description, generate a concise, engaging, and informative title that accurately reflects its purpose and scope. The title should be clear, professional, and no longer than 10 words. Do not include explanations, introductions, or additional text-only return the title itself. Project Description: '{description}'' The project title is:"
+                generated_text = ai_model_instance.generate_text(
+                    prompt=prompt,
+                    min_new_tokens=10,
+                    max_new_tokens=20,
+                    )
+
+                results.append({
+                    "model": ai_model.model_identifier,
+                    "generated_text": generated_text
+                })
+
+            except Exception as e:
+                messages.error(self.request, f"Error while generating text: {str(e)}")
+                return self.form_invalid(form)
+
+        self.request.session["generated_results"] = {
+            "description": description,
+            "results": results
+        }
+
+        messages.success(self.request, "Text generated successfully!")
+        return redirect(reverse("ai-models:results"))
+
+class ResultsView(TemplateView):
+    template_name = "ai_models/results.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        data = self.request.session.pop("generated_results", None)
+        if not data:
+            context["error"] = "No generated text data found."
+        else:
+            context.update(data)
+        return context

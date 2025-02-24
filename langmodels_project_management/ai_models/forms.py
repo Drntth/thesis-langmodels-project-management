@@ -17,11 +17,38 @@ class TestModelForm(forms.Form):
         widget=forms.Textarea(attrs={
         'class': 'form-control border-0 shadow-sm',
         'rows': 4,
+        'placeholder': 'Enter text to generate content...',
         })
     )
 
     class Meta:
         fields = ['ai_model', 'prompt']
+
+class GenerateDescriptionForm(forms.Form):
+    title = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control border-0 shadow-sm',
+            'maxlength': 255,
+            'placeholder': 'Enter a title to generate a description...',
+        })
+    )
+
+    class Meta:
+        fields = ['title']
+
+class GenerateTitleForm(forms.Form):
+    description = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control border-0 shadow-sm',
+            'placeholder': 'Enter a description to generate title...',
+            'rows': 5,
+        })
+    )
+
+    class Meta:
+        fields = ['description']
 
 class ProjectSelectionForm(forms.Form):
     project = forms.ModelChoiceField(

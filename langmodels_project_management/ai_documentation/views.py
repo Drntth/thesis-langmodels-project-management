@@ -20,7 +20,21 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user 
 
         try:
-            form.instance.content = form.instance.type.get_template_file_content()
+            document_content = form.instance.type.get_template_file_content()
+
+            context = {
+                "project.name": form.instance.project.name,
+                "document.version": 1,
+                "document.created_by.username": form.instance.created_by.username,
+                "document.ai_model.name": form.instance.ai_model.name if form.instance.ai_model else "N/A",
+                "document.updated_at": "Not updated",
+                "project.description": form.instance.project.description or "No description available",
+            }
+
+            for placeholder, value in context.items():
+                document_content = document_content.replace(f'{{{{ {placeholder} }}}}', str(value))
+
+            form.instance.content = document_content
         except Exception as e:
             messages.error(self.request, f"Error loading document template: {e}")
             return self.form_invalid(form)
