@@ -134,8 +134,8 @@ class GenerateSectionContentView(View):
         document_id = request.session.get("selected_document_id")
         document = get_object_or_404(AIDocument, id=document_id)
 
-        section_title = request.POST.get("section_title")
-        section_content = request.POST.get("section_content")
+        section_title = request.POST.get("section_title").strip()
+        section_content = request.POST.get("section_content").strip()
         prompt = request.POST.get("prompt")
         action = request.POST.get("action")
 
@@ -146,7 +146,7 @@ class GenerateSectionContentView(View):
         if action == "generate":
             try:
                 full_prompt = f"{prompt}\n{section_content}"
-                generated_content = PipelineTextGenerator(document.ai_model).generate_text(full_prompt)
+                generated_content = PipelineTextGenerator(document.ai_model.model_identifier).generate_text(full_prompt)
 
                 lines = document.content.split("\n")
                 new_lines = []
@@ -176,21 +176,52 @@ class GenerateSectionContentView(View):
             return redirect(reverse("ai-models:generate"))
 
         elif action == "save":
-            project_folder_name = f"{project.owner}_{project.name}".replace(' ', '_').lower()
-            project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
-            document_filename = f"{document.title}".replace(' ', '_').lower() + ".md"
-            document_file_path = project_folder_path / document_filename
+            try:
+                lines = document.content.split("\n")
+                new_lines = []
+                inside_section = False
 
-            if not project_folder_path.exists():
-                messages.error(self.request, f"Project folder does not exist: {project_folder_name}")
-            else:
-                try:
-                    with open(document_file_path, 'w', encoding='utf-8') as md_file:
-                        md_file.write(document.content)
+                for i, line in enumerate(lines):
+                    stripped_line = line.strip()
 
-                    messages.success(self.request, f"Document '{document.title}' successfully updated! File saved: {document_filename}")
-                except Exception as e:
-                    messages.error(self.request, f"Error saving document file: {e}")
+                    if stripped_line == section_title:
+                        inside_section = True
+                        new_lines.append(section_title)
+                        new_lines.append("")
+                        new_lines.extend(section_content.splitlines())
+
+                    elif stripped_line == "---" and inside_section:
+                        inside_section = False
+
+                        if new_lines and new_lines[-1].strip():
+                            new_lines.append("")
+
+                        new_lines.append("---")
+
+                    elif not inside_section:
+                        new_lines.append(line)
+                
+                document.content = "\n".join(new_lines)
+                document.save()
+
+                project_folder_name = f"{project.owner}_{project.name}".replace(' ', '_').lower()
+                project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+                document_filename = f"{document.title}".replace(' ', '_').lower() + ".md"
+                document_file_path = project_folder_path / document_filename
+
+                if not project_folder_path.exists():
+                    messages.error(self.request, f"Project folder does not exist: {project_folder_name}")
+                else:
+                    try:
+                        with open(document_file_path, 'w', encoding='utf-8') as md_file:
+                            md_file.write(document.content)
+
+                        messages.success(self.request, f"Document '{document.title}' successfully updated! File saved: {document_filename}")
+                    except Exception as e:
+                        messages.error(self.request, f"Error saving document file: {e}")
+
+            except Exception as e:
+                messages.error(request, f"Error updating section content: {e}")
 
             return redirect(reverse("ai-models:generate"))
 
