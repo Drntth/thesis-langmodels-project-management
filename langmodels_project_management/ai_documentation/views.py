@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, View
 from .models import AIDocument
 from .forms import DocumentCreationForm, DocumentUpdateForm
 from django.urls import reverse_lazy
@@ -9,18 +9,34 @@ from pathlib import Path
 from django.conf import settings
 import os
 from pathlib import Path
+from django.http import FileResponse, Http404
+from utils.clean_filename import clean_filename
 
 class DocumentCreateView(LoginRequiredMixin, CreateView):
     model = AIDocument
     form_class = DocumentCreationForm
     template_name = "ai_documentation/create_document.html"
-    success_url = reverse_lazy('home:index')
+    success_url = reverse_lazy('ai-docs:list_documents')
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user 
 
         try:
-            form.instance.content = form.instance.type.get_template_file_content()
+            document_content = form.instance.type.get_template_file_content()
+
+            context = {
+                "project.name": form.instance.project.name,
+                "document.version": 1,
+                "document.created_by.username": form.instance.created_by.username,
+                "document.ai_model.name": form.instance.ai_model.name if form.instance.ai_model else "N/A",
+                "document.updated_at": "Not updated",
+                "project.description": form.instance.project.description or "No description available",
+            }
+
+            for placeholder, value in context.items():
+                document_content = document_content.replace(f'{{{{ {placeholder} }}}}', str(value))
+
+            form.instance.content = document_content
         except Exception as e:
             messages.error(self.request, f"Error loading document template: {e}")
             return self.form_invalid(form)
@@ -28,10 +44,10 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
         response = super().form_valid(form)
 
         project = form.instance.project
-        project_folder_name = f"{project.owner}_{project.name}".replace(' ', '_').lower()
+        project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
 
-        document_filename = f"{form.instance.title}".replace(' ', '_').lower() + ".md"
+        document_filename = clean_filename(form.instance.title) + ".md"
         document_file_path = project_folder_path / document_filename
 
         if not project_folder_path.exists():
@@ -111,7 +127,7 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_project_folder_path(self, project):
         project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
-        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         return project_root_folder / project_folder_name
 
 class DocumentDeleteView(LoginRequiredMixin, DeleteView):
@@ -146,5 +162,22 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_project_folder_path(self, project):
         project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
-        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         return project_root_folder / project_folder_name
+
+class DocumentDownloadView(View):
+    def get(self, request, pk, *args, **kwargs):
+        document = get_object_or_404(AIDocument, id=pk)
+        project = document.project
+
+        project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
+        project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        document_filename = clean_filename(document.title) + ".md"
+        document_file_path = project_folder_path / document_filename
+
+        if not document_file_path.exists():
+            raise Http404("File not found")
+
+        response = FileResponse(document_file_path.open('rb'), as_attachment=True)
+        response['Content-Disposition'] = f'attachment; filename="{document_filename}"'
+        return response

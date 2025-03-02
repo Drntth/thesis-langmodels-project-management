@@ -6,6 +6,7 @@ from project_management.models import Project
 from django.contrib.auth.models import User
 from pathlib import Path
 from django.conf import settings
+from utils.clean_filename import clean_filename
 
 class Command(BaseCommand):
     help = "Seed AI-generated documents"
@@ -31,11 +32,23 @@ class Command(BaseCommand):
             created_by = random.choice(users)
             ai_model = random.choice(ai_models)
             title = seeder.faker.sentence()
-            content = document_type.get_template_file_content()
+            document_content = document_type.get_template_file_content()
+
+            context = {
+                "project.name": project.name,
+                "document.version": 1,
+                "document.created_by.username": created_by.username,
+                "document.ai_model.name": ai_model.name if ai_model else "N/A",
+                "document.updated_at": "Not updated",
+                "project.description": project.description or "No description available",
+            }
+
+            for placeholder, value in context.items():
+                document_content = document_content.replace(f'{{{{ {placeholder} }}}}', str(value))
 
             document = AIDocument.objects.create(
                 title=title,
-                content=content,
+                content=document_content,
                 project=project,
                 created_by=created_by,
                 version=1,
@@ -43,9 +56,9 @@ class Command(BaseCommand):
                 ai_model=ai_model,
             )
 
-            project_folder_name = f"{project.owner}_{project.name}".replace(' ', '_').lower()
+            project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
             project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
-            document_filename = f"{document.title}".replace(' ', '_').lower() + ".md"
+            document_filename = clean_filename(document.title) + ".md"
             document_file_path = project_folder_path / document_filename
 
             if not project_folder_path.exists():

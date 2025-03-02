@@ -6,6 +6,7 @@ from ai_documentation.models import AIDocument
 from pathlib import Path
 from django.conf import settings
 import shutil
+from utils.clean_filename import clean_filename
 
 class Command(BaseCommand):
     help = "Delete only Faker-generated data (users, projects, members, AI documents) and project folders"
@@ -33,7 +34,7 @@ class Command(BaseCommand):
             return
 
         for project in Project.objects.all():
-            project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+            project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
             project_folder_path = project_root_folder / project_folder_name
 
             if project_folder_path.exists():

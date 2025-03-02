@@ -8,6 +8,7 @@ from django.contrib import messages
 from pathlib import Path
 from django.conf import settings
 import os, shutil
+from utils.clean_filename import clean_filename
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
@@ -20,7 +21,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         
         response = super().form_valid(form)
 
-        project_folder_name = f"{self.request.user.username}_{form.instance.name}".replace(' ', '_').lower()
+        project_folder_name = clean_filename(f"{self.request.user.username}_{form.instance.name}")
         project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
         
         if not project_folder_path.exists():
@@ -72,7 +73,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_project_folder_path(self, project):
         project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
-        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         return project_root_folder / project_folder_name
 
 class ProjectDeleteView(LoginRequiredMixin, DeleteView):
@@ -100,7 +101,7 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_project_folder_path(self, project):
         project_root_folder = Path(settings.MEDIA_ROOT) / "projects"
-        project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+        project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         return project_root_folder / project_folder_name
 
 class ProjectMemberCreateView(LoginRequiredMixin, CreateView):
