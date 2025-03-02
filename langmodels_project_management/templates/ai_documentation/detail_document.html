@@ -62,14 +62,12 @@
         </div>
     </div>
     <div class="card-footer bg-dark text-center bg-dark d-flex flex-column justify-content-between px-4 gap-3">
-        {% if document.created_by == request.user %}
-            <a href="{% url 'ai-docs:update_document' document.id %}" class="btn btn-warning shadow-lg rounded-pill btn-lg w-100 w-md-auto">
-                <i class="fa-regular fa-pen-to-square me-2"></i> Update
-            </a>
-            <a href="{% url 'ai-docs:delete_document' document.id %}" class="btn btn-danger shadow-lg rounded-pill btn-lg w-100 w-md-auto">
-                <i class="fa-solid fa-trash me-2"></i> Delete
-            </a>
-        {% endif %}
+        <a href="{% url 'ai-docs:update_document' document.id %}" class="btn btn-warning shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+            <i class="fa-regular fa-pen-to-square me-2"></i> Update
+        </a>
+        <a href="{% url 'ai-docs:delete_document' document.id %}" class="btn btn-danger shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+            <i class="fa-solid fa-trash me-2"></i> Delete
+        </a>
 
         <a href="{% url 'ai-docs:download_document' document.id %}" class="btn btn-primary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
             <i class="fa-solid fa-download me-2"></i> Download

@@ -52,12 +52,20 @@ class GenerateTitleForm(forms.Form):
 
 class ProjectSelectionForm(forms.Form):
     project = forms.ModelChoiceField(
-        queryset=Project.objects.all(),
+        queryset=Project.objects.none(),
         required=True,
         widget=forms.Select(attrs={
             'class': 'form-control border-0 shadow-sm',
         })
     )
+
+    class Meta:
+        model = Project
+        fields = ['project']
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
 
 class DocumentSelectionForm(forms.Form):
     def __init__(self, project, *args, **kwargs):

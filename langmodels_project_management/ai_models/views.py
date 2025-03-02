@@ -10,6 +10,7 @@ from ai_models.models import AIModel
 from pathlib import Path
 from django.conf import settings
 from utils.clean_filename import clean_filename
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class TestModellsView(FormView):
     template_name="ai_models/test_models.html"
@@ -35,7 +36,7 @@ class TestModellsView(FormView):
         }
 
         messages.success(self.request, "Text generated successfully!")
-        return redirect(reverse("ai-models:test_generated_test"))
+        return redirect(reverse("ai-models:test_generated_text"))
 
 class TestGeneratedTextView(TemplateView):
     template_name = "ai_models/test_generated_text.html"
@@ -49,18 +50,27 @@ class TestGeneratedTextView(TemplateView):
             context.update(data)
         return context
 
-class SelectProjectView(FormView):
+class SelectProjectView(LoginRequiredMixin, FormView):
     template_name = "ai_models/select_project.html"
     form_class = ProjectSelectionForm
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.user = self.request.user 
+        form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+        return form
 
     def form_valid(self, form):
         project_id = form.cleaned_data["project"].id
         self.request.session["selected_project_id"] = project_id
         return redirect(reverse("ai-models:select_document"))
 
-class SelectDocumentView(FormView):
+class SelectDocumentView(LoginRequiredMixin, FormView):
     template_name = "ai_models/select_document.html"
     form_class = DocumentSelectionForm
+
+    def get_queryset(self):
+        return AIDocument.objects.filter(created_by=self.request.user)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -83,7 +93,7 @@ class SelectDocumentView(FormView):
         context["project"] = self.project
         return context
 
-class GenerateView(View):
+class GenerateView(LoginRequiredMixin, View):
     template_name = "ai_models/generate.html"
 
     def get(self, request):
@@ -128,7 +138,7 @@ class GenerateView(View):
 
         return render(request, self.template_name, {"document": document, "sections": sections, "project_description": project.description})
 
-class GenerateSectionContentView(View):
+class GenerateSectionContentView(LoginRequiredMixin, View):
     def post(self, request):
         project_id = request.session.get("selected_project_id")
         project = get_object_or_404(Project, id=project_id)

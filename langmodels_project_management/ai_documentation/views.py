@@ -11,12 +11,19 @@ import os
 from pathlib import Path
 from django.http import FileResponse, Http404
 from utils.clean_filename import clean_filename
+from project_management.models import Project
 
 class DocumentCreateView(LoginRequiredMixin, CreateView):
     model = AIDocument
     form_class = DocumentCreationForm
     template_name = "ai_documentation/create_document.html"
     success_url = reverse_lazy('ai-docs:list_documents')
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.user = self.request.user 
+        form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+        return form
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user 
@@ -68,6 +75,9 @@ class DocumentListView(LoginRequiredMixin, ListView):
     template_name = "ai_documentation/list_documents.html"
     context_object_name = "documents"
 
+    def get_queryset(self):
+        return AIDocument.objects.filter(created_by=self.request.user)
+
 class DocumentDetailView(LoginRequiredMixin, DetailView):
     model = AIDocument
     template_name = "ai_documentation/detail_document.html"
@@ -88,13 +98,19 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['document'] = self.object 
         return context
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.user = self.request.user 
+        form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+        return form
 
     def form_valid(self, form):
         document = self.get_object()
         old_project = document.project
         new_project = form.cleaned_data['project']
-        old_title = f"{document.title}".replace(' ', '_').lower() + ".md"
-        new_title = f"{form.cleaned_data['title']}".replace(' ', '_').lower() + ".md"
+        old_title = clean_filename(document.title) + ".md"
+        new_title = clean_filename(form.cleaned_data['title'])+ ".md"
         new_content = form.cleaned_data['content']
         response = super().form_valid(form)
 
@@ -146,7 +162,7 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         document = self.get_object()
         project_folder_path = self.get_project_folder_path(document.project)
-        file_name = f"{document.title}".replace(' ', '_').lower() + ".md"
+        file_name = clean_filename(document.title) + ".md"
         file_path = project_folder_path / file_name
 
         if file_path.exists():
@@ -165,7 +181,7 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
         project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         return project_root_folder / project_folder_name
 
-class DocumentDownloadView(View):
+class DocumentDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         document = get_object_or_404(AIDocument, id=pk)
         project = document.project
