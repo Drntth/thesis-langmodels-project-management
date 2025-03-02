@@ -215,7 +215,7 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
                         new_lines.append(line)
 
                 document.content = "\n".join(new_lines)
-                document.save()
+                AIDocument.objects.filter(id=document.id).update(content=document.content)
 
                 messages.success(request, f"The '{section_title}' section's content has been updated with AI-generated text!")
 

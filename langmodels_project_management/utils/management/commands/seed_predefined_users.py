@@ -33,4 +33,7 @@ class Command(BaseCommand):
                 user.save()
             all_users.append(user)
 
+        for user in all_users:
+            UserProfile.objects.get_or_create(user=user)
+
         self.stdout.write(self.style.SUCCESS("Predefined users: user/userPass123, staff/staffPass123, superuser/superuserPass123"))
