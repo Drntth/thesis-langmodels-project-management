@@ -36,6 +36,11 @@ class AIDocument(models.Model):
     type = models.ForeignKey(DocumentType, on_delete=models.CASCADE)
     ai_model = models.ForeignKey(AIModel, on_delete=models.CASCADE)
 
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.version += 1
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'Document: {self.title} (Project: {self.project})'
 
