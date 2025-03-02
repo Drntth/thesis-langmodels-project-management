@@ -9,6 +9,7 @@ from pathlib import Path
 from django.conf import settings
 import os, shutil
 from utils.clean_filename import clean_filename
+from django.db.models import Q
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
@@ -38,7 +39,10 @@ class ProjectListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Project.objects.all()
-        return Project.objects.filter(owner=self.request.user)
+        return Project.objects.filter(
+            Q(owner=self.request.user) | 
+            Q(projectmember__user=self.request.user)
+        ).distinct()
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
     model = Project

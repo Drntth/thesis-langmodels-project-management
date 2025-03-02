@@ -4,13 +4,14 @@ from .forms import TestModelForm, ProjectSelectionForm, DocumentSelectionForm, G
 from django.views.generic import FormView, TemplateView, View
 from django.contrib import messages
 from django.urls import reverse
-from project_management.models import Project
+from project_management.models import Project, ProjectMember
 from ai_documentation.models import AIDocument, DocumentSection
 from ai_models.models import AIModel
 from pathlib import Path
 from django.conf import settings
 from utils.clean_filename import clean_filename
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 class TestModellsView(FormView):
     template_name="ai_models/test_models.html"
@@ -60,7 +61,10 @@ class SelectProjectView(LoginRequiredMixin, FormView):
         if self.request.user.is_staff:
             form.fields['project'].queryset = Project.objects.all() 
         else:
-            form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+            form.fields['project'].queryset = Project.objects.filter(
+                Q(owner=self.request.user) |  
+                Q(projectmember__user=self.request.user)  
+            ).distinct()
         return form
 
     def form_valid(self, form):
@@ -75,7 +79,10 @@ class SelectDocumentView(LoginRequiredMixin, FormView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return AIDocument.objects.all()
-        return AIDocument.objects.filter(created_by=self.request.user)
+        return AIDocument.objects.filter(
+            Q(created_by=self.request.user) |  
+            Q(project__projectmember__user=self.request.user)  
+        ).distinct()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -110,12 +117,14 @@ class GenerateView(LoginRequiredMixin, View):
 
         document = get_object_or_404(AIDocument, id=document_id)
 
-        if not (self.request.user.is_staff or document.created_by == self.request.user):
-            messages.error(self.request, "You do not have permission to edit this document.")
-            return redirect("ai-models:select_document")
-
         project_id = request.session.get("selected_project_id")
         project = get_object_or_404(Project, id=project_id)
+
+        is_project_member = ProjectMember.objects.filter(user=request.user, project=project).exists()
+
+        if not (request.user.is_staff or document.created_by == request.user or is_project_member):
+            messages.error(request, "You do not have permission to access this document.")
+            return redirect("ai-models:select_document")
 
         sections = []
         lines = document.content.split("\n")
@@ -154,7 +163,9 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
         document_id = request.session.get("selected_document_id")
         document = get_object_or_404(AIDocument, id=document_id)
 
-        if not (self.request.user.is_staff or document.created_by == self.request.user):
+        is_project_member = ProjectMember.objects.filter(user=request.user, project=project).exists()
+
+        if not (request.user.is_staff or document.created_by == request.user or is_project_member):
             messages.error(request, "You do not have permission to modify this document.")
             return redirect(reverse("ai-models:generate"))
 

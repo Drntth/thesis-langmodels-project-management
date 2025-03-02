@@ -12,6 +12,7 @@ from pathlib import Path
 from django.http import FileResponse, Http404
 from utils.clean_filename import clean_filename
 from project_management.models import Project
+from django.db.models import Q
 
 class DocumentCreateView(LoginRequiredMixin, CreateView):
     model = AIDocument
@@ -78,7 +79,10 @@ class DocumentListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return AIDocument.objects.all()
-        return AIDocument.objects.filter(created_by=self.request.user)
+        return AIDocument.objects.filter(
+            Q(created_by=self.request.user) |  
+            Q(project__projectmember__user=self.request.user)
+        ).distinct()
 
 class DocumentDetailView(LoginRequiredMixin, DetailView):
     model = AIDocument
