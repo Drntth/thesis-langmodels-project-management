@@ -84,7 +84,7 @@ class DocumentUpdateForm(forms.ModelForm):
     )
     type = forms.ModelChoiceField(
         queryset=DocumentType.objects.all(),
-        required=True,
+        required=False,
         widget=forms.Select(attrs={
             'class': 'form-control border-0 shadow-sm',
             'disabled': 'disabled',

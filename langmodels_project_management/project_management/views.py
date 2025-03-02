@@ -52,6 +52,9 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["members"] = ProjectMember.objects.filter(project=self.object)
+        context["is_project_member"] = ProjectMember.objects.filter(
+            project=self.object, user=self.request.user
+        ).exists()
         return context
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
@@ -65,7 +68,10 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Project.objects.all()
-        return Project.objects.filter(owner=self.request.user)
+        return Project.objects.filter(
+            Q(owner=self.request.user) |
+            Q(projectmember__user=self.request.user)
+        ).distinct()
     
     def form_valid(self, form):
         project = self.get_object()
@@ -95,7 +101,10 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Project.objects.all()
-        return Project.objects.filter(owner=self.request.user)
+        return Project.objects.filter(
+            Q(owner=self.request.user) |
+            Q(projectmember__user=self.request.user)
+        ).distinct()
 
     def form_valid(self, form):
         project = self.get_object()

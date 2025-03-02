@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, View
 from .models import AIDocument
+from project_management.models import ProjectMember
 from .forms import DocumentCreationForm, DocumentUpdateForm
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -89,6 +90,14 @@ class DocumentDetailView(LoginRequiredMixin, DetailView):
     template_name = "ai_documentation/detail_document.html"
     context_object_name = "document"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project = self.object.project
+        context["is_project_member"] = ProjectMember.objects.filter(
+            project=project, user=self.request.user
+        ).exists()
+        return context
+
 class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = AIDocument
     form_class = DocumentUpdateForm
@@ -100,7 +109,10 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return AIDocument.objects.all()
-        return AIDocument.objects.filter(created_by=self.request.user)
+        return AIDocument.objects.filter(
+            Q(created_by=self.request.user) |  
+            Q(project__projectmember__user=self.request.user)
+        ).distinct()
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -113,7 +125,14 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         if self.request.user.is_staff:
             form.fields['project'].queryset = Project.objects.all()
         else:
-            form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+            form.fields['project'].queryset = Project.objects.filter(
+                Q(owner=self.request.user) | 
+                Q(projectmember__user=self.request.user)
+            ).distinct()
+        
+        if self.object:
+            form.fields['type'].initial = self.object.type
+        
         return form
 
     def form_valid(self, form):
@@ -123,6 +142,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         old_title = clean_filename(document.title) + ".md"
         new_title = clean_filename(form.cleaned_data['title'])+ ".md"
         new_content = form.cleaned_data['content']
+        form.instance.version = document.version 
+        form.instance.type = document.type
         response = super().form_valid(form)
 
         old_folder_path = self.get_project_folder_path(old_project)
@@ -165,7 +186,10 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return AIDocument.objects.all()
-        return AIDocument.objects.filter(created_by=self.request.user)
+        return AIDocument.objects.filter(
+            Q(created_by=self.request.user) |  
+            Q(project__projectmember__user=self.request.user)
+        ).distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -198,7 +222,9 @@ class DocumentDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         document = get_object_or_404(AIDocument, id=pk)
 
-        if not (request.user.is_staff or document.created_by == request.user):
+        is_project_member = ProjectMember.objects.filter(project=document.project, user=request.user).exists()
+
+        if not (request.user.is_staff or document.created_by == request.user or is_project_member):
             raise Http404("You do not have permission to access this document.")
     
         project = document.project

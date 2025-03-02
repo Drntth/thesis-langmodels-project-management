@@ -37,7 +37,7 @@ class AIDocument(models.Model):
     ai_model = models.ForeignKey(AIModel, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if self.pk:
+        if self.pk and not kwargs.pop('prevent_version_increment', False):
             self.version += 1
         super().save(*args, **kwargs)
 

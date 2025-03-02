@@ -91,17 +91,19 @@
         </div>
     </div>
     <div class="card-footer bg-dark text-center bg-dark d-flex flex-column justify-content-between px-4 gap-3">
+        {% if request.user == project.owner or request.user.is_staff%}
         <a href="{% url 'projects:add_member' project.id %}" class="btn btn-primary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
             <i class="fa-solid fa-user-plus me-2"></i> Add Member
         </a>
-
+        {% endif %}
+        {% if request.user == project.owner or request.user.is_staff or is_project_member %}
         <a href="{% url 'projects:update_project' project.id %}" class="btn btn-warning shadow-lg rounded-pill btn-lg w-100 w-md-auto">
             <i class="fa-regular fa-pen-to-square me-2"></i> Update
         </a>
-
         <a href="{% url 'projects:delete_project' project.id %}" class="btn btn-danger shadow-lg rounded-pill btn-lg w-100 w-md-auto">
             <i class="fa-solid fa-trash me-2"></i> Delete
         </a>
+        {% endif %}
         <a href="{% url 'projects:list_projects' %}" class="btn btn-secondary shadow-lg rounded-pill btn-lg w-100 w-md-auto">
             <i class="fa-solid fa-arrow-left me-2"></i> Back to Projects
         </a>
