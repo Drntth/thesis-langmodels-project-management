@@ -22,7 +22,7 @@ class DocumentCreationForm(forms.ModelForm):
         })
     )
     project = forms.ModelChoiceField(
-        queryset=Project.objects.all(),
+        queryset=Project.objects.none(),
         required=True,
         widget=forms.Select(attrs={
             'class': 'form-control border-0 shadow-sm',
@@ -76,7 +76,7 @@ class DocumentUpdateForm(forms.ModelForm):
         })
     )
     project = forms.ModelChoiceField(
-        queryset=Project.objects.all(),
+        queryset=Project.objects.none(),
         required=True,
         widget=forms.Select(attrs={
             'class': 'form-control border-0 shadow-sm',

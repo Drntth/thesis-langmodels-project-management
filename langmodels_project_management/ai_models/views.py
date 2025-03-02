@@ -53,6 +53,12 @@ class SelectProjectView(FormView):
     template_name = "ai_models/select_project.html"
     form_class = ProjectSelectionForm
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.user = self.request.user 
+        form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+        return form
+
     def form_valid(self, form):
         project_id = form.cleaned_data["project"].id
         self.request.session["selected_project_id"] = project_id
@@ -61,6 +67,9 @@ class SelectProjectView(FormView):
 class SelectDocumentView(FormView):
     template_name = "ai_models/select_document.html"
     form_class = DocumentSelectionForm
+
+    def get_queryset(self):
+        return AIDocument.objects.filter(created_by=self.request.user)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
