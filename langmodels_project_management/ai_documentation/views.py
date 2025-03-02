@@ -181,7 +181,7 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
         project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
         return project_root_folder / project_folder_name
 
-class DocumentDownloadView(View):
+class DocumentDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         document = get_object_or_404(AIDocument, id=pk)
         project = document.project
