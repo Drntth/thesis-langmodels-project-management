@@ -36,6 +36,8 @@ class ProjectListView(LoginRequiredMixin, ListView):
     context_object_name = "projects"
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Project.objects.all()
         return Project.objects.filter(owner=self.request.user)
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
@@ -57,6 +59,8 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('projects:detail_project', kwargs={'pk': self.object.pk})
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Project.objects.all()
         return Project.objects.filter(owner=self.request.user)
     
     def form_valid(self, form):
@@ -85,6 +89,8 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("projects:list_projects") 
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Project.objects.all()
         return Project.objects.filter(owner=self.request.user)
 
     def form_valid(self, form):
@@ -139,7 +145,7 @@ class ProjectMemberRemoveView(LoginRequiredMixin, UserPassesTestMixin, DeleteVie
 
     def test_func(self):
         project = self.get_object().project
-        return self.request.user == project.owner
+        return self.request.user.is_staff or self.request.user == project.owner
 
     def handle_no_permission(self):
         messages.error(self.request, "You do not have permission to remove this member.")

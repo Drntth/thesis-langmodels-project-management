@@ -76,6 +76,8 @@ class DocumentListView(LoginRequiredMixin, ListView):
     context_object_name = "documents"
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return AIDocument.objects.all()
         return AIDocument.objects.filter(created_by=self.request.user)
 
 class DocumentDetailView(LoginRequiredMixin, DetailView):
@@ -92,6 +94,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('ai-docs:detail_document', kwargs={'pk': self.object.pk})
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return AIDocument.objects.all()
         return AIDocument.objects.filter(created_by=self.request.user)
     
     def get_context_data(self, **kwargs):
@@ -102,7 +106,10 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.user = self.request.user 
-        form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+        if self.request.user.is_staff:
+            form.fields['project'].queryset = Project.objects.all()
+        else:
+            form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
         return form
 
     def form_valid(self, form):
@@ -152,6 +159,8 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("ai-docs:list_documents") 
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return AIDocument.objects.all()
         return AIDocument.objects.filter(created_by=self.request.user)
 
     def get_context_data(self, **kwargs):
@@ -184,6 +193,10 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
 class DocumentDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         document = get_object_or_404(AIDocument, id=pk)
+
+        if not (request.user.is_staff or document.created_by == request.user):
+            raise Http404("You do not have permission to access this document.")
+    
         project = document.project
 
         project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")

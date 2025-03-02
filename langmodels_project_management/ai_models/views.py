@@ -57,7 +57,10 @@ class SelectProjectView(LoginRequiredMixin, FormView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.user = self.request.user 
-        form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+        if self.request.user.is_staff:
+            form.fields['project'].queryset = Project.objects.all() 
+        else:
+            form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
         return form
 
     def form_valid(self, form):
@@ -70,6 +73,8 @@ class SelectDocumentView(LoginRequiredMixin, FormView):
     form_class = DocumentSelectionForm
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return AIDocument.objects.all()
         return AIDocument.objects.filter(created_by=self.request.user)
 
     def get_form_kwargs(self):
@@ -104,6 +109,10 @@ class GenerateView(LoginRequiredMixin, View):
             return render(request, self.template_name, {"sections": []})
 
         document = get_object_or_404(AIDocument, id=document_id)
+
+        if not (self.request.user.is_staff or document.created_by == self.request.user):
+            messages.error(self.request, "You do not have permission to edit this document.")
+            return redirect("ai-models:select_document")
 
         project_id = request.session.get("selected_project_id")
         project = get_object_or_404(Project, id=project_id)
@@ -145,6 +154,10 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
         document_id = request.session.get("selected_document_id")
         document = get_object_or_404(AIDocument, id=document_id)
 
+        if not (self.request.user.is_staff or document.created_by == self.request.user):
+            messages.error(request, "You do not have permission to modify this document.")
+            return redirect(reverse("ai-models:generate"))
+
         section_title = request.POST.get("section_title").strip()
         section_content = request.POST.get("section_content").strip()
         action = request.POST.get("action")
@@ -168,16 +181,8 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
                         [f"{dep.title}: {dep.prompt}" for dep in dependencies]
                     )
                     full_prompt = f"{prompt}\nDependencies:\n{dependencies_text}\n{section_content}"
-                    print(f"\n---------\nPrompts: {prompt}")
-                    print(f"\n---------\nDependencies text: {dependencies_text}")
-                    print(f"\n---------\nSection content: {section_content}")
-                    print(f"\n---------\n---------\nFull prompt: {full_prompt}")
                 else:
                     full_prompt = f"{prompt}\n{section_content}"
-                    print(f"\n---------\nPrompts: {prompt}")
-                    print(f"\n---------\nSection content: {section_content}")
-                    print(f"\n---------\n---------\nFull prompt: {full_prompt}")
-
 
                 generated_content = PipelineTextGenerator(document.ai_model.model_identifier).generate_text(full_prompt)
 
