@@ -38,3 +38,12 @@ class AIDocument(models.Model):
 
     def __str__(self):
         return f'Document: {self.title} (Project: {self.project})'
+
+class DocumentSection(models.Model):
+    document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    prompt = models.TextField()
+    dependencies = models.ManyToManyField('self', symmetrical=False, blank=True)
+    
+    def __str__(self):
+        return f"{self.document_type.name} - {self.title}"

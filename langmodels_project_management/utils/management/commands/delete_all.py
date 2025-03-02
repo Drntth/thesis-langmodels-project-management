@@ -5,11 +5,12 @@ from project_management.models import (
     Project, ProjectStatus, ProjectMember, ProjectRole, 
 )
 from ai_documentation.models import (
-    DocumentType, AIModel, AIDocument
+    DocumentType, AIModel, AIDocument, DocumentSection
 )
 from pathlib import Path
 from django.conf import settings
 import shutil
+from utils.clean_filename import clean_filename
 
 class Command(BaseCommand):
     help = 'Delete all data from User, UserProfile, Project, ProjectStatus, ProjectMember, ProjectRole, DocumentType, AIModel and AIDocument tables and project folders'
@@ -20,6 +21,7 @@ class Command(BaseCommand):
         AIDocument.objects.all().delete()
         AIModel.objects.all().delete()
         DocumentType.objects.all().delete()
+        DocumentSection.objects.all().delete()
         ProjectMember.objects.all().delete()
         self.delete_project_folders()
         Project.objects.all().delete()
@@ -38,7 +40,7 @@ class Command(BaseCommand):
             return
 
         for project in Project.objects.all():
-            project_folder_name = f"{project.owner.username}_{project.name}".replace(' ', '_').lower()
+            project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
             project_folder_path = project_root_folder / project_folder_name
 
             if project_folder_path.exists():

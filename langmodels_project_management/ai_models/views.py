@@ -5,7 +5,7 @@ from django.views.generic import FormView, TemplateView, View
 from django.contrib import messages
 from django.urls import reverse
 from project_management.models import Project
-from ai_documentation.models import AIDocument
+from ai_documentation.models import AIDocument, DocumentSection
 from ai_models.models import AIModel
 from pathlib import Path
 from django.conf import settings
@@ -137,16 +137,38 @@ class GenerateSectionContentView(View):
 
         section_title = request.POST.get("section_title").strip()
         section_content = request.POST.get("section_content").strip()
-        prompt = request.POST.get("prompt")
         action = request.POST.get("action")
 
         if not section_title or not section_content:
             messages.error(request, "Missing title or content!")
             return redirect(reverse("ai-models:generate"))
+        
+        try:
+            doc_section = DocumentSection.objects.get(document_type=document.type, title=section_title)
+            prompt = doc_section.prompt
+            dependencies = doc_section.dependencies.all()
+        except DocumentSection.DoesNotExist:
+            messages.error(request, "No prompt found for this section in the database!")
+            return redirect(reverse("ai-models:generate"))
 
         if action == "generate":
             try:
-                full_prompt = f"{prompt}\n{section_content}"
+                if dependencies.exists():
+                    dependencies_text = "\n".join(
+                        [f"{dep.title}: {dep.prompt}" for dep in dependencies]
+                    )
+                    full_prompt = f"{prompt}\nDependencies:\n{dependencies_text}\n{section_content}"
+                    print(f"\n---------\nPrompts: {prompt}")
+                    print(f"\n---------\nDependencies text: {dependencies_text}")
+                    print(f"\n---------\nSection content: {section_content}")
+                    print(f"\n---------\n---------\nFull prompt: {full_prompt}")
+                else:
+                    full_prompt = f"{prompt}\n{section_content}"
+                    print(f"\n---------\nPrompts: {prompt}")
+                    print(f"\n---------\nSection content: {section_content}")
+                    print(f"\n---------\n---------\nFull prompt: {full_prompt}")
+
+
                 generated_content = PipelineTextGenerator(document.ai_model.model_identifier).generate_text(full_prompt)
 
                 lines = document.content.split("\n")

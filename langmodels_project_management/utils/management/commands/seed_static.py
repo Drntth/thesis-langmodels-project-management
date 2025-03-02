@@ -8,6 +8,7 @@ class Command(BaseCommand):
         call_command("seed_predefined_users")
         call_command("seed_ai_models")
         call_command("seed_document_types")
+        call_command("seed_section_prompts")
         call_command("seed_project_roles")
         call_command("seed_project_statuses")
         self.stdout.write(self.style.SUCCESS("Static data has been seeded!"))
