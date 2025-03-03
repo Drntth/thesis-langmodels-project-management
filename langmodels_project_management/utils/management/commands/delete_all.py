@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from users.models import UserProfile
 from project_management.models import (
     Project, ProjectStatus, ProjectMember, ProjectRole, 
 )
@@ -27,7 +26,6 @@ class Command(BaseCommand):
         Project.objects.all().delete()
         ProjectStatus.objects.all().delete()
         ProjectRole.objects.all().delete()
-        UserProfile.objects.all().delete()
         User.objects.all().delete()
 
         self.stdout.write(self.style.SUCCESS("All seeded data has been deleted!"))

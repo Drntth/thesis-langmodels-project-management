@@ -5,7 +5,6 @@ from .forms import CustomLoginForm, CustomRegisterForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib import messages
-from users.models import UserProfile
 
 class CustomLoginView(LoginView):
     template_name = "authentication/login.html"
@@ -24,7 +23,6 @@ class CustomRegisterView(CreateView):
         user = form.save()
         if user:
             login(self.request, user)
-            UserProfile.objects.create(user=user)
             messages.success(self.request, "Your account has been created successfully!")
             messages.success(self.request, "You have successfully logged in!")
             return redirect("home:index")

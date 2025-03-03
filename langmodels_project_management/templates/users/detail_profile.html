@@ -14,10 +14,10 @@
 
     <div class="card-body">
         <div class="text-center my-3">
-            <img src="{{ user.userprofile.get_default_profile_picture }}" 
-                    alt="Profile Picture" 
-                    class="img-fluid"
-                    style="max-width: 150px; height: auto;">
+            <img src="{{ profile_picture }}" 
+                alt="Profile Picture" 
+                class="img-fluid"
+                style="max-width: 150px; height: auto;">
         </div>
 
         <div class="row">
@@ -26,7 +26,7 @@
                     <label for="username">Username</label>
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-user text-dark"></i></span>
-                        <span class="form-control bg-light">{{ user_profile.username }}</span>
+                        <span class="form-control bg-light">{{ user.username }}</span>
                     </div>
                 </div>
 
@@ -34,7 +34,7 @@
                     <label for="email">Email</label>
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-envelope text-dark"></i></span>
-                        <span class="form-control bg-light">{{ user_profile.email }}</span>
+                        <span class="form-control bg-light">{{ user.email }}</span>
                     </div>
                 </div>
 
@@ -42,7 +42,7 @@
                     <label for="first_name">First Name</label>
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-address-card text-dark"></i></span>
-                        <span class="form-control bg-light">{{ user_profile.first_name|default:"Not provided" }}</span>
+                        <span class="form-control bg-light">{{ user.first_name|default:"Not provided" }}</span>
                     </div>
                 </div>
 
@@ -50,7 +50,7 @@
                     <label for="last_name">Last Name</label>
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-address-card text-dark"></i></span>
-                        <span class="form-control bg-light">{{ user_profile.last_name|default:"Not provided" }}</span>
+                        <span class="form-control bg-light">{{ user.last_name|default:"Not provided" }}</span>
                     </div>
                 </div>
             </div>
@@ -61,8 +61,8 @@
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-power-off text-dark"></i></span>
                         <span class="form-control bg-light">
-                            <span class="badge {% if user_profile.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                {% if user_profile.is_active %}Active{% else %}Inactive{% endif %}
+                            <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
                             </span>
                         </span>
                     </div>
@@ -73,8 +73,8 @@
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-user-tie text-dark"></i></span>
                         <span class="form-control bg-light">
-                            <span class="badge {% if user_profile.is_staff %}bg-primary{% else %}bg-secondary{% endif %}">
-                                {% if user_profile.is_staff %}Yes{% else %}No{% endif %}
+                            <span class="badge {% if user.is_staff %}bg-primary{% else %}bg-secondary{% endif %}">
+                                {% if user.is_staff %}Yes{% else %}No{% endif %}
                             </span>
                         </span>
                     </div>
@@ -85,8 +85,8 @@
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-shield text-dark"></i></span>
                         <span class="form-control bg-light">
-                            <span class="badge {% if user_profile.is_superuser %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
-                                {% if user_profile.is_superuser %}Yes{% else %}No{% endif %}
+                            <span class="badge {% if user.is_superuser %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                {% if user.is_superuser %}Yes{% else %}No{% endif %}
                             </span>
                         </span>
                     </div>
@@ -96,7 +96,7 @@
                     <label for="date_joined">Date Joined</label>
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-calendar-days text-dark"></i></span>
-                        <span class="form-control bg-light">{{ user_profile.date_joined|date:"F d, Y" }}</span>
+                        <span class="form-control bg-light">{{ user.date_joined|date:"F d, Y" }}</span>
                     </div>
                 </div>
 
@@ -105,8 +105,8 @@
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="fa-solid fa-clock text-dark"></i></span>
                         <span class="form-control bg-light">
-                            {% if user_profile.last_login %}
-                                {{ user_profile.last_login|date:"F d, Y H:i" }}
+                            {% if user.last_login %}
+                                {{ user.last_login|date:"F d, Y H:i" }}
                             {% else %}
                                 Never
                             {% endif %}
@@ -117,14 +117,16 @@
         </div>
     </div>
 
-    <div class="card-footer text-center bg-dark d-flex flex-column flex-md-row justify-content-between px-4 gap-3">
-        <button type="submit" class="btn btn-warning shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+    <div class="card-footer bg-dark text-center bg-dark d-flex flex-column justify-content-between px-4 gap-3">
+        <a href="{% url 'users:update_profile' %}" class="btn btn-warning shadow-lg rounded-pill btn-lg w-100 w-md-auto">
             <i class="fa-regular fa-pen-to-square me-2"></i> Update
-        </button>
-
-        <button type="submit" class="btn btn-danger shadow-lg rounded-pill btn-lg w-100 w-md-auto" onclick="return confirm('Are you sure you want to delete this?');">
-            <i class="fa-solid fa-trash me-2"></i> Delete
-        </button>
+        </a>
+        <form action="{% url 'users:delete_profile' %}" method="post" onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger shadow-lg rounded-pill btn-lg w-100 w-md-auto">
+                <i class="fa-solid fa-trash me-2"></i> Delete
+            </button>
+        </form>
     </div>
 </div>
 {% endblock %}

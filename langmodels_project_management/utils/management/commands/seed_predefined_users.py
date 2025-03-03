@@ -2,7 +2,6 @@ import random
 from django.core.management.base import BaseCommand
 from django_seed import Seed
 from django.contrib.auth.models import User
-from users.models import UserProfile
 
 class Command(BaseCommand):
     help = "Seed the database with predefined users and user profiles"
@@ -32,8 +31,5 @@ class Command(BaseCommand):
                 user.set_password(user_data["password"]) 
                 user.save()
             all_users.append(user)
-
-        for user in all_users:
-            UserProfile.objects.get_or_create(user=user)
 
         self.stdout.write(self.style.SUCCESS("Predefined users: user/userPass123, staff/staffPass123, superuser/superuserPass123"))
