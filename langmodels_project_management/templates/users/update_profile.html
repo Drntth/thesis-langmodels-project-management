@@ -120,5 +120,30 @@
 {% block sidebar_left %}
 {% endblock %}
 
-{% block sidebar_right %}
+{% block siderbar_right %}
+<div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-light">
+        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Help & Tips</h5>
+    </div>
+    <div class="card-body">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-pen-to-square me-2 text-warning"></i>How to Update Your Profile</strong></p>
+        <p class="text-muted">
+            Use the form to update your profile information, including:
+        </p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fa-solid fa-user me-2 text-secondary"></i>Username</li>
+            <li><i class="fa-solid fa-envelope me-2 text-secondary"></i>Email</li>
+            <li><i class="fa-solid fa-signature me-2 text-secondary"></i>First Name</li>
+            <li><i class="fa-solid fa-signature me-2 text-secondary"></i>Last Name</li>
+        </ul>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-shield me-2 text-success"></i>Account Security Tips</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-check-circle text-success me-2"></i>Use a strong, unique password.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Enable two-factor authentication if available.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Regularly review your account activity.</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

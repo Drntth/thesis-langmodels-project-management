@@ -30,6 +30,71 @@
 
             <div class="col-12 col-md-3 col-lg-2 order-2 order-md-1">
                 <div class="container">
+                    <div class="card shadow-lg border-secondary">
+                        <div class="card-header bg-secondary text-light">
+                            <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>User Info</h5>
+                        </div>
+                        <div class="card-body text-center bg-light">
+                            <div class="text-center my-3">
+                                <a href="{% url 'users:detail_profile' %}">
+                                    <img id="profile-picture" src="" alt="Profile Picture" class="img-fluid">
+                                    <br>
+                                    <span class="badge bg-dark mt-2">{{ request.user.username }}</span>
+                                </a>
+                                <div class="mt-3">
+                                    {% if request.user.is_authenticated %}
+                                        {% if request.user.is_superuser %}
+                                            <span class="badge bg-danger p-2 fs-6">
+                                                <i class="fas fa-crown me-1"></i>Superuser
+                                            </span>
+                                        {% elif request.user.is_staff %}
+                                            <span class="badge bg-warning p-2 fs-6">
+                                                <i class="fas fa-user-shield me-1"></i>Staff
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success p-2 fs-6">
+                                                <i class="fas fa-user-check me-1"></i>Normal User
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary p-2 fs-6">
+                                            <i class="fas fa-user-clock me-1"></i>Guest
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if request.user.is_authenticated %}
+                    <hr>
+                    <div class="card shadow-lg border-secondary mt-3">
+                        <div class="card-header bg-secondary text-light">
+                            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <a href="{% url 'projects:list_projects' %}" class="btn btn-outline-dark w-100 mb-2">
+                                <i class="fas fa-folder-open me-2"></i>View My Projects
+                            </a>
+                            <a href="{% url 'ai-docs:list_documents' %}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-file-alt me-2"></i>View My Documents
+                            </a>
+                            <a href="{% url 'ai-models:generate' %}" class="btn btn-outline-success w-100 mb-2">
+                                <i class="fas fa-magic me-2"></i>Generate Content
+                            </a>
+                            <a href="{% url 'ai-models:test_models' %}" class="btn btn-outline-danger w-100 mb-2">
+                                <i class="fas fa-vial me-2"></i>Test AI Models
+                            </a>
+                            <a class="btn btn-outline-warning w-100 mb-2" href="{% url 'ai-models:generate_description' %}">
+                                <i class="fas fa-align-left me-2"></i>Generate Description
+                            </a>
+                            <a class="btn btn-outline-info w-100 mb-2" href="{% url 'ai-models:generate_title' %}">
+                                <i class="fas fa-header me-2"></i>Generate Title
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% endif %}
+
                     {% block sidebar_left %}
                     
                     {% endblock %}
@@ -56,6 +121,21 @@
     </main>
 
     {% include 'partials/footer.html' %}
-    {% block extra_scripts %}{% endblock %}
+    {% block extra_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var profilePicture = "";
+            {% if request.user.is_superuser %}
+                profilePicture = "/static/images/default_superuser.svg";
+            {% elif request.user.is_staff %}
+                profilePicture = "/static/images/default_staff.svg";
+            {% else %}
+                profilePicture = "/static/images/default_user.svg";
+            {% endif %}
+        
+            document.getElementById('profile-picture').src = profilePicture;
+        });        
+    </script>
+    {% endblock %}
 </body>
 </html>

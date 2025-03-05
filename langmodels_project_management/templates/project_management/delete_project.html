@@ -118,4 +118,32 @@
 {% endblock %}
 
 {% block siderbar_right %}
+<div class="card shadow-lg border-danger">
+    <div class="card-header bg-danger text-light">
+        <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Warning</h5>
+    </div>
+    <div class="card-body">
+        <p class="h6 text-dark"><i class="fas fa-ban me-2 text-danger"></i><strong>This Action is Irreversible!</strong></p>
+        <p class="text-muted">
+            <i class="fas fa-trash-alt me-1 text-danger"></i> Deleting this project will permanently remove all associated tasks, members, and files.
+        </p>
+        
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><i class="fas fa-skull-crossbones me-2 text-danger"></i><strong>Consequences of Deletion</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-times-circle text-danger me-2"></i> All project data will be lost.</li>
+            <li><i class="fas fa-user-slash text-danger me-2"></i> Members will lose access to the project.</li>
+            <li><i class="fas fa-folder-minus text-danger me-2"></i> Tasks and files will be permanently deleted.</li>
+        </ul>
+
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><i class="fas fa-lightbulb me-2 text-warning"></i><strong>Alternatives to Deletion</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-check-circle text-success me-2"></i> Update the project status to <span class="badge bg-success">Completed</span>.</li>
+            <li><i class="fas fa-user-edit me-2 text-info"></i> Reassign tasks and transfer ownership if needed.</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

@@ -94,4 +94,28 @@
 {% endblock %}
 
 {% block siderbar_right %}
+<div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-light">
+        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Help & Tips</h5>
+    </div>
+    <div class="card-body">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>Deletion Warning</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-trash-can me-2 text-danger"></i>Deleting this document will permanently remove all associated data, including versions and content. This action cannot be undone.
+        </p>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-lightbulb me-2 text-warning"></i>Alternatives to Deletion</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-edit me-2 text-secondary"></i>Update the document if changes are needed.</li>
+        </ul>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-circle-question me-2 text-info"></i>What Happens After Deletion?</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-times-circle text-danger me-2"></i><i class="fa-solid fa-file me-2 text-secondary"></i>The document will no longer be accessible.</li>
+            <li><i class="fas fa-times-circle text-danger me-2"></i><i class="fa-solid fa-users me-2 text-secondary"></i>Collaborators will lose access to the document.</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

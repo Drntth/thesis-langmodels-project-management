@@ -135,4 +135,33 @@
 {% endblock %}
 
 {% block siderbar_right %}
+<div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-light">
+        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Help & Tips</h5>
+    </div>
+    <div class="card-body">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-pen-to-square me-2 text-warning"></i>How to Update Your Profile</strong></p>
+        <p class="text-muted">
+            Use the <i class="fa-regular fa-pen-to-square text-warning"></i> <span class="text-primary">Update</span> button to modify your profile information, including:
+        </p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fa-solid fa-user me-2 text-secondary"></i>Username</li>
+            <li><i class="fa-solid fa-envelope me-2 text-secondary"></i>Email</li>
+            <li><i class="fa-solid fa-signature me-2 text-secondary"></i>First Name</li>
+            <li><i class="fa-solid fa-signature me-2 text-secondary"></i>Last Name</li>
+            <li><i class="fa-solid fa-key me-2 text-secondary"></i>Password</li>
+        </ul>
+        <hr class="my-3">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-shield me-2 text-success"></i>Account Security Tips</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-check-circle text-success me-2"></i>Use a strong, unique password.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Regularly review your account activity.</li>
+        </ul>
+        <hr class="my-3">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>Profile Deletion Warning</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-trash-can me-2 text-danger"></i>Deleting your profile will permanently remove all your data, including projects, tasks, and files. This action cannot be undone.
+        </p>
+    </div>
+</div>
 {% endblock %}

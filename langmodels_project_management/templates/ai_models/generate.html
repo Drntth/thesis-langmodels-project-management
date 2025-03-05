@@ -69,4 +69,35 @@
 {% endblock %}
 
 {% block siderbar_right %}
+<div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-light">
+        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Help & Tips</h5>
+    </div>
+    <div class="card-body">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-magic me-2 text-info"></i>How to Generate Content</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-robot me-2 text-secondary"></i>Use the <span class="text-primary">Generate</span> button to create content for each section. The AI will analyze the project description and section title to produce relevant content. The system includes built-in prompts to enhance generation quality.
+        </p>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-save me-2 text-success"></i>Saving Content</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-floppy-disk me-2 text-secondary"></i>Click the <span class="text-primary">Save</span> button to store the generated content for each section. Ensure you save before moving to another section.
+        </p>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-lightbulb me-2 text-warning"></i>Tips for Effective Content</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-align-left me-2 text-secondary"></i>Provide clear and concise project descriptions.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-edit me-2 text-secondary"></i>Refine generated content manually for accuracy.</li>
+        </ul>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>Important Notes</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-exclamation-circle text-danger me-2"></i><i class="fa-solid fa-sync me-2 text-secondary"></i>You can regenerate content if the result isn't satisfactory.</li>
+            <li><i class="fas fa-exclamation-circle text-danger me-2"></i><i class="fa-solid fa-save me-2 text-secondary"></i>Always save your work before navigating away.</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

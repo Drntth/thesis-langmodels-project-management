@@ -11,3 +11,24 @@ body {
 label, h1, h2, h3, button {
     font-variant: small-caps;
 }
+
+#profile-picture {
+    max-width: 100px;
+    height: auto;
+    border: 2px solid #ddd;
+    border-radius: 50%; 
+    object-fit: cover;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#profile-picture:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    #profile-picture {
+        max-width: 80px;
+    }
+}

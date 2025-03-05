@@ -71,4 +71,36 @@
 {% endblock %}
 
 {% block siderbar_right %}
+<div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-light">
+        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Help & Tips</h5>
+    </div>
+    <div class="card-body">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-robot me-2 text-secondary"></i>How to Test Models</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-pen-to-square me-2 text-secondary"></i>Select an <span class="text-primary">AI model</span> and provide a <span class="text-primary">prompt</span> to generate text. The model will analyze the prompt and produce relevant output.
+        </p>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-lightbulb me-2 text-warning"></i>Tips for Writing Prompts</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-align-left me-2 text-secondary"></i>Use clear and concise language in your prompt.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-tags me-2 text-secondary"></i>Include keywords relevant to the desired output.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-bullseye me-2 text-secondary"></i>Be specific about the type of content you want to generate.</li>
+        </ul>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-brain me-2 text-info"></i>Choosing an AI Model</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-robot me-2 text-secondary"></i>Different AI models are optimized for different tasks. Select the model that best fits your needs.
+        </p>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>Important Notes</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-exclamation-circle text-danger me-2"></i><i class="fa-solid fa-sync me-2 text-secondary"></i>Results may vary depending on the prompt and model used.</li>
+            <li><i class="fas fa-exclamation-circle text-danger me-2"></i><i class="fa-solid fa-edit me-2 text-secondary"></i>Refine the generated text manually for better accuracy.</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}
