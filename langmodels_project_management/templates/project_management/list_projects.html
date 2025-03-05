@@ -92,7 +92,114 @@
 {% endblock %}
 
 {% block sidebar_left %}
+{% if request.user.is_authenticated %}
+    {% with memberships=request.user.projectmember_set.all %}
+        <div class="card shadow-lg border-secondary mt-3">
+            <div class="card-header bg-secondary text-light">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Project Memberships</h5>
+            </div>
+            <div class="card-body">
+                {% if memberships %}
+                    {% for membership in memberships %}
+                        <div class="mb-3 p-3 bg-light rounded shadow-sm">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-project-diagram me-2 text-primary"></i>
+                                <h6 class="text-dark"><strong>{{ membership.project.name }}</strong></h6>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-user-tag me-2 text-secondary"></i>
+                                <p class="mb-0 text-muted">
+                                    <strong>Role:</strong>
+                                    {% if membership.role.name == "Owner" %}
+                                        <span class="badge bg-danger">Owner</span>
+                                    {% elif membership.role.name == "Project Manager" %}
+                                        <span class="badge bg-warning text-dark">Project Manager</span>
+                                    {% elif membership.role.name == "Developer" %}
+                                        <span class="badge bg-primary">Developer</span>
+                                    {% elif membership.role.name == "Tester" %}
+                                        <span class="badge bg-info">Tester</span>
+                                    {% elif membership.role.name == "Viewer" %}
+                                        <span class="badge bg-secondary">Viewer</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">Unknown</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-2 text-info"></i>
+                                <p class="mb-0 text-muted">
+                                    <strong>Status:</strong>
+                                    {% if membership.project.status.name == "Draft" %}
+                                        <span class="badge bg-secondary">Draft</span>
+                                    {% elif membership.project.status.name == "In Progress" %}
+                                        <span class="badge bg-warning text-dark">In Progress</span>
+                                    {% elif membership.project.status.name == "Completed" %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Unknown</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <hr class="my-2">
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0"><i class="fas fa-folder-open me-2"></i>No projects assigned.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endwith %}
+{% endif %}
 {% endblock %}
 
 {% block siderbar_right %}
+<div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-light">
+        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i> Help & Tips</h5>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <p class="h6 text-dark"><i class="fas fa-folder-plus me-2 text-success"></i><strong>How to Create a Project</strong></p>
+            <p class="text-muted">
+                Click the
+                <span class="text-primary">"Create New Project"</span> button to start a new 
+                project.
+            </p>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="mb-4">
+            <p class="h6 text-dark"><i class="fas fa-eye me-2 text-secondary"></i><strong>How to View Project Details</strong></p>
+            <p class="text-muted">
+                Click the
+                <span class="text-primary">"View"</span> button on any project 
+                card to see its details.
+            </p>
+        </div>
+
+        <hr class="my-4">
+
+        <div>
+            <p class="h6 text-dark"><i class="fas fa-tasks me-2 text-primary"></i><strong>Project Status Explanation</strong></p>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="fas fa-file-alt text-secondary me-1"></i>
+                    <span class="badge bg-secondary me-2">Draft</span>
+                    <span class="text-muted">Initial stage</span>
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-spinner text-warning me-1"></i>
+                    <span class="badge bg-warning text-dark me-2">In Progress</span>
+                    <span class="text-muted">Active development</span>
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-check-circle text-success me-1"></i>
+                    <span class="badge bg-success me-2">Completed</span>
+                    <span class="text-muted">Finished project</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 {% endblock %}

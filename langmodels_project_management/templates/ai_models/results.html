@@ -61,4 +61,36 @@
 {% endblock %}
 
 {% block siderbar_right %}
+<div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-light">
+        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Help & Tips</h5>
+    </div>
+    <div class="card-body">
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-robot me-2 text-secondary"></i>Understanding Results</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-comment-dots me-2 text-secondary"></i>This page displays the generated <span class="text-primary">title</span> or <span class="text-primary">description</span> from multiple AI models. Compare the results to choose the best one.
+        </p>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-lightbulb me-2 text-warning"></i>Tips for Using Results</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-clipboard-check me-2 text-secondary"></i>Review and compare results from different models.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-edit me-2 text-secondary"></i>Manually refine the generated text for better accuracy.</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i><i class="fa-solid fa-save me-2 text-secondary"></i>Save the best result for future use.</li>
+        </ul>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-arrow-rotate-left me-2 text-info"></i>Regenerate Results</strong></p>
+        <p class="text-muted">
+            <i class="fa-solid fa-sync me-2 text-secondary"></i>If the results aren't satisfactory, go back to the <span class="text-primary">Title Generation</span> or <span class="text-primary">Description Generation</span> page to try again.
+        </p>
+        <hr class="my-3">
+
+        <p class="h6 text-dark"><strong><i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>Important Notes</strong></p>
+        <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-exclamation-circle text-danger me-2"></i><i class="fa-solid fa-sync me-2 text-secondary"></i>Results may vary depending on the input and AI model.</li>
+            <li><i class="fas fa-exclamation-circle text-danger me-2"></i><i class="fa-solid fa-edit me-2 text-secondary"></i>Always review and refine generated content before finalizing.</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}
