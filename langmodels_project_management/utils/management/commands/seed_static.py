@@ -11,4 +11,5 @@ class Command(BaseCommand):
         call_command("seed_section_prompts")
         call_command("seed_project_roles")
         call_command("seed_project_statuses")
+        call_command("seed_predefined_projects")
         self.stdout.write(self.style.SUCCESS("Static data has been seeded!"))

@@ -5,7 +5,487 @@
 {% block page_title %}Welcome to the Language Models in Project Management Application!{% endblock %}
 
 {% block content %}
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
 
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 text-primary fw-bold">
+                    <i class="fas fa-rocket me-2"></i> AI-Powered Project Management
+                </h2>
+                <p class="lead text-muted">
+                    This platform is designed to <strong>revolutionize</strong> the way project managers and teams handle documentation and task management. By leveraging advanced AI language models, you can <strong>automate</strong> project document creation, generate structured content effortlessly, and ensure <strong>consistency</strong> across all reports.
+                </p>
+                <hr class="my-4">
+                <p class="lead text-muted">
+                    Our goal is to <strong>reduce the administrative burden</strong>, minimize manual work, and enhance overall efficiency. Teams can focus on <strong>strategic decision-making</strong> rather than paperwork. Whether you're planning, tracking progress, or collaborating, AI-driven automation <strong>streamlines workflows</strong> and improves productivity.
+                </p>
+                <div class="text-center mt-4">
+                    <p class="lead text-muted">
+                        Experience a <strong>smarter way</strong> to manage projects and let AI handle the repetitive tasks for you! 
+                    </p>
+                    <i class="fas fa-lightbulb fa-3x text-warning"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
+
+<div class="row my-2">
+    <div class="col-12 text-center">
+        <div class="p-5 bg-light rounded-3">
+            <h1 class="display-4 fw-bold">Revolutionize Your Project Management</h1>
+            <p class="lead">Automate documentation, streamline workflows, and enhance collaboration with AI-powered tools.</p>
+            <a href="{% url 'projects:list_projects' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket me-2"></i>Get Started
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3 class="fw-bold mb-4">Current Projects</h3>
+        <div class="row">
+            {% for project in projects %}
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-dark text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">{{ project.name }}</h5>
+                            <span class="badge 
+                                {% if project.status.name == 'Draft' %}bg-secondary
+                                {% elif project.status.name == 'In Progress' %}bg-warning text-dark
+                                {% elif project.status.name == 'Completed' %}bg-success
+                                {% else %}bg-info
+                                {% endif %}">
+                                {{ project.status.name }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Description:</strong> {{ project.description }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-calendar me-2 text-success"></i>
+                            <strong>Created:</strong> {{ project.created_at|date:"Y-m-d" }}
+                        </p>
+                        {% if project.deadline %}
+                        <p class="card-text">
+                            <i class="fas fa-calendar-days me-2 text-danger"></i>
+                            <strong>Deadline:</strong> {{ project.deadline|date:"Y-m-d" }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3 class="fw-bold mb-4">Key Features</h3>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-header bg-primary text-light shadow-lg d-flex justify-content-between align-items-center">
+                        <i class="fas fa-folder-open me-2 fs-4"></i>
+                        <h5 class="card-title text-center fw-bold my-2 flex-grow-1">Projects</h5>
+                        <i class="fas fa-folder-open me-2 fs-4 text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <i class="fas fa-tasks me-2 text-secondary"></i>Efficiently manage your projects with tools designed for creating, updating, and tracking progress. Whether you're starting a new project or collaborating on an existing one, this platform has you covered.
+                        </p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2">
+                                <i class="fas fa-user-plus me-2 text-success"></i>Create and manage projects, assign roles, and set permissions for team members.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-calendar-check me-2 text-warning"></i>Set deadlines to keep your projects on track.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-lightbulb me-2 text-info"></i>Need inspiration? Use my AI-powered tools to generate creative 
+                                <a href="{% url 'ai-models:generate_title' %}" class="text-danger">titles</a> or 
+                                <a href="{% url 'ai-models:generate_description' %}" class="text-danger">descriptions</a> for your projects.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'projects:list_projects' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>Explore Projects
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-success">
+                    <div class="card-header bg-success text-light shadow-lg d-flex justify-content-between align-items-center">
+                        <i class="fas fa-file me-2 fs-4"></i>
+                        <h5 class="card-title text-center fw-bold my-2 flex-grow-1">Documents</h5>
+                        <i class="fas fa-file me-2 fs-4 text-success"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <i class="fas fa-file-alt me-2 text-secondary"></i>Efficiently manage all documents created for your projects. Store multiple types of specifications or other types of required documents.
+                        </p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2">
+                                <i class="fas fa-plus-circle me-2 text-success"></i>Create new documents by selecting a document type. A template with predefined content will be loaded, ready for customization.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-edit me-2 text-warning"></i>Modify documents manually or leverage AI models to automatically generate and refine content.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-share-alt me-2 text-info"></i>Collaborate with your team by sharing documents and tracking changes in real-time.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-download me-2 text-primary"></i>Download documents in Markdown format for GitHub compatibility.
+                            </li>
+                        </ul>
+                        
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'ai-docs:list_documents' %}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>Explore Documents
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-warning">
+                    <div class="card-header bg-warning text-dark shadow-lg d-flex justify-content-between align-items-center">
+                        <i class="fas fa-magic me-2 fs-4"></i>
+                        <h5 class="card-title text-center fw-bold my-2 flex-grow-1">Generate</h5>
+                        <i class="fas fa-magic me-2 fs-4 text-warning"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <i class="fas fa-robot me-2 text-secondary"></i>Leverage the power of AI to generate high-quality content for your documents. Choose from multiple AI models to create tailored content for different sections of your projects.
+                        </p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2">
+                                <i class="fas fa-lightbulb me-2 text-warning"></i>Generate titles, descriptions, and other content with just a few clicks.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-cogs me-2 text-info"></i>Select from advanced AI models to ensure the best results for your needs.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-sync-alt me-2 text-success"></i>Refine and regenerate content until it perfectly matches your requirements.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-file-export me-2 text-primary"></i>Export generated content directly into your documents for seamless integration.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'ai-models:select_project' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>Start Generating
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-danger">
+                    <div class="card-header bg-danger text-light shadow-lg d-flex justify-content-between align-items-center">
+                        <i class="fas fa-flask me-2 fs-4"></i>
+                        <h5 class="card-title text-center fw-bold my-2 flex-grow-1">PlayGround</h5>
+                        <i class="fas fa-flask me-2 fs-4 text-danger"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <i class="fas fa-vial me-2 text-secondary"></i>Experiment with AI models to fine-tune your project requirements and explore creative possibilities. The PlayGround is your space to test, iterate, and innovate.
+                        </p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2">
+                                <i class="fas fa-cogs me-2 text-danger"></i>Test different AI models to find the best fit for your project needs.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-pencil-alt me-2 text-warning"></i>Generate and refine titles, descriptions, and other content with ease.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-share-alt me-2 text-info"></i>Collaborate with your team by sharing test results and insights.
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-chart-line me-2 text-success"></i>Analyze the performance of AI models to make data-driven decisions.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-footer text-center d-flex flex-column flex-md-row justify-content-between px-4 gap-3">
+                        <a href="{% url 'ai-models:test_models' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>Test Models
+                        </a>
+                        <a href="{% url 'ai-models:generate_description' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>Generate Description
+                        </a>
+                        <a href="{% url 'ai-models:generate_title' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>Generate Title
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3 class="fw-bold mb-4">How It Works</h3>
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-folder-plus fa-2x me-3 text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-2">Create and Manage Projects</h5>
+                                <p class="text-muted mb-0">
+                                    Easily create new projects and generate structured documentation. Each project can have multiple associated documents, helping you keep everything organized.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-file-code fa-2x me-3 text-success"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-2">AI-Generated Markdown Documents</h5>
+                                <p class="text-muted mb-0">
+                                    Documents are structured using predefined templates in Markdown format. You can modify the content manually or use AI models to generate high-quality text tailored to each section.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-robot fa-2x me-3 text-secondary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-2">Smart AI Content Generation</h5>
+                                <p class="text-muted mb-0">
+                                    Click the <span class="text-primary">Generate</span> button to create content for each section. AI analyzes the project details and section titles to generate relevant, well-structured text. Built-in prompts ensure high-quality output.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-magic fa-2x me-3 text-warning"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-2">AI-Assisted Title & Description Generation</h5>
+                                <p class="text-muted mb-0">
+                                    Need a project title or description? Simply enter one field and let AI generate the other for you with the <span class="text-primary">Generate</span> button.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-download fa-2x me-3 text-info"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-2">Export and Download</h5>
+                                <p class="text-muted mb-0">
+                                    Once your document is ready, you can download it in Markdown format for easy sharing, further editing, or integration into other platforms.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-share-nodes fa-2x me-3 text-danger"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-2">Seamless Collaboration</h5>
+                                <p class="text-muted mb-0">
+                                    Share your AI-generated documents with your team, collaborate in real-time, and refine content as needed to align with project goals.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3 class="fw-bold mb-4">About the Application</h3>
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <p class="lead mb-4">
+                    <i class="fa-solid fa-robot me-2 text-primary"></i>
+                    This application leverages advanced AI language models to automate the generation of project documentation. By reducing manual administrative tasks, it enhances efficiency, ensures consistency, and improves collaboration among team members.
+                </p>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fa-solid fa-magic me-2 text-warning"></i>AI-Powered Content Generation
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    With AI-powered content generation, users can quickly create structured project documentation, including project specifications, reports, and summaries. The system intelligently analyzes project details and context to generate relevant and well-organized text, reducing the time and effort required for documentation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fa-solid fa-code me-2 text-success"></i>Markdown Compatibility
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    The application supports <strong>Markdown</strong> as the default document format, ensuring seamless compatibility with platforms like GitHub and other version control systems. This allows users to maintain a structured and accessible documentation workflow.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fa-solid fa-file-alt me-2 text-info"></i>Key Document Generation
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    Key documents such as <strong>Specification</strong> and <strong>Software Requirements Specification (SRS)</strong> files are automatically generated, providing a clear and structured foundation for project development. Users can modify, expand, and refine these documents manually or with AI assistance.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fa-solid fa-users me-2 text-danger"></i>Real-Time Collaboration
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    The platform enables effortless collaboration by allowing teams to create, edit, and manage documents in real-time. This ensures that all stakeholders have access to up-to-date and accurate information, fostering better teamwork and project alignment.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="lead mt-4">
+                    <i class="fa-solid fa-lightbulb me-2 text-warning"></i>
+                    Whether you're working on a small project or a large-scale enterprise solution, this AI-powered tool streamlines project documentation, improves accuracy, and saves valuable time, allowing you to focus on execution and innovation.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
+
+<div class="row bg-light py-5">
+    <div class="col-12 text-center">
+        <h3 class="fw-bold mb-4">By the Numbers</h3>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="display-4 fw-bold text-primary">{{ project_count }}</h2>
+                        <p class="text-muted">Projects Created</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="display-4 fw-bold text-success">{{ ai_document_count }}</h2>
+                        <p class="text-muted">Documents Generated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="display-4 fw-bold text-warning">{{ user_count }}</h2>
+                        <p class="text-muted">Active Users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center my-4">
+    <hr class="flex-grow-1 border-2">
+    <i class="fa-solid fa-robot mx-3 text-dark"></i>
+    <hr class="flex-grow-1 border-2">
+</div>
+
+<div class="row mt-5 bg-dark py-5 text-light">
+    <div class="col-12 text-center">
+        <h2 class="fw-bold mb-4">Ready to Transform Your Project Management?</h2>
+        <p class="lead mb-4">Join the of users who are already benefiting from AI-powered project documentation.</p>
+        <a href="{% url 'authentication:register' %}" class="btn btn-light btn-lg">
+            <i class="fas fa-user-plus me-2"></i>Sign Up Now
+        </a>
+    </div>
+</div>
 {% endblock %}
 
 {% block sidebar_left %}
