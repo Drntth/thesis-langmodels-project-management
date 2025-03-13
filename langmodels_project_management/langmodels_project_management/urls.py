@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls import handler400, handler403, handler404, handler500
+from home.views import custom_400_view, custom_403_view, custom_404_view, custom_500_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,3 +28,8 @@ urlpatterns = [
     path('ai-docs/', include('ai_documentation.urls',namespace="ai_documentation")),
     path('ai-models/', include('ai_models.urls',namespace="ai_models")),
 ]
+
+handler400 = "home.views.custom_400_view"
+handler403 = "home.views.custom_403_view"
+handler404 = "home.views.custom_404_view"
+handler500 = "home.views.custom_500_view"
