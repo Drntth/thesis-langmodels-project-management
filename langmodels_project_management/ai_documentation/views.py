@@ -24,7 +24,10 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.user = self.request.user 
-        form.fields['project'].queryset = Project.objects.filter(owner=self.request.user)
+        form.fields['project'].queryset = Project.objects.filter(
+            Q(owner=self.request.user) | 
+            Q(projectmember__user=self.request.user)
+        ).distinct()
         return form
 
     def form_valid(self, form):
