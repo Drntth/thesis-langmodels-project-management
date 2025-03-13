@@ -46,10 +46,20 @@ class ProjectListView(LoginRequiredMixin, ListView):
             Q(projectmember__user=self.request.user)
         ).distinct()
 
-class ProjectDetailView(LoginRequiredMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Project
     template_name = "project_management/detail_project.html"
     context_object_name = "project"
+
+    def test_func(self):
+        project = self.get_object()
+        return self.request.user.is_staff or project.owner == self.request.user or ProjectMember.objects.filter(
+            project=project, user=self.request.user
+        ).exists()
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You do not have permission to view this project.")
+        return redirect("home:index")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

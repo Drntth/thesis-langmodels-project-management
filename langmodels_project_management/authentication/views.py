@@ -5,20 +5,35 @@ from .forms import CustomLoginForm, CustomRegisterForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 
-class CustomLoginView(LoginView):
+class CustomLoginView(UserPassesTestMixin, LoginView):
     template_name = "authentication/login.html"
     authentication_form = CustomLoginForm
     redirect_authenticated_user = True
+
+    def test_func(self):
+        return not self.request.user.is_authenticated
+
+    def handle_no_permission(self):
+        messages.warning(self.request, "You are already registered and logged in!")
+        return redirect("home:index")
 
     def get_success_url(self):
         messages.success(self.request, "You have successfully logged in!")
         return reverse_lazy("home:index")
 
-class CustomRegisterView(CreateView):
+class CustomRegisterView(UserPassesTestMixin, CreateView):
     template_name = "authentication/register.html"
     form_class = CustomRegisterForm
-    
+
+    def test_func(self):
+        return not self.request.user.is_authenticated
+
+    def handle_no_permission(self):
+        messages.warning(self.request, "You are already registered and logged in!")
+        return redirect("home:index")
+
     def form_valid(self, form):
         user = form.save()
         if user:

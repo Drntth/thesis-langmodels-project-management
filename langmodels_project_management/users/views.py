@@ -6,6 +6,8 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.models import User
 from .forms import ProfileUpdateForm, CustomPasswordChangeForm
 from django.contrib import messages
+from project_management.models import Project, ProjectMember
+from ai_documentation.models import AIDocument
 
 class ProfileDetailView(LoginRequiredMixin, DetailView):
     model = User
@@ -68,6 +70,9 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 class ProfileDeleteView(LoginRequiredMixin, View):    
     def post(self, request, *args, **kwargs):
         user = request.user
-        messages.success(request, "Your profile has been deleted successfully. You can continue as a guest or register again!")
+        messages.success(request, "Your profile and all related data have been deleted successfully. You can continue as a guest or register again!")
+        AIDocument.objects.filter(created_by=user).delete()
+        ProjectMember.objects.filter(user=user).delete()
+        Project.objects.filter(owner=user).delete()
         user.delete()
         return redirect(reverse_lazy("home:index"))
