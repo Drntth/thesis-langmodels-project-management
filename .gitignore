@@ -136,3 +136,25 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# Cypress #
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+cypress/results/
+cypress/.cache/
+
+# Cypress konfigurációs fájlok, ha testreszabottak és nem akarod verziókezelni
+cypress.env.json
+cypress.json
+cypress.config.ts
+
+# Node.js csomagok, ha különálló Cypress mappában használod
+node_modules/
+package-lock.json
+yarn.lock
+
+# Cypress futtatás közbeni ideiglenes fájlok
+.DS_Store
+*.log
+*.tmp
