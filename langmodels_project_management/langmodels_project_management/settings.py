@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import environ
 from pathlib import Path
+import os
 
 # .env
 env = environ.Env()
@@ -51,6 +52,8 @@ INSTALLED_APPS = [
     'project_management',
     'ai_documentation',
     'ai_models',
+    'dal',
+    'dal_select2',
 ]
 
 MIDDLEWARE = [
@@ -133,6 +136,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -145,7 +149,5 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-import os
 
 AI_MODEL_STORAGE = os.path.join(BASE_DIR, 'ai_models/storage')

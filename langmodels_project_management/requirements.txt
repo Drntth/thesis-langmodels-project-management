@@ -7,6 +7,7 @@ certifi==2025.1.31
 charset-normalizer==3.4.1
 colorama==0.4.6
 Django==4.2.19
+django-autocomplete-light==3.12.1
 django-bootstrap-v5==1.0.11
 django-environ==0.12.0
 django-markdownify==0.9.5

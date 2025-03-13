@@ -105,13 +105,14 @@ class ProjectMemberForm(forms.ModelForm):
             existing_members = ProjectMember.objects.filter(project=project).values_list('user_id', flat=True)
             self.fields['user'].queryset = User.objects.exclude(id__in=existing_members)
 
-    user = forms.ModelChoiceField(
-        queryset=User.objects.none(),
-        required=True,
-        widget=forms.Select(attrs={
+    user = forms.CharField(
+        widget=forms.TextInput(attrs={
             'class': 'form-control border-0 shadow-sm',
-        })
+            'list': 'user-list'
+        }),
+        required=True,
     )
+
     role = forms.ModelChoiceField(
         required=True,
         queryset=ProjectRole.objects.all(),
@@ -123,3 +124,10 @@ class ProjectMemberForm(forms.ModelForm):
     class Meta:
         model = ProjectMember
         fields = ['user', 'role']
+
+    def clean_user(self):
+        username = self.cleaned_data['user']
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise forms.ValidationError("Invalid username!")

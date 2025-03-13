@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -10,6 +11,7 @@ from django.conf import settings
 import os, shutil
 from utils.clean_filename import clean_filename
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
@@ -139,7 +141,11 @@ class ProjectMemberCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         project = get_object_or_404(Project, id=self.kwargs['pk'])
         form.instance.project = project
-        return super().form_valid(form)
+        try:
+            return super().form_valid(form)
+        except IntegrityError:
+            form.add_error('user', 'The user is already a member of this project!')
+            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse_lazy('projects:detail_project', kwargs={'pk': self.kwargs['pk']})
@@ -147,6 +153,7 @@ class ProjectMemberCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['project'] = get_object_or_404(Project, id=self.kwargs['pk'])
+        context['user_list'] = User.objects.all()
         return context
 
 class ProjectMemberRemoveView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
