@@ -1,0 +1,32 @@
+{% extends "partials/base_authentication.html" %}
+{% block title %}404 - Page Not Found{% endblock %}
+{% block content %}
+<div class="card shadow-lg border-danger">
+    <div class="card-header bg-danger text-light shadow-lg d-flex justify-content-between align-items-center">
+        <i class="fa-solid fa-triangle-exclamation fa-3x text-light"></i>
+        <h2 class="card-title text-center fw-bold my-2 flex-grow-1">404 - Page Not Found</h2>
+        <i class="fa-solid fa-triangle-exclamation fa-3x text-light"></i>
+    </div>
+    <div class="card-body text-center py-5">
+        <p class="lead text-dark mb-4">
+            Oops! It looks like you've taken a wrong turn.
+        </p>
+        <p class="text-muted mb-4">
+            The page you're looking for might have been moved, deleted, or never existed. But don't worry, we're here to help you find your way back!
+        </p>
+        <div class="mt-4">
+            <p class="text-dark fw-bold mb-2">Here are a few things you can try:</p>
+            <ul class="list-unstyled text-muted">
+                <li><i class="fa-solid fa-arrow-right me-2"></i>Double-check the URL for typos.</li>
+                <li><i class="fa-solid fa-arrow-right me-2"></i>Head back to the homepage.</li>
+                <li><i class="fa-solid fa-arrow-right me-2"></i>Contact support if the issue persists.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-footer bg-light border-0 text-center py-2">
+        <a href="{% url 'home:index' %}" class="btn btn-danger shadow-sm btn-lg">
+            <i class="fa-solid fa-house me-2"></i>Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

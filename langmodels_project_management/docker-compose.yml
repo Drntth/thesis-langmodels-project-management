@@ -10,4 +10,7 @@ services:
       - DEBUG=1
       - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
       - DATABASE_URL=sqlite:///db.sqlite3
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py seed_static &&
+             python manage.py runserver 0.0.0.0:8000"

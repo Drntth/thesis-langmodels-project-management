@@ -14,7 +14,7 @@ urlpatterns = [
 
     path('<int:pk>/members/add/', ProjectMemberCreateView.as_view(), name='add_member'),
     path('<int:pk>/members/remove/', ProjectMemberRemoveView.as_view(), name='remove_member'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
