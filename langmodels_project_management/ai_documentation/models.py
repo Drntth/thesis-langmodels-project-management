@@ -42,7 +42,7 @@ class AIDocument(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'Document: {self.title} (Project: {self.project})'
+        return f'{self.title} (Project: {self.project})'
 
 class DocumentSection(models.Model):
     document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE)
