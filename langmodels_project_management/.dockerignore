@@ -1,7 +1,12 @@
-docs/
-__pycache__/
+*.sqlite3
 *.pyc
 *.pyo
+__pycache__/
 *.log
-db.sqlite3
 venv/
+.env
+*.db
+*.egg-info/
+.mypy_cache/
+.idea/
+.vscode/
