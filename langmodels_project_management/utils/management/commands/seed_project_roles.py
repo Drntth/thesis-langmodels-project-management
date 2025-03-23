@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from project_management.models import ProjectRole
 
+
 class Command(BaseCommand):
     help = "Seed the database with project roles"
 
@@ -14,6 +15,10 @@ class Command(BaseCommand):
                 created_roles.append(obj.name)
 
         if created_roles:
-            self.stdout.write(self.style.SUCCESS(f"Seeded roles: {', '.join(created_roles)}"))
+            self.stdout.write(
+                self.style.SUCCESS(f"Seeded roles: {', '.join(created_roles)}")
+            )
         else:
-            self.stdout.write(self.style.WARNING("Project roles already exist. No new roles added."))
+            self.stdout.write(
+                self.style.WARNING("Project roles already exist. No new roles added.")
+            )

@@ -11,12 +11,24 @@ from django.conf import settings
 from utils.clean_filename import clean_filename
 import os
 import shutil
-from ai_documentation.views import DocumentCreateView, DocumentListView, DocumentDetailView, DocumentUpdateView, DocumentDeleteView, DocumentDownloadView
+from ai_documentation.views import (
+    DocumentCreateView,
+    DocumentListView,
+    DocumentDetailView,
+    DocumentUpdateView,
+    DocumentDeleteView,
+    DocumentDownloadView,
+)
 from ai_documentation.forms import DocumentCreationForm, DocumentUpdateForm
-from ai_documentation.admin import DocumentTypeAdmin, AIDocumentAdmin, DocumentSectionAdmin
+from ai_documentation.admin import (
+    DocumentTypeAdmin,
+    AIDocumentAdmin,
+    DocumentSectionAdmin,
+)
 from django.contrib.admin.sites import site
 
 # ====== models.py ======
+
 
 class DocumentTypeModelTest(TestCase):
     def setUp(self):
@@ -42,6 +54,7 @@ class DocumentTypeModelTest(TestCase):
         content = self.doc_type_srs.get_template_file_content().split("\n")[0]
         self.assertEqual(content, "# Software Requirements Specification (SRS)")
 
+
 class AIDocumentModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser")
@@ -54,11 +67,14 @@ class AIDocumentModelTest(TestCase):
             project=self.project,
             created_by=self.user,
             type=self.doc_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
 
     def test_aidocument_creation(self):
-        self.assertEqual(str(self.document), "Document: Test Doc (Project: Test Project (Owner: testuser))")
+        self.assertEqual(
+            str(self.document),
+            "Document: Test Doc (Project: Test Project (Owner: testuser))",
+        )
 
     def test_version_increment_on_save(self):
         original_version = self.document.version
@@ -78,7 +94,7 @@ class AIDocumentModelTest(TestCase):
             project=self.project,
             created_by=self.user,
             type=self.doc_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
         new_document.save()
         self.assertEqual(new_document.version, 1)
@@ -87,13 +103,12 @@ class AIDocumentModelTest(TestCase):
         self.assertIsNotNone(self.document.created_at)
         self.assertIsNotNone(self.document.updated_at)
 
+
 class DocumentSectionModelTest(TestCase):
     def setUp(self):
         self.doc_type = DocumentType.objects.create(name="Test Type")
         self.section = DocumentSection.objects.create(
-            document_type=self.doc_type,
-            title="Test Section",
-            prompt="Test Prompt"
+            document_type=self.doc_type, title="Test Section", prompt="Test Prompt"
         )
 
     def test_document_section_creation(self):
@@ -101,30 +116,38 @@ class DocumentSectionModelTest(TestCase):
 
     def test_document_section_dependencies(self):
         section2 = DocumentSection.objects.create(
-            document_type=self.doc_type,
-            title="Test Section 2",
-            prompt="Test Prompt 2"
+            document_type=self.doc_type, title="Test Section 2", prompt="Test Prompt 2"
         )
         self.section.dependencies.add(section2)
         self.assertIn(section2, self.section.dependencies.all())
 
+
 # ====== views.py ======
+
 
 class DocumentCreateViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
         self.client.login(username="testuser", password="password")
 
-        self.project = Project.objects.create(name="Test Project", owner=self.user, description="Test Description")
-        project_folder_name = clean_filename(f"{self.project.owner.username}_{self.project.name}")
-        self.project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        self.project = Project.objects.create(
+            name="Test Project", owner=self.user, description="Test Description"
+        )
+        project_folder_name = clean_filename(
+            f"{self.project.owner.username}_{self.project.name}"
+        )
+        self.project_folder_path = (
+            Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        )
         os.makedirs(self.project_folder_path, exist_ok=True)
 
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
 
-        self.url = reverse('ai-docs:create_document')
+        self.url = reverse("ai-docs:create_document")
 
     def tearDown(self):
         if self.project_folder_path.exists():
@@ -136,7 +159,9 @@ class DocumentCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_project_queryset_filtered_by_user(self):
-        other_user = get_user_model().objects.create_user(username="otheruser", password="password")
+        other_user = get_user_model().objects.create_user(
+            username="otheruser", password="password"
+        )
         Project.objects.create(name="Other Project", owner=other_user)
 
         response = self.client.get(self.url)
@@ -176,12 +201,19 @@ class DocumentCreateViewTest(TestCase):
         response = self.client.post(self.url, data, follow=True)
         self.assertContains(response, "Project folder does not exist", status_code=200)
 
+
 class DocumentListViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="password", is_staff=True)
-        self.other_user = get_user_model().objects.create_user(username="otheruser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="password", is_staff=True
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="otheruser", password="password"
+        )
 
         self.project = Project.objects.create(name="Shared Project", owner=self.user)
         self.project_role = ProjectRole.objects.create(name="Contributor")
@@ -194,7 +226,7 @@ class DocumentListViewTest(TestCase):
             created_by=self.user,
             project=self.project,
             type=self.document_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
 
         self.other_document = AIDocument.objects.create(
@@ -203,12 +235,14 @@ class DocumentListViewTest(TestCase):
             created_by=self.other_user,
             project=self.project,
             type=self.document_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
 
-        ProjectMember.objects.create(user=self.user, project=self.project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.project, role=self.project_role
+        )
 
-        self.url = reverse('ai-docs:list_documents')
+        self.url = reverse("ai-docs:list_documents")
 
     def test_access_requires_login(self):
         self.client.logout()
@@ -238,16 +272,23 @@ class DocumentListViewTest(TestCase):
         response = self.client.get(self.url)
 
         documents = list(response.context["documents"])
-        self.assertIn(self.other_document, documents) 
+        self.assertIn(self.other_document, documents)
         self.assertNotIn(self.own_document, documents)
         self.assertEqual(len(documents), 1)
+
 
 class DocumentDetailViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="password", is_staff=True)
-        self.other_user = get_user_model().objects.create_user(username="otheruser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="password", is_staff=True
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="otheruser", password="password"
+        )
 
         self.project = Project.objects.create(name="Shared Project", owner=self.user)
         self.project_role = ProjectRole.objects.create(name="Contributor")
@@ -260,12 +301,14 @@ class DocumentDetailViewTest(TestCase):
             created_by=self.user,
             project=self.project,
             type=self.document_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
 
-        ProjectMember.objects.create(user=self.user, project=self.project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.project, role=self.project_role
+        )
 
-        self.url = reverse('ai-docs:detail_document', kwargs={'pk': self.document.pk})
+        self.url = reverse("ai-docs:detail_document", kwargs={"pk": self.document.pk})
 
     def test_access_requires_login(self):
         self.client.logout()
@@ -281,7 +324,9 @@ class DocumentDetailViewTest(TestCase):
 
     def test_document_detail_view_for_project_member(self):
         self.client.login(username="otheruser", password="password")
-        ProjectMember.objects.create(user=self.other_user, project=self.project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.other_user, project=self.project, role=self.project_role
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["document"], self.document)
@@ -301,18 +346,31 @@ class DocumentDetailViewTest(TestCase):
         self.assertEqual(response.context["document"], self.document)
         self.assertFalse(response.context["is_project_member"])
 
+
 class DocumentUpdateViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="password", is_staff=True)
-        self.other_user = get_user_model().objects.create_user(username="otheruser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="password", is_staff=True
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="otheruser", password="password"
+        )
 
         self.project = Project.objects.create(name="Test Project", owner=self.user)
-        project_folder_name = clean_filename(f"{self.project.owner.username}_{self.project.name}")
-        self.project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        project_folder_name = clean_filename(
+            f"{self.project.owner.username}_{self.project.name}"
+        )
+        self.project_folder_path = (
+            Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        )
         os.makedirs(self.project_folder_path, exist_ok=True)
-        self.other_project = Project.objects.create(name="Other Project", owner=self.user)
+        self.other_project = Project.objects.create(
+            name="Other Project", owner=self.user
+        )
         self.project_role = ProjectRole.objects.create(name="Contributor")
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
@@ -323,17 +381,23 @@ class DocumentUpdateViewTest(TestCase):
             created_by=self.user,
             project=self.project,
             type=self.document_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
 
-        ProjectMember.objects.create(user=self.user, project=self.project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.project, role=self.project_role
+        )
 
-        self.url = reverse('ai-docs:update_document', kwargs={'pk': self.document.pk})
+        self.url = reverse("ai-docs:update_document", kwargs={"pk": self.document.pk})
 
     def tearDown(self):
         for project in Project.objects.filter(owner=self.user):
-            project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
-            project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+            project_folder_name = clean_filename(
+                f"{project.owner.username}_{project.name}"
+            )
+            project_folder_path = (
+                Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+            )
             if project_folder_path.exists():
                 shutil.rmtree(project_folder_path, ignore_errors=True)
 
@@ -366,7 +430,7 @@ class DocumentUpdateViewTest(TestCase):
             "content": "Updated content",
             "project": self.project.id,
             "type": self.document_type.id,
-            "ai_model": self.ai_model.id
+            "ai_model": self.ai_model.id,
         }
 
         response = self.client.post(self.url, new_data, follow=True)
@@ -376,20 +440,31 @@ class DocumentUpdateViewTest(TestCase):
         self.assertEqual(updated_document.title, "Updated Document")
         self.assertEqual(updated_document.content, "Updated content")
 
+
 class DocumentDeleteViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="password", is_staff=True)
-        self.other_user = get_user_model().objects.create_user(username="otheruser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="password", is_staff=True
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="otheruser", password="password"
+        )
 
         self.project = Project.objects.create(name="Test Project", owner=self.user)
         self.project_role = ProjectRole.objects.create(name="Contributor")
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
 
-        project_folder_name = clean_filename(f"{self.project.owner.username}_{self.project.name}")
-        self.project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        project_folder_name = clean_filename(
+            f"{self.project.owner.username}_{self.project.name}"
+        )
+        self.project_folder_path = (
+            Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        )
         os.makedirs(self.project_folder_path, exist_ok=True)
 
         self.document = AIDocument.objects.create(
@@ -398,12 +473,14 @@ class DocumentDeleteViewTest(TestCase):
             created_by=self.user,
             project=self.project,
             type=self.document_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
 
-        ProjectMember.objects.create(user=self.user, project=self.project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.project, role=self.project_role
+        )
 
-        self.url = reverse('ai-docs:delete_document', kwargs={'pk': self.document.pk})
+        self.url = reverse("ai-docs:delete_document", kwargs={"pk": self.document.pk})
 
     def tearDown(self):
         if self.project_folder_path.exists():
@@ -455,12 +532,19 @@ class DocumentDeleteViewTest(TestCase):
         with self.assertRaises(AIDocument.DoesNotExist):
             AIDocument.objects.get(pk=self.document.pk)
 
+
 class DocumentDownloadViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="password", is_staff=True)
-        self.other_user = get_user_model().objects.create_user(username="otheruser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="password", is_staff=True
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="otheruser", password="password"
+        )
 
         self.project = Project.objects.create(name="Test Project", owner=self.user)
         self.project_role = ProjectRole.objects.create(name="Contributor")
@@ -473,15 +557,21 @@ class DocumentDownloadViewTest(TestCase):
             created_by=self.user,
             project=self.project,
             type=self.document_type,
-            ai_model=self.ai_model
+            ai_model=self.ai_model,
         )
 
-        ProjectMember.objects.create(user=self.user, project=self.project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.project, role=self.project_role
+        )
 
-        self.url = reverse('ai-docs:download_document', kwargs={'pk': self.document.pk})
+        self.url = reverse("ai-docs:download_document", kwargs={"pk": self.document.pk})
 
-        project_folder_name = clean_filename(f"{self.project.owner.username}_{self.project.name}")
-        self.project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        project_folder_name = clean_filename(
+            f"{self.project.owner.username}_{self.project.name}"
+        )
+        self.project_folder_path = (
+            Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+        )
         self.document_filename = clean_filename(self.document.title) + ".md"
         self.document_file_path = self.project_folder_path / self.document_filename
 
@@ -501,13 +591,19 @@ class DocumentDownloadViewTest(TestCase):
         self.client.login(username="testuser", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Disposition'], f'attachment; filename="{clean_filename(self.document.title)}.md"')
+        self.assertEqual(
+            response["Content-Disposition"],
+            f'attachment; filename="{clean_filename(self.document.title)}.md"',
+        )
 
     def test_download_document_for_staff(self):
         self.client.login(username="staffuser", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Disposition'], f'attachment; filename="{clean_filename(self.document.title)}.md"')
+        self.assertEqual(
+            response["Content-Disposition"],
+            f'attachment; filename="{clean_filename(self.document.title)}.md"',
+        )
 
     def test_download_document_for_project_member(self):
         self.client.login(username="testuser", password="password")
@@ -524,7 +620,9 @@ class DocumentDownloadViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 
+
 # ====== urls.py ======
+
 
 class TestAIDocumentUrls(SimpleTestCase):
     def test_create_document_url_resolves(self):
@@ -551,11 +649,15 @@ class TestAIDocumentUrls(SimpleTestCase):
         url = reverse("ai-docs:download_document", kwargs={"pk": 1})
         self.assertEqual(resolve(url).func.view_class, DocumentDownloadView)
 
+
 # ====== forms.py ======
+
 
 class DocumentCreationFormTest(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
         self.project = Project.objects.create(name="Test Project", owner=self.user)
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
@@ -602,9 +704,12 @@ class DocumentCreationFormTest(TestCase):
             self.assertEqual(document.created_by, self.user)
             self.assertEqual(document.title, "Test Document")
 
+
 class DocumentUpdateFormTest(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="password")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
         self.project = Project.objects.create(name="Test Project", owner=self.user)
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
@@ -662,7 +767,9 @@ class DocumentUpdateFormTest(TestCase):
             self.assertEqual(updated_document.title, "Updated Title")
             self.assertEqual(updated_document.content, "Updated Content")
 
+
 # ====== admin.py ======
+
 
 class AdminSiteTest(TestCase):
     def test_document_type_admin_registered(self):
@@ -679,35 +786,49 @@ class AdminSiteTest(TestCase):
 
     def test_document_type_admin_list_display(self):
         admin_instance = DocumentTypeAdmin(DocumentType, site)
-        self.assertEqual(admin_instance.list_display, ('name',))
+        self.assertEqual(admin_instance.list_display, ("name",))
 
     def test_document_type_admin_search_fields(self):
         admin_instance = DocumentTypeAdmin(DocumentType, site)
-        self.assertEqual(admin_instance.search_fields, ('name',))
+        self.assertEqual(admin_instance.search_fields, ("name",))
 
     def test_ai_document_admin_list_display(self):
         admin_instance = AIDocumentAdmin(AIDocument, site)
         self.assertEqual(
             admin_instance.list_display,
-            ('title', 'project', 'created_by', 'created_at', 'updated_at', 'version', 'type', 'ai_model'),
+            (
+                "title",
+                "project",
+                "created_by",
+                "created_at",
+                "updated_at",
+                "version",
+                "type",
+                "ai_model",
+            ),
         )
 
     def test_ai_document_admin_search_fields(self):
         admin_instance = AIDocumentAdmin(AIDocument, site)
-        self.assertEqual(admin_instance.search_fields, ('title', 'project__name', 'created_by__username'))
+        self.assertEqual(
+            admin_instance.search_fields,
+            ("title", "project__name", "created_by__username"),
+        )
 
     def test_ai_document_admin_list_filter(self):
         admin_instance = AIDocumentAdmin(AIDocument, site)
-        self.assertEqual(admin_instance.list_filter, ('project', 'created_by', 'type', 'ai_model'))
+        self.assertEqual(
+            admin_instance.list_filter, ("project", "created_by", "type", "ai_model")
+        )
 
     def test_document_section_admin_list_display(self):
         admin_instance = DocumentSectionAdmin(DocumentSection, site)
-        self.assertEqual(admin_instance.list_display, ('document_type', 'title'))
+        self.assertEqual(admin_instance.list_display, ("document_type", "title"))
 
     def test_document_section_admin_search_fields(self):
         admin_instance = DocumentSectionAdmin(DocumentSection, site)
-        self.assertEqual(admin_instance.search_fields, ('title', 'document_type__name'))
+        self.assertEqual(admin_instance.search_fields, ("title", "document_type__name"))
 
     def test_document_section_admin_filter_horizontal(self):
         admin_instance = DocumentSectionAdmin(DocumentSection, site)
-        self.assertEqual(admin_instance.filter_horizontal, ('dependencies',))
+        self.assertEqual(admin_instance.filter_horizontal, ("dependencies",))

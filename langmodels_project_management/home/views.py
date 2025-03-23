@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView
 from project_management.models import Project
 from ai_documentation.models import AIDocument
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+
 
 class HomePageView(TemplateView):
     template_name = "home/index.html"
@@ -19,14 +19,18 @@ class HomePageView(TemplateView):
         context["user_count"] = User.objects.count()
         return context
 
+
 def custom_400_view(request, exception):
     return render(request, "errors/400.html", status=400)
+
 
 def custom_403_view(request, exception):
     return render(request, "errors/403.html", status=403)
 
+
 def custom_404_view(request, exception):
     return render(request, "errors/404.html", status=404)
+
 
 def custom_500_view(request):
     return render(request, "errors/500.html", status=500)

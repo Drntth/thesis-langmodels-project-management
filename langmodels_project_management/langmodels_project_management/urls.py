@@ -14,23 +14,24 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import include, path, re_path
-from django.conf.urls import handler400, handler403, handler404, handler500
-from home.views import custom_400_view, custom_403_view, custom_404_view, custom_500_view
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 
 urlpatterns = [
-    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
-    path('admin/', admin.site.urls),
-    path('', include('home.urls', namespace="home")),
-    path('authentication/', include('authentication.urls', namespace="authentication")),
-    path('users/', include('users.urls', namespace="users")),
-    path('projects/', include('project_management.urls', namespace="project_management")),
-    path('ai-docs/', include('ai_documentation.urls',namespace="ai_documentation")),
-    path('ai-models/', include('ai_models.urls',namespace="ai_models")),
+    re_path(r"^static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}),
+    path("admin/", admin.site.urls),
+    path("", include("home.urls", namespace="home")),
+    path("authentication/", include("authentication.urls", namespace="authentication")),
+    path("users/", include("users.urls", namespace="users")),
+    path(
+        "projects/", include("project_management.urls", namespace="project_management")
+    ),
+    path("ai-docs/", include("ai_documentation.urls", namespace="ai_documentation")),
+    path("ai-models/", include("ai_models.urls", namespace="ai_models")),
 ]
 
 if not settings.DEBUG:

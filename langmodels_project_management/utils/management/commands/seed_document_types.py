@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from ai_documentation.models import DocumentType
 
+
 class Command(BaseCommand):
     help = "Seed the databse with document types"
 
@@ -14,6 +15,10 @@ class Command(BaseCommand):
                 created_types.append(obj.name)
 
         if created_types:
-            self.stdout.write(self.style.SUCCESS(f"Seeded document types: {', '.join(created_types)}"))
+            self.stdout.write(
+                self.style.SUCCESS(f"Seeded document types: {', '.join(created_types)}")
+            )
         else:
-            self.stdout.write(self.style.WARNING("Document types already exist. No new types added."))
+            self.stdout.write(
+                self.style.WARNING("Document types already exist. No new types added.")
+            )

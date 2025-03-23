@@ -5,9 +5,28 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from project_management.models import Project, ProjectMember, ProjectRole
 from ai_documentation.models import AIDocument, DocumentType, DocumentSection
-from ai_models.views import TestModellsView, TestGeneratedTextView, SelectProjectView, SelectDocumentView, GenerateView, GenerateSectionContentView, GenerateDescriptionView, GenerateTitleView, ResultsView
-from ai_models.forms import TestModelForm, GenerateDescriptionForm, GenerateTitleForm, ProjectSelectionForm, DocumentSelectionForm
+from ai_models.views import (
+    TestModellsView,
+    TestGeneratedTextView,
+    SelectProjectView,
+    SelectDocumentView,
+    GenerateView,
+    GenerateSectionContentView,
+    GenerateDescriptionView,
+    GenerateTitleView,
+    ResultsView,
+)
+from ai_models.forms import (
+    TestModelForm,
+    GenerateDescriptionForm,
+    GenerateTitleForm,
+    ProjectSelectionForm,
+    DocumentSelectionForm,
+)
 from ai_models.services import PipelineTextGenerator, TokenizerModel
+from django.contrib.admin.sites import site
+from ai_models.admin import AIModelAdmin
+
 AI_MODELS = [
     ("DistilGPT2", "distilbert/distilgpt2"),
     ("GPT-Neo 125M", "EleutherAI/gpt-neo-125m"),
@@ -15,38 +34,41 @@ AI_MODELS = [
     ("GPT-2 Medium", "openai-community/gpt2-medium"),
     ("Facebook OPT 350M", "facebook/opt-350m"),
 ]
-from django.contrib.admin.sites import site
-from ai_models.admin import AIModelAdmin
 
 # ====== models.py ======
+
 
 class AIModelTestCase(TestCase):
     def setUp(self):
         self.model1 = AIModel.objects.create(name="Model A", model_identifier="model_a")
         self.model2 = AIModel.objects.create(name="Model B", model_identifier="model_b")
-    
+
     def test_model_creation(self):
         self.assertEqual(AIModel.objects.count(), 2)
-    
+
     def test_str_representation(self):
         self.assertEqual(str(self.model1), "Model A (model_a)")
-    
+
     def test_unique_name(self):
         with self.assertRaises(Exception):
             AIModel.objects.create(name="Model A", model_identifier="model_c")
-    
+
     def test_unique_model_identifier(self):
         with self.assertRaises(Exception):
             AIModel.objects.create(name="Model C", model_identifier="model_a")
 
+
 # ====== views.py ======
+
 
 class TestModellsViewTests(TestCase):
     def setUp(self):
         self.ai_model = AIModel.objects.create(
             name="Test Model", model_identifier="test-model"
         )
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:test_models")
 
@@ -55,9 +77,12 @@ class TestModellsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "ai_models/test_models.html")
 
+
 class TestGeneratedTextViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:test_generated_text")
 
@@ -72,7 +97,7 @@ class TestGeneratedTextViewTests(TestCase):
         session["generated_text_data"] = {
             "prompt": "Test prompt",
             "generated_text": "Generated result",
-            "model": "test-model"
+            "model": "test-model",
         }
         session.save()
 
@@ -88,24 +113,37 @@ class TestGeneratedTextViewTests(TestCase):
         session["generated_text_data"] = {
             "prompt": "Test prompt",
             "generated_text": "Generated result",
-            "model": "test-model"
+            "model": "test-model",
         }
         session.save()
 
         self.client.get(self.url)
         self.assertNotIn("generated_text_data", self.client.session)
 
+
 class SelectProjectViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="testpassword", is_staff=True)
-        self.project_owner = get_user_model().objects.create_user(username="owneruser", password="testpassword")
-        self.project = Project.objects.create(name="Test Project", owner=self.project_owner)
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="testpassword", is_staff=True
+        )
+        self.project_owner = get_user_model().objects.create_user(
+            username="owneruser", password="testpassword"
+        )
+        self.project = Project.objects.create(
+            name="Test Project", owner=self.project_owner
+        )
         self.user_project = Project.objects.create(name="User Project", owner=self.user)
-        self.member_project = Project.objects.create(name="Member Project", owner=self.project_owner)
+        self.member_project = Project.objects.create(
+            name="Member Project", owner=self.project_owner
+        )
 
         self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(user=self.user, project=self.member_project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.member_project, role=self.project_role
+        )
 
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:select_project")
@@ -140,31 +178,64 @@ class SelectProjectViewTests(TestCase):
     def test_form_valid_sets_selected_project_in_session(self):
         response = self.client.post(self.url, {"project": self.user_project.id})
         self.assertRedirects(response, reverse("ai-models:select_document"))
-        self.assertEqual(self.client.session["selected_project_id"], self.user_project.id)
+        self.assertEqual(
+            self.client.session["selected_project_id"], self.user_project.id
+        )
 
     def test_form_invalid_does_not_set_session(self):
         response = self.client.post(self.url, {"project": ""})
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("selected_project_id", self.client.session)
 
+
 class SelectDocumentViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="testpassword", is_staff=True)
-        self.project_owner = get_user_model().objects.create_user(username="owneruser", password="testpassword")
-        self.project = Project.objects.create(name="Test Project", owner=self.project_owner)
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="testpassword", is_staff=True
+        )
+        self.project_owner = get_user_model().objects.create_user(
+            username="owneruser", password="testpassword"
+        )
+        self.project = Project.objects.create(
+            name="Test Project", owner=self.project_owner
+        )
         self.user_project = Project.objects.create(name="User Project", owner=self.user)
-        self.member_project = Project.objects.create(name="Member Project", owner=self.project_owner)
-        
+        self.member_project = Project.objects.create(
+            name="Member Project", owner=self.project_owner
+        )
+
         self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(user=self.user, project=self.member_project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.member_project, role=self.project_role
+        )
 
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
 
-        self.document1 = AIDocument.objects.create(title="Doc1", project=self.project, created_by=self.project_owner, type=self.document_type, ai_model=self.ai_model)
-        self.document2 = AIDocument.objects.create(title="Doc2", project=self.user_project, created_by=self.user, type=self.document_type, ai_model=self.ai_model)
-        self.document3 = AIDocument.objects.create(title="Doc3", project=self.member_project, created_by=self.project_owner, type=self.document_type, ai_model=self.ai_model)
+        self.document1 = AIDocument.objects.create(
+            title="Doc1",
+            project=self.project,
+            created_by=self.project_owner,
+            type=self.document_type,
+            ai_model=self.ai_model,
+        )
+        self.document2 = AIDocument.objects.create(
+            title="Doc2",
+            project=self.user_project,
+            created_by=self.user,
+            type=self.document_type,
+            ai_model=self.ai_model,
+        )
+        self.document3 = AIDocument.objects.create(
+            title="Doc3",
+            project=self.member_project,
+            created_by=self.project_owner,
+            type=self.document_type,
+            ai_model=self.ai_model,
+        )
 
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:select_document")
@@ -177,7 +248,12 @@ class SelectDocumentViewTests(TestCase):
     def test_get_without_project_id_in_session_shows_error(self):
         response = self.client.get(self.url, follow=True)
         messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any("The project ID is missing from the session." in msg.message for msg in messages))
+        self.assertTrue(
+            any(
+                "The project ID is missing from the session." in msg.message
+                for msg in messages
+            )
+        )
 
     def test_get_with_project_id_in_session_renders_correct_template(self):
         session = self.client.session
@@ -218,24 +294,53 @@ class SelectDocumentViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("selected_document_id", self.client.session)
 
+
 class GenerateViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="testpassword", is_staff=True)
-        self.project_owner = get_user_model().objects.create_user(username="owneruser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="testpassword", is_staff=True
+        )
+        self.project_owner = get_user_model().objects.create_user(
+            username="owneruser", password="testpassword"
+        )
 
-        self.project = Project.objects.create(name="Test Project", owner=self.project_owner, description="Project Description")
+        self.project = Project.objects.create(
+            name="Test Project",
+            owner=self.project_owner,
+            description="Project Description",
+        )
         self.user_project = Project.objects.create(name="User Project", owner=self.user)
-        self.member_project = Project.objects.create(name="Member Project", owner=self.project_owner)
-        
+        self.member_project = Project.objects.create(
+            name="Member Project", owner=self.project_owner
+        )
+
         self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(user=self.user, project=self.member_project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.member_project, role=self.project_role
+        )
 
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
 
-        self.document1 = AIDocument.objects.create(title="Doc1", content="# Section 1\nText\n---\n# Section 2\nMore text", project=self.project, created_by=self.project_owner, type=self.document_type, ai_model=self.ai_model)
-        self.document2 = AIDocument.objects.create(title="Doc2", content="No sections here", project=self.user_project, created_by=self.user, type=self.document_type, ai_model=self.ai_model)
+        self.document1 = AIDocument.objects.create(
+            title="Doc1",
+            content="# Section 1\nText\n---\n# Section 2\nMore text",
+            project=self.project,
+            created_by=self.project_owner,
+            type=self.document_type,
+            ai_model=self.ai_model,
+        )
+        self.document2 = AIDocument.objects.create(
+            title="Doc2",
+            content="No sections here",
+            project=self.user_project,
+            created_by=self.user,
+            type=self.document_type,
+            ai_model=self.ai_model,
+        )
 
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:generate")
@@ -248,7 +353,12 @@ class GenerateViewTests(TestCase):
     def test_get_without_document_id_shows_error(self):
         response = self.client.get(self.url, follow=True)
         messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any("The document ID is missing from the session." in msg.message for msg in messages))
+        self.assertTrue(
+            any(
+                "The document ID is missing from the session." in msg.message
+                for msg in messages
+            )
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "ai_models/generate.html")
 
@@ -260,21 +370,39 @@ class GenerateViewTests(TestCase):
 
         response = self.client.get(self.url, follow=True)
         messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any("You do not have permission to access this document." in msg.message for msg in messages))
+        self.assertTrue(
+            any(
+                "You do not have permission to access this document." in msg.message
+                for msg in messages
+            )
+        )
         self.assertRedirects(response, reverse("ai-models:select_document"))
+
 
 class GenerateSectionContentViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
-        self.staff_user = get_user_model().objects.create_user(username="staffuser", password="testpassword", is_staff=True)
-        self.project_owner = get_user_model().objects.create_user(username="owneruser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.staff_user = get_user_model().objects.create_user(
+            username="staffuser", password="testpassword", is_staff=True
+        )
+        self.project_owner = get_user_model().objects.create_user(
+            username="owneruser", password="testpassword"
+        )
 
-        self.project = Project.objects.create(name="Test Project", owner=self.project_owner)
+        self.project = Project.objects.create(
+            name="Test Project", owner=self.project_owner
+        )
         self.user_project = Project.objects.create(name="User Project", owner=self.user)
-        self.member_project = Project.objects.create(name="Member Project", owner=self.project_owner)
-        
+        self.member_project = Project.objects.create(
+            name="Member Project", owner=self.project_owner
+        )
+
         self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(user=self.user, project=self.member_project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.member_project, role=self.project_role
+        )
 
         self.document_type = DocumentType.objects.create(name="Test Type")
         self.ai_model = AIModel.objects.create(name="Test AI Model")
@@ -283,15 +411,15 @@ class GenerateSectionContentViewTests(TestCase):
             title="Doc1",
             content="# Section 1\nInitial text\n---\n# Section 2\nMore text",
             project=self.project,
-            created_by=self.project_owner, 
-            type=self.document_type, 
-            ai_model=self.ai_model
+            created_by=self.project_owner,
+            type=self.document_type,
+            ai_model=self.ai_model,
         )
 
         self.document_section = DocumentSection.objects.create(
             title="Section 1",
             prompt="Generate content for section 1",
-            document_type=self.document.type
+            document_type=self.document.type,
         )
 
         self.client.login(username="testuser", password="testpassword")
@@ -308,14 +436,23 @@ class GenerateSectionContentViewTests(TestCase):
         session["selected_project_id"] = self.project.id
         session.save()
 
-        response = self.client.post(self.url, {
-            "section_title": "Section 1",
-            "section_content": "Updated content",
-            "action": "save"
-        }, follow=True)
+        response = self.client.post(
+            self.url,
+            {
+                "section_title": "Section 1",
+                "section_content": "Updated content",
+                "action": "save",
+            },
+            follow=True,
+        )
 
         messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any("You do not have permission to modify this document." in msg.message for msg in messages))
+        self.assertTrue(
+            any(
+                "You do not have permission to modify this document." in msg.message
+                for msg in messages
+            )
+        )
         self.assertRedirects(response, reverse("ai-models:select_document"))
 
     def test_post_with_missing_title_or_content_shows_error(self):
@@ -325,23 +462,36 @@ class GenerateSectionContentViewTests(TestCase):
         session.save()
 
         self.project_role = ProjectRole.objects.create(name="Tester")
-        ProjectMember.objects.create(user=self.user, project=self.project, role=self.project_role)
+        ProjectMember.objects.create(
+            user=self.user, project=self.project, role=self.project_role
+        )
 
-        response = self.client.post(self.url, {
-            "section_title": "",
-            "section_content": "Updated content",
-            "action": "save"
-        }, follow=True)
+        response = self.client.post(
+            self.url,
+            {
+                "section_title": "",
+                "section_content": "Updated content",
+                "action": "save",
+            },
+            follow=True,
+        )
 
         messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any("Missing title or content!" in msg.message for msg in messages))
+        self.assertTrue(
+            any("Missing title or content!" in msg.message for msg in messages)
+        )
+
 
 class GenerateDescriptionViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:generate_description")
-        self.ai_model = AIModel.objects.create(name="Test AI Model", model_identifier="test-model")
+        self.ai_model = AIModel.objects.create(
+            name="Test AI Model", model_identifier="test-model"
+        )
 
     def test_get_renders_template(self):
         response = self.client.get(self.url)
@@ -353,12 +503,17 @@ class GenerateDescriptionViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This field is required.")
 
+
 class GenerateTitleViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:generate_title")
-        self.ai_model = AIModel.objects.create(name="Test AI Model", model_identifier="test-model")
+        self.ai_model = AIModel.objects.create(
+            name="Test AI Model", model_identifier="test-model"
+        )
 
     def test_get_renders_template(self):
         response = self.client.get(self.url)
@@ -366,12 +521,17 @@ class GenerateTitleViewTests(TestCase):
         self.assertTemplateUsed(response, "ai_models/generate_title.html")
 
     def test_post_valid_data_redirects_to_results(self):
-        response = self.client.post(self.url, {"description": "This is a sample project description."})
+        response = self.client.post(
+            self.url, {"description": "This is a sample project description."}
+        )
         self.assertEqual(response.status_code, 200)
+
 
 class ResultsViewTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
         self.client.login(username="testuser", password="testpassword")
         self.url = reverse("ai-models:results")
 
@@ -387,7 +547,7 @@ class ResultsViewTests(TestCase):
             "description": "Sample project",
             "results": [
                 {"model": "test-model", "generated_text": "AI Generated Title"}
-            ]
+            ],
         }
         session.save()
 
@@ -397,7 +557,9 @@ class ResultsViewTests(TestCase):
         self.assertContains(response, "Sample project")
         self.assertContains(response, "AI Generated Title")
 
+
 # ====== urls.py ======
+
 
 class TestAIModelsUrls(SimpleTestCase):
     def test_test_models_url_resolves(self):
@@ -436,14 +598,20 @@ class TestAIModelsUrls(SimpleTestCase):
         url = reverse("ai-models:results")
         self.assertEqual(resolve(url).func.view_class, ResultsView)
 
+
 # ====== forms.py ======
+
 
 class TestModelFormTests(TestCase):
     def setUp(self):
-        self.ai_model = AIModel.objects.create(name="Test AI Model", model_identifier="test-model")
+        self.ai_model = AIModel.objects.create(
+            name="Test AI Model", model_identifier="test-model"
+        )
 
     def test_valid_form(self):
-        form = TestModelForm(data={"ai_model": self.ai_model.id, "prompt": "Test prompt"})
+        form = TestModelForm(
+            data={"ai_model": self.ai_model.id, "prompt": "Test prompt"}
+        )
         self.assertTrue(form.is_valid())
 
     def test_invalid_form_missing_fields(self):
@@ -451,6 +619,7 @@ class TestModelFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("ai_model", form.errors)
         self.assertIn("prompt", form.errors)
+
 
 class GenerateDescriptionFormTests(TestCase):
     def test_valid_form(self):
@@ -462,6 +631,7 @@ class GenerateDescriptionFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("title", form.errors)
 
+
 class GenerateTitleFormTests(TestCase):
     def test_valid_form(self):
         form = GenerateTitleForm(data={"description": "This is a sample description."})
@@ -472,9 +642,12 @@ class GenerateTitleFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("description", form.errors)
 
+
 class ProjectSelectionFormTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
         self.project = Project.objects.create(name="Test Project", owner=self.user)
 
     def test_valid_form(self):
@@ -487,16 +660,27 @@ class ProjectSelectionFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("project", form.errors)
 
+
 class DocumentSelectionFormTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="testpassword")
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpassword"
+        )
         self.project = Project.objects.create(name="Test Project", owner=self.user)
         self.document_type = DocumentType.objects.create(name="Test Type")
-        self.ai_model = AIModel.objects.create(name="Test AI Model") 
-        self.document = AIDocument.objects.create(title="Test Document", project=self.project, created_by=self.user, type=self.document_type, ai_model=self.ai_model)
+        self.ai_model = AIModel.objects.create(name="Test AI Model")
+        self.document = AIDocument.objects.create(
+            title="Test Document",
+            project=self.project,
+            created_by=self.user,
+            type=self.document_type,
+            ai_model=self.ai_model,
+        )
 
     def test_valid_form(self):
-        form = DocumentSelectionForm(project=self.project, data={"document": self.document.id})
+        form = DocumentSelectionForm(
+            project=self.project, data={"document": self.document.id}
+        )
         self.assertTrue(form.is_valid())
 
     def test_invalid_form_missing_document(self):
@@ -504,7 +688,9 @@ class DocumentSelectionFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("document", form.errors)
 
+
 # ====== services.py ======
+
 
 class PipelineTextGeneratorTests(TestCase):
     def test_generate_text_returns_string(self):
@@ -512,7 +698,9 @@ class PipelineTextGeneratorTests(TestCase):
         for model_name, model_identifier in AI_MODELS:
             with self.subTest(model=model_name):
                 generator = PipelineTextGenerator(model_identifier)
-                output_text = generator.generate_text(prompt, min_new_tokens=10, max_new_tokens=20)
+                output_text = generator.generate_text(
+                    prompt, min_new_tokens=10, max_new_tokens=20
+                )
                 self.assertIsInstance(output_text, str)
                 self.assertGreater(len(output_text), 0)
 
@@ -521,12 +709,17 @@ class PipelineTextGeneratorTests(TestCase):
         for model_name, model_identifier in AI_MODELS:
             with self.subTest(model=model_name):
                 generator = PipelineTextGenerator(model_identifier)
-                output_short = generator.generate_text(prompt, min_new_tokens=5, max_new_tokens=10)
-                output_long = generator.generate_text(prompt, min_new_tokens=20, max_new_tokens=50)
+                output_short = generator.generate_text(
+                    prompt, min_new_tokens=5, max_new_tokens=10
+                )
+                output_long = generator.generate_text(
+                    prompt, min_new_tokens=20, max_new_tokens=50
+                )
 
                 self.assertIsInstance(output_short, str)
                 self.assertIsInstance(output_long, str)
                 self.assertGreater(len(output_long), len(output_short))
+
 
 class TokenizerModelTests(TestCase):
     def test_generate_text_returns_string(self):
@@ -534,7 +727,9 @@ class TokenizerModelTests(TestCase):
         for model_name, model_identifier in AI_MODELS:
             with self.subTest(model=model_name):
                 tokenizer_model = TokenizerModel(model_identifier)
-                output_text = tokenizer_model.generate_text(prompt, min_new_tokens=10, max_new_tokens=20)
+                output_text = tokenizer_model.generate_text(
+                    prompt, min_new_tokens=10, max_new_tokens=20
+                )
                 self.assertIsInstance(output_text, str)
                 self.assertGreater(len(output_text), 0)
 
@@ -543,14 +738,20 @@ class TokenizerModelTests(TestCase):
         for model_name, model_identifier in AI_MODELS:
             with self.subTest(model=model_name):
                 tokenizer_model = TokenizerModel(model_identifier)
-                output_short = tokenizer_model.generate_text(prompt, min_new_tokens=5, max_new_tokens=10)
-                output_long = tokenizer_model.generate_text(prompt, min_new_tokens=20, max_new_tokens=50)
+                output_short = tokenizer_model.generate_text(
+                    prompt, min_new_tokens=5, max_new_tokens=10
+                )
+                output_long = tokenizer_model.generate_text(
+                    prompt, min_new_tokens=20, max_new_tokens=50
+                )
 
                 self.assertIsInstance(output_short, str)
                 self.assertIsInstance(output_long, str)
                 self.assertGreater(len(output_long), len(output_short))
 
+
 # ====== admin.py ======
+
 
 class AIModelAdminTests(TestCase):
     def setUp(self):
@@ -561,10 +762,10 @@ class AIModelAdminTests(TestCase):
         self.assertIn(AIModel, self.admin_site._registry)
 
     def test_list_display(self):
-        self.assertEqual(self.model_admin.list_display, ('name', 'model_identifier'))
+        self.assertEqual(self.model_admin.list_display, ("name", "model_identifier"))
 
     def test_search_fields(self):
-        self.assertEqual(self.model_admin.search_fields, ('name', 'model_identifier'))
+        self.assertEqual(self.model_admin.search_fields, ("name", "model_identifier"))
 
     def test_ordering(self):
-        self.assertEqual(self.model_admin.ordering, ('name',))
+        self.assertEqual(self.model_admin.ordering, ("name",))

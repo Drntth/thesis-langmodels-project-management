@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from project_management.models import ProjectStatus
 
+
 class Command(BaseCommand):
     help = "Seed the database with project statuses"
 
@@ -14,6 +15,12 @@ class Command(BaseCommand):
                 created_statuses.append(obj.name)
 
         if created_statuses:
-            self.stdout.write(self.style.SUCCESS(f"Seeded statuses: {', '.join(created_statuses)}"))
+            self.stdout.write(
+                self.style.SUCCESS(f"Seeded statuses: {', '.join(created_statuses)}")
+            )
         else:
-            self.stdout.write(self.style.WARNING("Project statuses already exist. No new statuses added."))
+            self.stdout.write(
+                self.style.WARNING(
+                    "Project statuses already exist. No new statuses added."
+                )
+            )

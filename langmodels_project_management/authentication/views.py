@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import CreateView, View
 from .forms import CustomLoginForm, CustomRegisterForm
@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+
 
 class CustomLoginView(UserPassesTestMixin, LoginView):
     template_name = "authentication/login.html"
@@ -23,6 +24,7 @@ class CustomLoginView(UserPassesTestMixin, LoginView):
         messages.success(self.request, "You have successfully logged in!")
         return reverse_lazy("home:index")
 
+
 class CustomRegisterView(UserPassesTestMixin, CreateView):
     template_name = "authentication/register.html"
     form_class = CustomRegisterForm
@@ -38,12 +40,17 @@ class CustomRegisterView(UserPassesTestMixin, CreateView):
         user = form.save()
         if user:
             login(self.request, user)
-            messages.success(self.request, "Your account has been created successfully!")
+            messages.success(
+                self.request, "Your account has been created successfully!"
+            )
             messages.success(self.request, "You have successfully logged in!")
             return redirect("home:index")
         else:
-            messages.warning(self.request, "Authentication failed. Please try logging in manually.")
+            messages.warning(
+                self.request, "Authentication failed. Please try logging in manually."
+            )
             return redirect("authentication:login")
+
 
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy("authentication:login")
@@ -52,7 +59,10 @@ class CustomLogoutView(LogoutView):
         messages.success(request, "You have been logged out.")
         return super().dispatch(request, *args, **kwargs)
 
+
 class UseAsGuestView(View):
     def post(self, request, *args, **kwargs):
-        messages.warning(request, "You are browsing as a guest. Some features may be unavailable.")
+        messages.warning(
+            request, "You are browsing as a guest. Some features may be unavailable."
+        )
         return redirect(reverse_lazy("home:index"))

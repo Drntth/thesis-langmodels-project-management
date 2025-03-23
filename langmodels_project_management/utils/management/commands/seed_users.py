@@ -1,7 +1,7 @@
-import random
 from django.core.management.base import BaseCommand
 from django_seed import Seed
 from django.contrib.auth.models import User
+
 
 class Command(BaseCommand):
     help = "Seed the database with users and user profiles"
@@ -22,15 +22,15 @@ class Command(BaseCommand):
             user, created = User.objects.get_or_create(
                 username=seeder.faker.unique.user_name(),
                 defaults={
-                    'email': seeder.faker.unique.email(),
-                    'first_name': seeder.faker.first_name(),
-                    'last_name': seeder.faker.last_name(),
-                    'is_staff': False,
-                    'is_superuser': False,
-                }
+                    "email": seeder.faker.unique.email(),
+                    "first_name": seeder.faker.first_name(),
+                    "last_name": seeder.faker.last_name(),
+                    "is_staff": False,
+                    "is_superuser": False,
+                },
             )
             if created:
-                user.set_password(user_password) 
+                user.set_password(user_password)
                 user.save()
             all_users.append(user)
 
@@ -38,15 +38,15 @@ class Command(BaseCommand):
             user, created = User.objects.get_or_create(
                 username=seeder.faker.unique.user_name(),
                 defaults={
-                    'email': seeder.faker.unique.email(),
-                    'first_name': seeder.faker.first_name(),
-                    'last_name': seeder.faker.last_name(),
-                    'is_staff': True,
-                    'is_superuser': False,
-                }
+                    "email": seeder.faker.unique.email(),
+                    "first_name": seeder.faker.first_name(),
+                    "last_name": seeder.faker.last_name(),
+                    "is_staff": True,
+                    "is_superuser": False,
+                },
             )
             if created:
-                user.set_password(staff_password) 
+                user.set_password(staff_password)
                 user.save()
             all_users.append(user)
 
@@ -54,17 +54,21 @@ class Command(BaseCommand):
             user, created = User.objects.get_or_create(
                 username=seeder.faker.unique.user_name(),
                 defaults={
-                    'email': seeder.faker.unique.email(),
-                    'password': 'superuserPass123',
-                    'first_name': seeder.faker.first_name(),
-                    'last_name': seeder.faker.last_name(),
-                    'is_staff': True,
-                    'is_superuser': True,
-                }
+                    "email": seeder.faker.unique.email(),
+                    "password": "superuserPass123",
+                    "first_name": seeder.faker.first_name(),
+                    "last_name": seeder.faker.last_name(),
+                    "is_staff": True,
+                    "is_superuser": True,
+                },
             )
             if created:
-                user.set_password(superuser_password) 
+                user.set_password(superuser_password)
                 user.save()
             all_users.append(user)
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded {num_users} regular users, {num_staff} staff users, and {num_superuser} superuser(s)"))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Seeded {num_users} regular users, {num_staff} staff users, and {num_superuser} superuser(s)"
+            )
+        )

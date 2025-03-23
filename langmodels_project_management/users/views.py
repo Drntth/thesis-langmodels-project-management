@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, UpdateView, View
@@ -8,6 +8,7 @@ from .forms import ProfileUpdateForm, CustomPasswordChangeForm
 from django.contrib import messages
 from project_management.models import Project, ProjectMember
 from ai_documentation.models import AIDocument
+
 
 class ProfileDetailView(LoginRequiredMixin, DetailView):
     model = User
@@ -19,7 +20,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         user = self.get_object()
         if user.is_superuser:
             profile_picture = "/static/images/default_superuser.svg"
@@ -31,18 +32,19 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         context["profile_picture"] = profile_picture
         return context
 
+
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = ProfileUpdateForm
-    template_name = 'users/update_profile.html'
-    success_url = reverse_lazy('users:detail_profile')
+    template_name = "users/update_profile.html"
+    success_url = reverse_lazy("users:detail_profile")
 
     def get_object(self, queryset=None):
         return self.request.user
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
+        kwargs["user"] = self.request.user
         return kwargs
 
     def form_valid(self, form):
@@ -51,26 +53,37 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
     def form_invalid(self, form):
-        messages.error(self.request, "There was an error updating your profile. Please check the form and try again.")
+        messages.error(
+            self.request,
+            "There was an error updating your profile. Please check the form and try again.",
+        )
         return self.render_to_response(self.get_context_data(form=form))
+
 
 class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     form_class = CustomPasswordChangeForm
-    template_name = 'users/password_change.html'
-    success_url = reverse_lazy('users:detail_profile')
+    template_name = "users/password_change.html"
+    success_url = reverse_lazy("users:detail_profile")
 
     def form_valid(self, form):
         messages.success(self.request, "Your password has been updated successfully.")
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, "There was an error updating your password. Please check the form and try again.")
+        messages.error(
+            self.request,
+            "There was an error updating your password. Please check the form and try again.",
+        )
         return super().form_invalid(form)
 
-class ProfileDeleteView(LoginRequiredMixin, View):    
+
+class ProfileDeleteView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user = request.user
-        messages.success(request, "Your profile and all related data have been deleted successfully. You can continue as a guest or register again!")
+        messages.success(
+            request,
+            "Your profile and all related data have been deleted successfully. You can continue as a guest or register again!",
+        )
         AIDocument.objects.filter(created_by=user).delete()
         ProjectMember.objects.filter(user=user).delete()
         Project.objects.filter(owner=user).delete()

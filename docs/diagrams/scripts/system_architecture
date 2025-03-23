@@ -1,0 +1,26 @@
+digraph {
+	Frontend [label="Frontend
+(HTML, CSS, JS, Bootstrap)" fillcolor=lightblue shape=box style=filled]
+	Backend [label="Django Backend" fillcolor=lightgrey shape=box style=filled]
+	ai_documentation [label="AI Documentation" fillcolor=lightyellow shape=ellipse style=filled]
+	Backend -> ai_documentation
+	ai_models [label="AI Models" fillcolor=lightyellow shape=ellipse style=filled]
+	Backend -> ai_models
+	authentication [label="Auth System" fillcolor=lightyellow shape=ellipse style=filled]
+	Backend -> authentication
+	home [label=Home fillcolor=lightyellow shape=ellipse style=filled]
+	Backend -> home
+	project_management [label="Project Management" fillcolor=lightyellow shape=ellipse style=filled]
+	Backend -> project_management
+	users [label="User Management" fillcolor=lightyellow shape=ellipse style=filled]
+	Backend -> users
+	Frontend -> Backend [label="API Calls (REST)"]
+	Database [label="SQLite Database" fillcolor=lightgreen shape=cylinder style=filled]
+	Backend -> Database [label="Django ORM"]
+	HuggingFace [label="Hugging Face API
+(Transformers, Pipeline)" fillcolor=orange shape=parallelogram style=filled]
+	Backend -> HuggingFace [label="API Requests"]
+	Docker [label="Docker
+Containerized Deployment" fillcolor=lightcoral shape=box3d style=filled]
+	Docker -> Backend
+}

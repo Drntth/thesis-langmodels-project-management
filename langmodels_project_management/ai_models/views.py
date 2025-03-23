@@ -1,6 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .services import PipelineTextGenerator
-from .forms import TestModelForm, ProjectSelectionForm, DocumentSelectionForm, GenerateDescriptionForm, GenerateTitleForm
+from .forms import (
+    TestModelForm,
+    ProjectSelectionForm,
+    DocumentSelectionForm,
+    GenerateDescriptionForm,
+    GenerateTitleForm,
+)
 from django.views.generic import FormView, TemplateView, View
 from django.contrib import messages
 from django.urls import reverse
@@ -13,8 +19,9 @@ from utils.clean_filename import clean_filename
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 
+
 class TestModellsView(FormView):
-    template_name="ai_models/test_models.html"
+    template_name = "ai_models/test_models.html"
     form_class = TestModelForm
 
     def form_valid(self, form):
@@ -39,6 +46,7 @@ class TestModellsView(FormView):
         messages.success(self.request, "Text generated successfully!")
         return redirect(reverse("ai-models:test_generated_text"))
 
+
 class TestGeneratedTextView(TemplateView):
     template_name = "ai_models/test_generated_text.html"
 
@@ -51,19 +59,19 @@ class TestGeneratedTextView(TemplateView):
             context.update(data)
         return context
 
+
 class SelectProjectView(LoginRequiredMixin, FormView):
     template_name = "ai_models/select_project.html"
     form_class = ProjectSelectionForm
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.user = self.request.user 
+        form.user = self.request.user
         if self.request.user.is_staff:
-            form.fields['project'].queryset = Project.objects.all() 
+            form.fields["project"].queryset = Project.objects.all()
         else:
-            form.fields['project'].queryset = Project.objects.filter(
-                Q(owner=self.request.user) |  
-                Q(projectmember__user=self.request.user)  
+            form.fields["project"].queryset = Project.objects.filter(
+                Q(owner=self.request.user) | Q(projectmember__user=self.request.user)
             ).distinct()
         return form
 
@@ -71,6 +79,7 @@ class SelectProjectView(LoginRequiredMixin, FormView):
         project_id = form.cleaned_data["project"].id
         self.request.session["selected_project_id"] = project_id
         return redirect(reverse("ai-models:select_document"))
+
 
 class SelectDocumentView(LoginRequiredMixin, FormView):
     template_name = "ai_models/select_document.html"
@@ -80,8 +89,8 @@ class SelectDocumentView(LoginRequiredMixin, FormView):
         if self.request.user.is_staff:
             return AIDocument.objects.all()
         return AIDocument.objects.filter(
-            Q(created_by=self.request.user) |  
-            Q(project__projectmember__user=self.request.user)  
+            Q(created_by=self.request.user)
+            | Q(project__projectmember__user=self.request.user)
         ).distinct()
 
     def get_form_kwargs(self):
@@ -89,7 +98,7 @@ class SelectDocumentView(LoginRequiredMixin, FormView):
         project_id = self.request.session.get("selected_project_id")
 
         if not project_id:
-            messages.error(self.request, f"The project ID is missing from the session.")
+            messages.error(self.request, "The project ID is missing from the session.")
 
         self.project = get_object_or_404(Project, id=project_id)
         kwargs["project"] = self.project
@@ -105,6 +114,7 @@ class SelectDocumentView(LoginRequiredMixin, FormView):
         context["project"] = self.project
         return context
 
+
 class GenerateView(LoginRequiredMixin, View):
     template_name = "ai_models/generate.html"
 
@@ -112,7 +122,9 @@ class GenerateView(LoginRequiredMixin, View):
         document_id = request.session.get("selected_document_id")
 
         if not document_id:
-            messages.error(self.request, f"The document ID is missing from the session.")
+            messages.error(
+                self.request, "The document ID is missing from the session."
+            )
             return render(request, self.template_name, {"sections": []})
 
         document = get_object_or_404(AIDocument, id=document_id)
@@ -120,10 +132,18 @@ class GenerateView(LoginRequiredMixin, View):
         project_id = request.session.get("selected_project_id")
         project = get_object_or_404(Project, id=project_id)
 
-        is_project_member = ProjectMember.objects.filter(user=request.user, project=project).exists()
+        is_project_member = ProjectMember.objects.filter(
+            user=request.user, project=project
+        ).exists()
 
-        if not (request.user.is_staff or document.created_by == request.user or is_project_member):
-            messages.error(request, "You do not have permission to access this document.")
+        if not (
+            request.user.is_staff
+            or document.created_by == request.user
+            or is_project_member
+        ):
+            messages.error(
+                request, "You do not have permission to access this document."
+            )
             return redirect("ai-models:select_document")
 
         sections = []
@@ -144,17 +164,26 @@ class GenerateView(LoginRequiredMixin, View):
                     current_section = line.strip()
                     section_content = []
 
-            elif line == "---": 
+            elif line == "---":
                 if current_section:
                     content_to_add = "\n".join(section_content).strip()
                     sections.append((current_section, content_to_add))
-                current_section = None 
+                current_section = None
                 section_content = []
 
             elif current_section and line:
                 section_content.append(line)
 
-        return render(request, self.template_name, {"document": document, "sections": sections, "project_description": project.description})
+        return render(
+            request,
+            self.template_name,
+            {
+                "document": document,
+                "sections": sections,
+                "project_description": project.description,
+            },
+        )
+
 
 class GenerateSectionContentView(LoginRequiredMixin, View):
     def post(self, request):
@@ -163,10 +192,18 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
         document_id = request.session.get("selected_document_id")
         document = get_object_or_404(AIDocument, id=document_id)
 
-        is_project_member = ProjectMember.objects.filter(user=request.user, project=project).exists()
+        is_project_member = ProjectMember.objects.filter(
+            user=request.user, project=project
+        ).exists()
 
-        if not (request.user.is_staff or document.created_by == request.user or is_project_member):
-            messages.error(request, "You do not have permission to modify this document.")
+        if not (
+            request.user.is_staff
+            or document.created_by == request.user
+            or is_project_member
+        ):
+            messages.error(
+                request, "You do not have permission to modify this document."
+            )
             return redirect(reverse("ai-models:generate"))
 
         section_title = request.POST.get("section_title").strip()
@@ -176,9 +213,11 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
         if not section_title or not section_content:
             messages.error(request, "Missing title or content!")
             return redirect(reverse("ai-models:generate"))
-        
+
         try:
-            doc_section = DocumentSection.objects.get(document_type=document.type, title=section_title)
+            doc_section = DocumentSection.objects.get(
+                document_type=document.type, title=section_title
+            )
             prompt = doc_section.prompt
             dependencies = doc_section.dependencies.all()
         except DocumentSection.DoesNotExist:
@@ -195,7 +234,9 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
                 else:
                     full_prompt = f"{prompt}\n{section_content}"
 
-                generated_content = PipelineTextGenerator(document.ai_model.model_identifier).generate_text(full_prompt)
+                generated_content = PipelineTextGenerator(
+                    document.ai_model.model_identifier
+                ).generate_text(full_prompt)
 
                 lines = document.content.split("\n")
                 new_lines = []
@@ -215,9 +256,14 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
                         new_lines.append(line)
 
                 document.content = "\n".join(new_lines)
-                AIDocument.objects.filter(id=document.id).update(content=document.content)
+                AIDocument.objects.filter(id=document.id).update(
+                    content=document.content
+                )
 
-                messages.success(request, f"The '{section_title}' section's content has been updated with AI-generated text!")
+                messages.success(
+                    request,
+                    f"The '{section_title}' section's content has been updated with AI-generated text!",
+                )
 
             except Exception as e:
                 messages.error(request, f"Error while generating text: {str(e)}")
@@ -249,23 +295,33 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
 
                     elif not inside_section:
                         new_lines.append(line)
-                
+
                 document.content = "\n".join(new_lines)
                 document.save()
 
-                project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
-                project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+                project_folder_name = clean_filename(
+                    f"{project.owner.username}_{project.name}"
+                )
+                project_folder_path = (
+                    Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+                )
                 document_filename = clean_filename(document.title) + ".md"
                 document_file_path = project_folder_path / document_filename
 
                 if not project_folder_path.exists():
-                    messages.error(self.request, f"Project folder does not exist: {project_folder_name}")
+                    messages.error(
+                        self.request,
+                        f"Project folder does not exist: {project_folder_name}",
+                    )
                 else:
                     try:
-                        with open(document_file_path, 'w', encoding='utf-8') as md_file:
+                        with open(document_file_path, "w", encoding="utf-8") as md_file:
                             md_file.write(document.content)
 
-                        messages.success(self.request, f"Document '{document.title}' successfully updated! File saved: {document_filename}")
+                        messages.success(
+                            self.request,
+                            f"Document '{document.title}' successfully updated! File saved: {document_filename}",
+                        )
                     except Exception as e:
                         messages.error(self.request, f"Error saving document file: {e}")
 
@@ -274,15 +330,16 @@ class GenerateSectionContentView(LoginRequiredMixin, View):
 
             return redirect(reverse("ai-models:generate"))
 
+
 class GenerateDescriptionView(FormView):
-    template_name="ai_models/generate_description.html"
+    template_name = "ai_models/generate_description.html"
     form_class = GenerateDescriptionForm
 
     def form_valid(self, form):
         ai_models = AIModel.objects.all()
         title = form.cleaned_data["title"]
 
-        results=[]
+        results = []
 
         for ai_model in ai_models:
             try:
@@ -292,34 +349,34 @@ class GenerateDescriptionView(FormView):
                     prompt=prompt,
                     min_new_tokens=50,
                     max_new_tokens=150,
-                    )
+                )
 
-                results.append({
-                    "model": ai_model.model_identifier,
-                    "generated_text": generated_text
-                })
+                results.append(
+                    {
+                        "model": ai_model.model_identifier,
+                        "generated_text": generated_text,
+                    }
+                )
 
             except Exception as e:
                 messages.error(self.request, f"Error while generating text: {str(e)}")
                 return self.form_invalid(form)
 
-        self.request.session["generated_results"] = {
-            "title": title,
-            "results": results
-        }
+        self.request.session["generated_results"] = {"title": title, "results": results}
 
         messages.success(self.request, "Text generated successfully!")
         return redirect(reverse("ai-models:results"))
 
+
 class GenerateTitleView(FormView):
-    template_name="ai_models/generate_title.html"
+    template_name = "ai_models/generate_title.html"
     form_class = GenerateTitleForm
 
     def form_valid(self, form):
         ai_models = AIModel.objects.all()
         description = form.cleaned_data["description"]
 
-        results=[]
+        results = []
 
         for ai_model in ai_models:
             try:
@@ -329,12 +386,14 @@ class GenerateTitleView(FormView):
                     prompt=prompt,
                     min_new_tokens=10,
                     max_new_tokens=20,
-                    )
+                )
 
-                results.append({
-                    "model": ai_model.model_identifier,
-                    "generated_text": generated_text
-                })
+                results.append(
+                    {
+                        "model": ai_model.model_identifier,
+                        "generated_text": generated_text,
+                    }
+                )
 
             except Exception as e:
                 messages.error(self.request, f"Error while generating text: {str(e)}")
@@ -342,11 +401,12 @@ class GenerateTitleView(FormView):
 
         self.request.session["generated_results"] = {
             "description": description,
-            "results": results
+            "results": results,
         }
 
         messages.success(self.request, "Text generated successfully!")
         return redirect(reverse("ai-models:results"))
+
 
 class ResultsView(TemplateView):
     template_name = "ai_models/results.html"

@@ -2,13 +2,18 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from project_management.models import ProjectStatus, ProjectRole
 
+
 class Command(BaseCommand):
-    help = "Seed static data (AI models, document types, project roles, project statuses)"
+    help = (
+        "Seed static data (AI models, document types, project roles, project statuses)"
+    )
 
     def handle(self, *args, **kwargs):
         if ProjectStatus.objects.exists() and ProjectRole.objects.exists():
-            self.stdout.write(self.style.SUCCESS("Seeding skipped - data already exists."))
-            return 
+            self.stdout.write(
+                self.style.SUCCESS("Seeding skipped - data already exists.")
+            )
+            return
 
         call_command("seed_predefined_users")
         call_command("seed_ai_models")

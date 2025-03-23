@@ -8,6 +8,7 @@ from pathlib import Path
 from django.conf import settings
 from utils.clean_filename import clean_filename
 
+
 class Command(BaseCommand):
     help = "Seed AI-generated documents"
 
@@ -20,10 +21,14 @@ class Command(BaseCommand):
         document_types = list(DocumentType.objects.all())
 
         if not users or not projects or not ai_models or not document_types:
-            self.stdout.write(self.style.ERROR("Missing required data! Run seed_users, seed_projects, seed_ai_models, and seed_document_types first."))
+            self.stdout.write(
+                self.style.ERROR(
+                    "Missing required data! Run seed_users, seed_projects, seed_ai_models, and seed_document_types first."
+                )
+            )
             return
 
-        num_documents = 10 
+        num_documents = 10
         documents = []
 
         for _ in range(num_documents):
@@ -40,11 +45,14 @@ class Command(BaseCommand):
                 "document.created_by.username": created_by.username,
                 "document.ai_model.name": ai_model.name if ai_model else "N/A",
                 "document.updated_at": "Not updated",
-                "project.description": project.description or "No description available",
+                "project.description": project.description
+                or "No description available",
             }
 
             for placeholder, value in context.items():
-                document_content = document_content.replace(f'{{{{ {placeholder} }}}}', str(value))
+                document_content = document_content.replace(
+                    f"{{{{ {placeholder} }}}}", str(value)
+                )
 
             document = AIDocument.objects.create(
                 title=title,
@@ -56,8 +64,12 @@ class Command(BaseCommand):
                 ai_model=ai_model,
             )
 
-            project_folder_name = clean_filename(f"{project.owner.username}_{project.name}")
-            project_folder_path = Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+            project_folder_name = clean_filename(
+                f"{project.owner.username}_{project.name}"
+            )
+            project_folder_path = (
+                Path(settings.MEDIA_ROOT) / "projects" / project_folder_name
+            )
             document_filename = clean_filename(document.title) + ".md"
             document_file_path = project_folder_path / document_filename
 
@@ -65,13 +77,17 @@ class Command(BaseCommand):
                 project_folder_path.mkdir(parents=True, exist_ok=True)
 
             try:
-                with open(document_file_path, 'w', encoding='utf-8') as md_file:
+                with open(document_file_path, "w", encoding="utf-8") as md_file:
                     md_file.write(document.content)
 
                 documents.append(document)
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"Error saving document file: {e}"))
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded {len(documents)} AI-generated documents:"))
+        self.stdout.write(
+            self.style.SUCCESS(f"Seeded {len(documents)} AI-generated documents:")
+        )
         for doc in documents:
-            self.stdout.write(f" - {doc.title} (Project: {doc.project.name}, Created by: {doc.created_by.username})")
+            self.stdout.write(
+                f" - {doc.title} (Project: {doc.project.name}, Created by: {doc.created_by.username})"
+            )

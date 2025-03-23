@@ -1,14 +1,12 @@
 from django.core.management.base import BaseCommand
-from django_seed import Seed
 from project_management.models import Project, ProjectStatus
 from django.contrib.auth.models import User
+
 
 class Command(BaseCommand):
     help = "Seed the database with predefined projects"
 
     def handle(self, *args, **kwargs):
-        seeder = Seed.seeder()
-
         superuser, created = User.objects.get_or_create(
             username="superuser",
             defaults={
@@ -51,12 +49,13 @@ class Command(BaseCommand):
             )
             if created:
                 self.stdout.write(
-                    self.style.SUCCESS(f'Project "{project.name}" created successfully.')
+                    self.style.SUCCESS(
+                        f'Project "{project.name}" created successfully.'
+                    )
                 )
             else:
                 self.stdout.write(
                     self.style.WARNING(f'Project "{project.name}" already exists.')
                 )
-
 
         self.stdout.write(self.style.SUCCESS("Seeding predefined projects completed"))
