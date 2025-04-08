@@ -1,3 +1,4 @@
+import uuid
 from django.test import TestCase
 from django.urls import reverse, resolve
 from django.contrib.auth.models import User
@@ -11,6 +12,10 @@ from .views import HomePageView
 
 class HomePageViewTest(TestCase):
     def setUp(self):
+        self.initial_project_count = Project.objects.count()
+        self.initial_ai_document_count = AIDocument.objects.count()
+        self.initial_user_count = User.objects.count()
+
         self.user1 = User.objects.create_user(
             username="testuser1", password="testPass123"
         )
@@ -18,41 +23,42 @@ class HomePageViewTest(TestCase):
             username="testuser2", password="testPass123"
         )
 
-        self.status = ProjectStatus.objects.create(name="Draft")
+        self.status, _ = ProjectStatus.objects.get_or_create(name="Draft")
+
+        suffix = str(uuid.uuid4())[:8]
 
         self.project1 = Project.objects.create(
-            name="Project Alpha",
+            name=f"Project Alpha {suffix}",
             description="First test project",
             owner=self.user1,
             status=self.status,
         )
         self.project2 = Project.objects.create(
-            name="Project Beta",
+            name=f"Project Beta {suffix}",
             description="Second test project",
             owner=self.user2,
             status=self.status,
         )
         self.project3 = Project.objects.create(
-            name="Project Gamma",
+            name=f"Project Gamma {suffix}",
             description="Third test project",
             owner=self.user1,
             status=self.status,
         )
         self.project4 = Project.objects.create(
-            name="Project Delta",
+            name=f"Project Delta {suffix}",
             description="Excluded project",
             owner=self.user1,
             status=self.status,
         )
 
-        self.document_type = DocumentType.objects.create(name="Specs")
-
+        self.document_type = DocumentType.objects.create(name=f"Specs {suffix}")
         self.ai_model = AIModel.objects.create(
-            name="Test AI Model", model_identifier="test-ai-model"
+            name=f"Test AI Model {suffix}", model_identifier=f"test-ai-model-{suffix}"
         )
 
         self.ai_document1 = AIDocument.objects.create(
-            title="Test Document 1",
+            title=f"Test Document 1 {suffix}",
             content="This is a test document.",
             project=self.project1,
             created_by=self.user1,
@@ -60,7 +66,7 @@ class HomePageViewTest(TestCase):
             ai_model=self.ai_model,
         )
         self.ai_document = AIDocument.objects.create(
-            title="Test Document 2",
+            title=f"Test Document 2 {suffix}",
             content="This is a test document.",
             project=self.project2,
             created_by=self.user2,
@@ -88,15 +94,19 @@ class HomePageViewTest(TestCase):
 
     def test_homepage_context_contains_project_count(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.context["project_count"], 4)
+        self.assertEqual(
+            response.context["project_count"], self.initial_project_count + 4
+        )
 
     def test_homepage_context_contains_ai_document_count(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.context["ai_document_count"], 2)
+        self.assertEqual(
+            response.context["ai_document_count"], self.initial_ai_document_count + 2
+        )
 
     def test_homepage_context_contains_user_count(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.context["user_count"], 2)
+        self.assertEqual(response.context["user_count"], self.initial_user_count + 2)
 
 
 # ====== urls.py ======

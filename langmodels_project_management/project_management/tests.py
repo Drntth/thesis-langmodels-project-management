@@ -31,11 +31,11 @@ from .admin import (
 
 class ProjectStatusModelTest(TestCase):
     def setUp(self):
-        self.project_status = ProjectStatus.objects.create(name="In Progress")
+        self.status, _ = ProjectStatus.objects.get_or_create(name="In Progress")
 
     def test_project_status_creation(self):
-        self.assertEqual(self.project_status.name, "In Progress")
-        self.assertEqual(str(self.project_status), "In Progress")
+        self.assertEqual(self.status.name, "In Progress")
+        self.assertEqual(str(self.status), "In Progress")
 
     def test_unique_project_status_name(self):
         with self.assertRaises(Exception):
@@ -44,11 +44,11 @@ class ProjectStatusModelTest(TestCase):
 
 class ProjectModelTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username="testuser", password="testPass123"
         )
-        self.status = ProjectStatus.objects.create(name="In Progress")
-        self.project = Project.objects.create(
+        self.status, _ = ProjectStatus.objects.get_or_create(name="In Progress")
+        self.project, _ = Project.objects.get_or_create(
             name="Test Project", owner=self.user, status=self.status
         )
 
@@ -58,7 +58,7 @@ class ProjectModelTest(TestCase):
         self.assertEqual(self.project.status.name, "In Progress")
 
     def test_project_status_default(self):
-        project_without_status = Project.objects.create(
+        project_without_status, _ = Project.objects.get_or_create(
             name="Draft Test Project", owner=self.user
         )
         self.assertEqual(project_without_status.status.name, "Draft")
@@ -75,7 +75,7 @@ class ProjectModelTest(TestCase):
 
 class ProjectRoleModelTest(TestCase):
     def setUp(self):
-        self.project_role = ProjectRole.objects.create(name="Manager")
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Manager")
 
     def test_project_role_creation(self):
         self.assertEqual(self.project_role.name, "Manager")
@@ -88,12 +88,14 @@ class ProjectRoleModelTest(TestCase):
 
 class ProjectMemberModelTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username="testuser", password="testPass123"
         )
-        self.project = Project.objects.create(name="Test Project", owner=self.user)
-        self.role = ProjectRole.objects.create(name="Developer")
-        self.project_member = ProjectMember.objects.create(
+        self.project, _ = Project.objects.get_or_create(
+            name="Test Project", owner=self.user
+        )
+        self.role, _ = ProjectRole.objects.get_or_create(name="Developer")
+        self.project_member, _ = ProjectMember.objects.get_or_create(
             user=self.user, project=self.project, role=self.role
         )
 
@@ -112,10 +114,10 @@ class ProjectMemberModelTest(TestCase):
             )
 
     def test_project_status_update_on_member_addition(self):
-        project_with_member = Project.objects.create(
+        project_with_member, _ = Project.objects.get_or_create(
             name="New Project", owner=self.user
         )
-        ProjectMember.objects.create(
+        ProjectMember.objects.get_or_create(
             user=self.user, project=project_with_member, role=self.role
         )
         self.assertEqual(project_with_member.status.name, "In Progress")
@@ -190,14 +192,16 @@ class ProjectListViewTest(TestCase):
         self.member = get_user_model().objects.create_user(
             username="member", password="testPass123"
         )
-        self.staff_user = get_user_model().objects.create_superuser(
-            username="staff", password="testPass123", is_staff=True
+        self.staff_user = get_user_model().objects.create_user(
+            username="teststaff", password="testPass123", is_staff=True
         )
 
-        self.project = Project.objects.create(name="Test Project", owner=self.owner)
+        self.project, _ = Project.objects.get_or_create(
+            name="Test Project", owner=self.owner
+        )
 
-        self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Contributor")
+        ProjectMember.objects.get_or_create(
             user=self.member, project=self.project, role=self.project_role
         )
 
@@ -221,7 +225,7 @@ class ProjectListViewTest(TestCase):
         self.assertIn(self.project, response.context["projects"])
 
     def test_staff_sees_all_projects(self):
-        self.client.login(username="staff", password="testPass123")
+        self.client.login(username="teststaff", password="testPass123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.project, response.context["projects"])
@@ -237,10 +241,12 @@ class ProjectDetailViewTest(TestCase):
             username="member", password="testPass123"
         )
 
-        self.project = Project.objects.create(name="Test Project", owner=self.owner)
+        self.project, _ = Project.objects.get_or_create(
+            name="Test Project", owner=self.owner
+        )
 
-        self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Contributor")
+        ProjectMember.objects.get_or_create(
             user=self.member, project=self.project, role=self.project_role
         )
 
@@ -274,14 +280,16 @@ class ProjectUpdateViewTest(TestCase):
         self.member = get_user_model().objects.create_user(
             username="member", password="testPass123"
         )
-        self.staff_user = get_user_model().objects.create_superuser(
-            username="staff", password="testPass123", is_staff=True
+        self.staff_user = get_user_model().objects.create_user(
+            username="teststaff", password="testPass123", is_staff=True
         )
 
-        self.project = Project.objects.create(name="Test Project", owner=self.owner)
+        self.project, _ = Project.objects.get_or_create(
+            name="Test Project", owner=self.owner
+        )
 
-        self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Contributor")
+        ProjectMember.objects.get_or_create(
             user=self.member, project=self.project, role=self.project_role
         )
 
@@ -320,7 +328,7 @@ class ProjectUpdateViewTest(TestCase):
         self.assertTemplateUsed(response, "project_management/update_project.html")
 
     def test_staff_can_access_update_page(self):
-        self.client.login(username="staff", password="testPass123")
+        self.client.login(username="teststaff", password="testPass123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "project_management/update_project.html")
@@ -335,14 +343,16 @@ class ProjectDeleteViewTest(TestCase):
         self.member = get_user_model().objects.create_user(
             username="member", password="testPass123"
         )
-        self.staff_user = get_user_model().objects.create_superuser(
-            username="staff", password="testPass123", is_staff=True
+        self.staff_user = get_user_model().objects.create_user(
+            username="teststaff", password="testPass123", is_staff=True
         )
 
-        self.project = Project.objects.create(name="Test Project", owner=self.owner)
+        self.project, _ = Project.objects.get_or_create(
+            name="Test Project", owner=self.owner
+        )
 
-        self.project_role = ProjectRole.objects.create(name="Contributor")
-        ProjectMember.objects.create(
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Contributor")
+        ProjectMember.objects.get_or_create(
             user=self.member, project=self.project, role=self.project_role
         )
 
@@ -377,7 +387,7 @@ class ProjectDeleteViewTest(TestCase):
         self.assertTemplateUsed(response, "project_management/delete_project.html")
 
     def test_staff_can_access_delete_page(self):
-        self.client.login(username="staff", password="testPass123")
+        self.client.login(username="teststaff", password="testPass123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "project_management/delete_project.html")
@@ -398,11 +408,15 @@ class ProjectDeleteViewTest(TestCase):
 
 class ProjectMemberCreateViewTest(TestCase):
     def setUp(self):
-        self.owner = User.objects.create_user(username="owner", password="testPass123")
-        self.new_member = User.objects.create_user(
+        self.owner = get_user_model().objects.create_user(
+            username="owner", password="testPass123"
+        )
+        self.new_member = get_user_model().objects.create_user(
             username="newmember", password="testPass123"
         )
-        self.project = Project.objects.create(name="Test Project", owner=self.owner)
+        self.project, _ = Project.objects.get_or_create(
+            name="Test Project", owner=self.owner
+        )
         self.url = reverse("projects:add_member", kwargs={"pk": self.project.pk})
 
     def test_access_requires_login(self):
@@ -419,16 +433,21 @@ class ProjectMemberCreateViewTest(TestCase):
 
 class ProjectMemberRemoveViewTest(TestCase):
     def setUp(self):
-        self.owner = User.objects.create_user(username="owner", password="testPass123")
-        self.member = User.objects.create_user(
+        self.owner = get_user_model().objects.create_user(
+            username="owner", password="testPass123"
+        )
+        self.member = get_user_model().objects.create_user(
             username="member", password="testPass123"
         )
-        self.staff_user = User.objects.create_superuser(
-            username="staff", password="testPass123"
+        self.staff_user = get_user_model().objects.create_user(
+            username="teststaff", password="testPass123", is_staff=True
         )
-        self.project = Project.objects.create(name="Test Project", owner=self.owner)
-        self.project_role = ProjectRole.objects.create(name="Contributor")
-        self.project_member = ProjectMember.objects.create(
+
+        self.project, _ = Project.objects.get_or_create(
+            name="Test Project", owner=self.owner
+        )
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Contributor")
+        self.project_member, _ = ProjectMember.objects.get_or_create(
             project=self.project, user=self.member, role=self.project_role
         )
 
@@ -450,7 +469,7 @@ class ProjectMemberRemoveViewTest(TestCase):
         )
 
     def test_staff_can_remove_member(self):
-        self.client.login(username="staff", password="testPass123")
+        self.client.login(username="teststaff", password="testPass123")
         response = self.client.post(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(
@@ -577,8 +596,8 @@ class ProjectUpdateFormTest(TestCase):
         self.user = get_user_model().objects.create_user(
             username="testuser", password="testPass123"
         )
-        self.status = ProjectStatus.objects.create(name="In Progress")
-        self.project = Project.objects.create(
+        self.status, _ = ProjectStatus.objects.get_or_create(name="In Progress")
+        self.project, _ = Project.objects.get_or_create(
             name="Old Name",
             description="Old Desc",
             deadline=datetime.date.today(),
@@ -617,18 +636,22 @@ class ProjectMemberFormTest(TestCase):
         self.user = get_user_model().objects.create_user(
             username="testuser", password="testPass123"
         )
-        self.project = Project.objects.create(
+        self.project, _ = Project.objects.get_or_create(
             name="Test Project", owner_id=self.user.id
         )
-        self.user1 = User.objects.create_user(username="user1", password="password")
-        self.user2 = User.objects.create_user(username="user2", password="password")
-        self.role = ProjectRole.objects.create(name="Developer")
-        ProjectMember.objects.create(
+        self.user1 = get_user_model().objects.create_user(
+            username="user1", password="password"
+        )
+        self.user2 = get_user_model().objects.create_user(
+            username="user2", password="password"
+        )
+        self.role, _ = ProjectRole.objects.get_or_create(name="Developer")
+        ProjectMember.objects.get_or_create(
             project=self.project, user=self.user1, role=self.role
         )
 
     def test_valid_member_form(self):
-        form_data = {"user": self.user2.id, "role": self.role.id}
+        form_data = {"user": self.user2.username, "role": self.role.id}
         form = ProjectMemberForm(data=form_data, project=self.project)
         self.assertTrue(form.is_valid())
 
@@ -642,17 +665,23 @@ class ProjectMemberFormTest(TestCase):
 
 class AdminSiteTest(TestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(
-            username="admin", password="adminpassword"
-        )
+        self.admin_user = User.objects.filter(username="admin").first()
+        if not self.admin_user:
+            self.admin_user = User.objects.create_superuser(
+                username="admin", password="adminpassword"
+            )
         self.client.login(username="admin", password="adminpassword")
-        self.project_status = ProjectStatus.objects.create(name="Active")
-        self.project_role = ProjectRole.objects.create(name="Developer")
-        self.user = User.objects.create_user(username="testuser", password="password")
-        self.project = Project.objects.create(
+
+        self.project_status, _ = ProjectStatus.objects.get_or_create(name="Active")
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Developer")
+
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="password"
+        )
+        self.project, _ = Project.objects.get_or_create(
             name="Test Project", owner=self.user, status=self.project_status
         )
-        self.project_member = ProjectMember.objects.create(
+        self.project_member, _ = ProjectMember.objects.get_or_create(
             user=self.user, project=self.project, role=self.project_role
         )
 

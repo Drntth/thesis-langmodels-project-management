@@ -1,3 +1,5 @@
+import torch
+from unittest import skipUnless
 from django.test import TestCase, SimpleTestCase
 from .models import AIModel
 from django.urls import reverse, resolve
@@ -40,11 +42,12 @@ AI_MODELS = [
 
 class AIModelTestCase(TestCase):
     def setUp(self):
+        self.initial_count = AIModel.objects.count()
         self.model1 = AIModel.objects.create(name="Model A", model_identifier="model_a")
         self.model2 = AIModel.objects.create(name="Model B", model_identifier="model_b")
 
     def test_model_creation(self):
-        self.assertEqual(AIModel.objects.count(), 2)
+        self.assertEqual(AIModel.objects.count(), self.initial_count + 2)
 
     def test_str_representation(self):
         self.assertEqual(str(self.model1), "Model A (model_a)")
@@ -461,7 +464,7 @@ class GenerateSectionContentViewTests(TestCase):
         session["selected_project_id"] = self.project.id
         session.save()
 
-        self.project_role = ProjectRole.objects.create(name="Tester")
+        self.project_role, _ = ProjectRole.objects.get_or_create(name="Tester")
         ProjectMember.objects.create(
             user=self.user, project=self.project, role=self.project_role
         )
@@ -721,6 +724,7 @@ class PipelineTextGeneratorTests(TestCase):
                 self.assertGreater(len(output_long), len(output_short))
 
 
+@skipUnless(torch.cuda.is_available(), "CUDA is not available")
 class TokenizerModelTests(TestCase):
     def test_generate_text_returns_string(self):
         prompt = "This is a test prompt."

@@ -33,8 +33,8 @@ from django.contrib.admin.sites import site
 class DocumentTypeModelTest(TestCase):
     def setUp(self):
         self.doc_type = DocumentType.objects.create(name="Test Type")
-        self.doc_type_spec = DocumentType.objects.create(name="Specification")
-        self.doc_type_srs = DocumentType.objects.create(name="SRS")
+        self.doc_type_spec, _ = DocumentType.objects.get_or_create(name="Specification")
+        self.doc_type_srs, _ = DocumentType.objects.get_or_create(name="SRS")
         self.test_dir = os.path.join(settings.STATICFILES_DIRS[0], "document")
 
     def test_document_type_creation(self):
@@ -73,7 +73,7 @@ class AIDocumentModelTest(TestCase):
     def test_aidocument_creation(self):
         self.assertEqual(
             str(self.document),
-            "Document: Test Doc (Project: Test Project (Owner: testuser))",
+            "Test Doc (Project: Test Project (Owner: testuser))",
         )
 
     def test_version_increment_on_save(self):

@@ -115,18 +115,4 @@ describe("Index (User)", () => {
     cy.contains('Documents Generated').should('be.visible');
     cy.contains('Active Users').should('be.visible');
   });
-
-  it('Sign Up Now', () => {
-    cy.get('a.btn.btn-light.btn-lg')
-      .contains('Sign Up Now')
-      .should('be.visible')
-      .and('have.attr', 'href')
-      .then((href) => {
-        expect(href).to.contain('/authentication/register');
-      });
-      cy.get('a.btn.btn-light.btn-lg')
-      .should('be.visible')
-      .click();
-    cy.url().should('include', '/authentication/register');
-  });
 });

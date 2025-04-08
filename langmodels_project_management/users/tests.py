@@ -115,7 +115,7 @@ class ProfileDeleteViewTest(TestCase):
         self.assertFalse(User.objects.filter(username="testuser").exists())
         messages = [m.message for m in get_messages(response.wsgi_request)]
         self.assertIn(
-            "Your profile has been deleted successfully. You can continue as a guest or register again!",
+            "Your profile and all related data have been deleted successfully. You can continue as a guest or register again!",
             messages,
         )
 

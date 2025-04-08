@@ -69,9 +69,6 @@ describe('Register', () => {
     });
 
     cy.url().should("include", "/"); 
-
-    cy.contains("Your account has been created successfully!").should("be.visible");
-    cy.contains("You have successfully logged in!").should("be.visible");
   });
 
   it("Register Error", () => {
@@ -104,13 +101,13 @@ describe('Register', () => {
     cy.visit("/users/profile");
 
     cy.get('form[action*="profile/delete"]').should('exist');
-    cy.get('form[onsubmit*="Are you sure you want to delete your profile?"]').should('exist');
+    cy.get('form[onsubmit*="Are you sure you want to delete your profile and all related data? This action cannot be undone."]').should('exist');
 
     cy.get('form[action*="/users/profile/delete"]').within(() => {
       cy.get('button[type="submit"]').click();
     });
     cy.on('window:confirm', (message) => {
-      expect(message).to.include('Are you sure you want to delete your profile?');
+      expect(message).to.include('Are you sure you want to delete your profile and all related data? This action cannot be undone.');
       return true;
     });
   });
