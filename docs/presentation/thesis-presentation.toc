@@ -1,0 +1,6 @@
+\select@language {magyar} \beamer@sectionintoc {1}{Téma rövid bemutatása}{3}{0}{1}
+\select@language {magyar} \beamer@sectionintoc {2}{Felhasznált technológiák}{4}{0}{2}
+\select@language {magyar} \beamer@sectionintoc {3}{Az elkészült projekt ismertetése}{5}{0}{3}
+\select@language {magyar} \beamer@subsectionintoc {3}{1}{Demo}{9}{0}{3}
+\select@language {magyar} \beamer@sectionintoc {4}{Összegzés}{16}{0}{4}
+\select@language {magyar} \beamer@sectionintoc {5}{Opponens kérdései}{18}{0}{5}
