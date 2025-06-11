@@ -1,0 +1,95 @@
+Dia 3: Téma rövid bemutatása
+
+- A szakdolgozatom célja, hogy bemutassam és megismerjem a mesterséges intelligencia szerepét és integrálhatóságát a webalkalmazásokban, különösen az adminisztratív feladatok megkönnyítésében, mint a dokumentációk és specifikációk gyors létrehozása.
+- A témaválasztást a mesterséges intelligencia gyors fejlődése és az ehhez kapcsolódó technológiai kérdések motiválták. Személyes inspirációt jelentett az egyik egyetemi kurzuson végzett projektmunka, amely során a mesterséges intelligencia implementálása során szerzett gyakorlati tapasztalatok formálták az érdeklődésemet.
+- A célom egy olyan webalkalmazás létrehozása volt, amely gyorsítja az adminisztratív feladatok elvégzését, különösen a dokumentációk és specifikációk elkészítését nyelvi modellek segítségével.
+- Az ingyenesen elérhető nyelvi modellek hatékony felhasználása alacsony hardverigény mellett. Különböző promptolási technikák tesztelése és optimalizálása.  
+- Könnyen kezelhető, áttekinthető interfész, amely támogatja a gyors és hatékony munkavégzést.
+- Különböző nyelvi modellek támogatása, amely lehetővé teszi a felhasználók számára a saját igényeiknek megfelelő beállítások használatát.
+
+Dia 4: Felhasznált technológiák
+
+- Az implementáció során a Django és Python alapú backend, valamint a HTML, CSS, JavaScript és Bootstrap alapú frontend technológiák biztosítják a teljes funkcionalitást és felhasználói élményt.
+- Az adatbázis kezeléséhez az SQLite-ot választottam, amely egy könnyen használható, fájl alapú megoldás, így ideális kisebb alkalmazásokhoz.
+- A munkaszervezéshez és feladatkövetéshez olyan eszközöket használtam, mint a GitHub Projects és Issues, amelyek lehetővé teszik a projektek hatékony menedzselését és dokumentálását.
+- A verziókövetéshez Git és GitHub alapú megoldásokat használtam, amelyek biztosítják a kódbázis folyamatos verziókezelését és a kollaboráció támogatását.
+- A nyelvi modellek kiválasztása során olyan nyílt forráskódú modellek kerültek előtérbe, mint a DistilGPT2, GPT-Neo 125M, Facebook OPT 125M és 350M, valamint a közepes méretű GPT-2, amelyek különböző paraméterekkel és teljesítménnyel rendelkeznek, lehetővé téve a kísérletezést különböző szövegfeldolgozási feladatokkal.
+
+Dia 5: Adatbázis struktúra
+
+- Az alkalmazás adatbázisának kialakítása során több táblát hoztam létre a különböző entitások tárolására.
+    - Felhasználók (auth_user): A felhasználók adatait tartalmazza, mint például a felhasználónevet, e-mail címet és jelszót.
+    - Projektek (Project): A létrehozott projektek adatait tárolja, beleértve a projekt nevét, leírását, határidejét, tulajdonosát és státuszát.
+    - Státuszok (ProjectStatus): A projektek aktuális állapotait tárolja, mint például „Draft”, „In Progress”, „Completed”.
+    - Szerepkörök (ProjectRole): A projektfeladatok során betöltött szerepköröket tartalmazza, mint például „Owner”, „Project Manager”, „Developer”, „Tester”, „Viewer”.
+    - Tagok (ProjectMember): A felhasználók kapcsolatait a projekthez tárolja, minden projekthez egy felhasználót egy szerepkörrel rendel.
+    - Dokumentum Típusok (DocumentType): A dokumentumok típusait és azokhoz tartozó sablonfájlok elérhetőségét tárolja, mint például „Specification” és „SRS”.
+    - Mesterséges Intelligencia Modellek (AIModel): A használt nyelvi modellek nevét és elérhetőségét tartalmazza, lehetővé téve azok egyszerű meghívását.
+    - Mesterséges Intelligencia Dokumentumok (AIDocument): A dokumentumok tartalmát és metaadatait, például címét, tartalmát és verzióját tárolja.
+    - Dokumentum Szekciók (DocumentSection): A dokumentumtípusokhoz tartozó szekciók adatait tartalmazza, beleértve a generálás során használt promptokat és a szekciók közötti függőségeket.
+    
+- Az adatbázis kapcsolatai az alábbi típusok szerint lettek kialakítva:
+    - 1:N (egy-a-többhöz) kapcsolat: Például egy felhasználó több projektet is birtokolhat, de egy projektnek csak egy tulajdonosa lehet. Ehhez az auth_user és Project táblák közötti kapcsolatot használjuk, ahol az owner_id idegen kulcsként hivatkozik az auth_user táblában lévő elsődleges kulcsra (id).
+    - N:M (több-a-többhöz) kapcsolat: Például a felhasználók és projektek között több-a-többhöz kapcsolat van, amelyet a ProjectMember kapcsolótábla valósít meg.
+    
+- Az adatbázis normalizálása a harmadik normálformára (3NF) történt, amely biztosítja a redundancia csökkentését és az adatkezelés hatékonyságát. Ennek során minden táblának van elsődleges kulcsa, és nincsenek tranzitív vagy részleges függőségek. Az adatbázis biztosítja az 1NF, 2NF és 3NF követelményeit, elkerülve a duplikált adatokat és biztosítva a hatékony lekérdezést.
+    
+- Az adatbázis SQLite formátumban készült, mivel ez a rendszer gyors, önállóan működő, és kis méretének köszönhetően ideális kisebb webalkalmazásokhoz. Az SQLite platformfüggetlen és nem igényel külön SQL konfigurálást, mivel az adatbázis egyetlen fájlként tárolódik. Ezáltal egyszerűvé válik a migrációk kezelése és a biztonsági mentések készítése. Kisebb adatforgalmú alkalmazások számára ideális, mivel nincs szükség külső adatbázis-szerverre. Nagyobb forgalmú rendszerek esetén viszont nem ajánlott, mivel nem biztosítja a nagy számú párhuzamos lekérdezések hatékony kezelését.
+
+Dia 6: Osztályhierarchia
+
+- A views.py osztály kezeli a felhasználói kéréseket és válaszokat, az alkalmazás logikáját tartalmazza.
+- A models.py az adatbázis struktúráját és a kapcsolódó műveleteket tartalmazza.
+- A forms.py a felhasználói űrlapokat és azok validációját kezeli.
+- A urls.py az alkalmazás URL útvonalait és azokhoz rendelt nézeteket tartalmazza.
+- A settings.py az alkalmazás konfigurációját és beállításait kezeli.
+- A views.py osztály interakcióba lép a models.py-val, hogy adatokat kérjen le az adatbázisból.
+- A views.py osztály a forms.py}-ban definiált űrlapokat használja a felhasználói adatbevitelhez.
+- A urls.py rendeli hozzá a kéréseket a megfelelő views.py funkciókhoz.
+
+Dia 7: A program fő funkciói/moduljai
+
+- Felhasználói szerepkörök:
+    - Vendég (Guest): Korlátozott hozzáférés, a regisztráció előtti tájékozódás céljából.
+    - Normál felhasználó (User): Teljes körű projekt- és dokumentációkezelés.
+    - Moderátor (Staff): Projektek és dokumentációk megtekintése, felhasználói támogatás.
+    - Adminisztrátor (Superuser): Teljes hozzáférés, felhasználók és rendszermodulok kezelése.
+- Fő funkciók:
+    - Projektek kezelése: Létrehozás, megtekintés, szerkesztés, törlés, tagok kezelése.
+    - Dokumentációk kezelése: Létrehozás, listázás, megtekintés, szerkesztés, törlés.
+    - MI funkciók: Cím- és leírásgenerálás, nyelvi modellek tesztelése.
+    - Profilkezelés: Regisztráció, bejelentkezés, adatmódosítás, kijelentkezés.
+    - Adminisztráció: Rendszeradminisztráció, felhasználók kezelése, adatbázis módosítása.
+
+Dia 8: Tesztelés
+
+- A tesztelési folyamat két fő formája az egységtesztelés (unit testing) és a végponttól végpontig tartó tesztelés (end-to-end testing, E2E) volt.
+     
+  - Egységtesztelés:
+    - A Django beépített unittest modulját használtam.
+    - Minden alkalmazáshoz külön tesztfájl készült, amely a modelleket, nézeteket, URL-eket, formokat és admin oldalt ellenőrzi.
+    - Az ai_models alkalmazás további teszteket tartalmaz a services.py fájlban található modellekre vonatkozóan.
+    - Példa teszt a PipelineTextGenerator osztály működésének ellenőrzésére: a tesztek vizsgálják, hogy a modell visszatér-e nem üres karakterlánccal és hogy a különböző hosszúságú generálások megfelelően működnek-e.
+    
+  - Végponttól végpontig tartó tesztelés (E2E):
+    - A Cypress tesztkeretrendszert használtam.
+    - Minden oldalhoz külön almappákban találhatóak a tesztek, amelyek külön jogosultsági szintekre vannak bontva (guest, user, staff, superuser).
+    - Az E2E tesztek célja, hogy a teljes folyamatot a felhasználói szemszögből validálják.
+    - Minden jogosultsági szinthez tartozó funkció és megjelenített tartalom ellenőrizve van.
+    - Például a projektkezelő oldalak tesztelik a hozzáférési jogosultságokat és a helyes tartalmak megjelenítését.
+
+Dia 16: Elért eredmények a célkitűzésekkel összehasonlítva
+
+- A célom egy olyan webalkalmazás fejlesztése volt, amely ingyenes nyelvi modellekkel, alacsony hardverigény mellett képes minőségi dokumentációkat és specifikációkat generálni, egyszerűen kezelhető felületen.
+- Specifikus promptolási technikák és paraméterbeállítások alkalmazásával jelentős javulást értem el a generált szövegek minőségében, de a kisebb modellek teljesítménye elmarad a nagyobb modellekétől.
+- A rendszer gyors és intuitív Markdown alapú dokumentumgenerálást biztosít, amely kompatibilis a GitHub platformmal, így hatékonyan támogatja a projektmenedzsmentet.
+- A generált szövegek azonban még nem képesek komplexebb összefüggések kezelésére, ezért a jövőbeni fejlesztések fókuszában a modellek finomhangolása és a komplexitás növelése áll.
+
+Dia 17: További fejlesztési lehetőségek
+
+- Specifikus finomhangolás dokumentumtípusokra: A modellek teljesítménye javítható célzott, dokumentumtípus-specifikus adatokkal történő finomhangolással, bár az ilyen adatok gyakran nem nyilvánosak vagy eltérő formátumban érhetők el, ami kihívást jelent.
+- Feladatspecifikus prompt- és paraméteroptimalizálás: A generált szövegek minőségét és relevanciáját a promptok és paraméterek feladathoz igazított finomhangolásával lehetne növelni.
+- További dokumentumtípusok integrálása: A rendszer bővíthető új dokumentumtípusokkal, például Vision Statement, Design Document, Test Plan vagy User Manual, amelyek eltérő szerkezeti és nyelvi logikát igényelnek, növelve az alkalmazhatóságot.
+- Automatikus tartalomértékelés és iteratív finomhangolás: Egy közepes méretű modell alkalmazásával a generált tartalom automatikusan értékelhető, majd iteratívan finomhangolható, ami erőforrás-igényes, de jelentős minőségjavulást hozhat.
+- Vektoradatbázis-alapú kontextuskezelés (RAG): A vektoradatbázis integrációja lehetővé tenné a hasonló szövegek kontextusba vonását, javítva a generálás pontosságát és relevanciáját.
+- Rendszer- és futási teljesítmény optimalizálása: A generálási folyamatok gyorsíthatók lokális GPU vagy felhőalapú megoldásokkal, illetve a sablonok és adatbázisok tartalmi bővítésével.

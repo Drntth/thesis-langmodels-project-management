@@ -93,7 +93,7 @@
         \begin{itemize}
             \vspace{0.5em}
             \item Mesterséges intelligencia (MI) szerepe a webalkalmazásokban
-            % A szakdolgozat célja, hogy bemutassa a mesterséges intelligencia szerepét és integrálhatóságát a webalkalmazásokban, különösen az adminisztratív feladatok megkönnyítésében, mint a dokumentációk és specifikációk gyors létrehozása.  
+            % A szakdolgozatom célja, hogy bemutassam és megismerjem a mesterséges intelligencia szerepét és integrálhatóságát a webalkalmazásokban, különösen az adminisztratív feladatok megkönnyítésében, mint a dokumentációk és specifikációk gyors létrehozása.
         \end{itemize}
         
         \vspace{0.75em}
@@ -106,7 +106,7 @@
             \item MI alkalmazások és lehetőségek
             \vspace{0.5em}
             \item Személyes inspiráció (egyetemi projektmunkák)
-            % A témaválasztást a mesterséges intelligencia gyors fejlődése és az ehhez kapcsolódó technológiai, etikai és társadalmi kérdések motiválták. Személyes inspirációt jelentett az egyetemi kurzuson végzett projektmunka, amely során a mesterséges intelligencia implementálása során szerzett gyakorlati tapasztalatok formálták az érdeklődésemet.
+            % A témaválasztást a mesterséges intelligencia gyors fejlődése és az ehhez kapcsolódó technológiai kérdések motiválták. Személyes inspirációt jelentett az egyik egyetemi kurzuson végzett projektmunka, amely során a mesterséges intelligencia implementálása során szerzett gyakorlati tapasztalatok formálták az érdeklődésemet.
         \end{itemize}
         
         \vspace{0.75em}
@@ -115,7 +115,7 @@
         \begin{itemize}
             \vspace{0.5em}
             \item Hatékony MI-alapú dokumentumkezelés  
-            % A cél egy olyan webalkalmazás létrehozása, amely gyorsítja az adminisztratív feladatok elvégzését, különösen a dokumentációk és specifikációk elkészítését nyelvi modellek segítségével.  
+            % A célom egy olyan webalkalmazás létrehozása volt, amely gyorsítja az adminisztratív feladatok elvégzését, különösen a dokumentációk és specifikációk elkészítését nyelvi modellek segítségével.  
             \vspace{0.5em}
             \item Minimális hardverigény  
             % Az ingyenesen elérhető nyelvi modellek hatékony felhasználása alacsony hardverigény mellett. Különböző promptolási technikák tesztelése és optimalizálása.  
@@ -179,11 +179,12 @@
       \end{block}
     \column{0.25\textwidth}
     \end{columns}
-    % Az implementáció során a Django és Python alapú backend, valamint a HTML, CSS, JavaScript és Bootstrap alapú frontend technológiák biztosítják a teljes funkcionalitást és felhasználói élményt.
-        % Az adatbázis kezeléséhez az SQLite került kiválasztásra, amely egy könnyen használható, fájl alapú megoldás, ideális kisebb alkalmazásokhoz.
-        % A munkaszervezéshez és feladatkövetéshez olyan eszközök kerültek felhasználásra, mint a GitHub Projects és Issues, amelyek lehetővé teszik a projektek hatékony menedzselését és dokumentálását.
-        % A verziókövetéshez Git és GitHub alapú megoldások kerültek alkalmazásra, amelyek biztosítják a kódbázis folyamatos verziókezelését és a kollaboráció támogatását.
-        % A nyelvi modellek kiválasztása során olyan nyílt forráskódú modellek kerültek előtérbe, mint a DistilGPT2, GPT-Neo 125M, Facebook OPT 125M és 350M, valamint a közepes méretű GPT-2, amelyek különböző paraméterekkel és teljesítménnyel rendelkeznek, lehetővé téve a kísérletezést különböző szövegfeldolgozási feladatokkal.
+   		% Az implementáció során a Django és Python alapú backend, valamint a HTML, CSS, JavaScript és Bootstrap alapú frontend technológiák biztosítják a teljes funkcionalitást és felhasználói élményt.
+   		% Az adatbázis kezeléséhez az SQLite-ot választottam, amely egy könnyen használható, fájl alapú megoldás, így ideális kisebb alkalmazásokhoz.
+   		% A munkaszervezéshez és feladatkövetéshez olyan eszközöket használtam, mint a GitHub Projects és Issues, amelyek lehetővé teszik a projektek hatékony menedzselését és dokumentálását.
+   		% A verziókövetéshez Git és GitHub alapú megoldásokat használtam, amelyek biztosítják a kódbázis folyamatos verziókezelését és a kollaboráció támogatását.
+   		% A nyelvi modellek kiválasztása során olyan nyílt forráskódú modellek kerültek előtérbe, mint a DistilGPT2, GPT-Neo 125M, Facebook OPT 125M és 350M, valamint a közepes méretű GPT-2, amelyek különböző paraméterekkel és teljesítménnyel rendelkeznek, lehetővé téve a kísérletezést különböző szövegfeldolgozási feladatokkal.
+   		
 \end{frame}
 
 \section{Az elkészült projekt ismertetése}
@@ -275,7 +276,7 @@
          \begin{figure}[ht!]
             \centering
             \includegraphics[width=\textwidth]{class_hierarchy.png}
-            \label{fig-erd}
+            \label{fig-class-hierarchy}
         \end{figure}
         \vspace{-1.5em}
         \scriptsize
@@ -398,7 +399,6 @@
     % - Az E2E tesztek célja, hogy a teljes folyamatot a felhasználói szemszögből validálják.
     % - Minden jogosultsági szinthez tartozó funkció és megjelenített tartalom ellenőrizve van.
     % - Például a projektkezelő oldalak tesztelik a hozzáférési jogosultságokat és a helyes tartalmak megjelenítését.
-    %
 \end{frame}
 
 \subsection{Demo}
@@ -452,7 +452,7 @@
 
 \begin{frame}{Főoldal áttekintés}
   \begin{center}
-    \animategraphics[loop,autoplay,width=0.85\textwidth]{1}{gif/home/home_frame-}{0}{17}
+    \animategraphics[loop,autoplay,width=0.8\textwidth]{1}{gif/home/home_frame-}{0}{17}
   \end{center}
   \begin{itemize}
     \item \faHome~ Főmenü, gyorselérési csempék
@@ -564,7 +564,7 @@
           \end{itemize}
         \end{block}
     \end{columns}
-    % Célom egy olyan webalkalmazás fejlesztése volt, amely ingyenes nyelvi modellekkel, alacsony hardverigény mellett képes minőségi dokumentációkat és specifikációkat generálni, egyszerűen kezelhető felületen.
+    % A célom egy olyan webalkalmazás fejlesztése volt, amely ingyenes nyelvi modellekkel, alacsony hardverigény mellett képes minőségi dokumentációkat és specifikációkat generálni, egyszerűen kezelhető felületen.
     % Specifikus promptolási technikák és paraméterbeállítások alkalmazásával jelentős javulást értem el a generált szövegek minőségében, de a kisebb modellek teljesítménye elmarad a nagyobb modellekétől.
     % A rendszer gyors és intuitív Markdown alapú dokumentumgenerálást biztosít, amely kompatibilis a GitHub platformmal, így hatékonyan támogatja a projektmenedzsmentet.
     % A generált szövegek azonban még nem képesek komplexebb összefüggések kezelésére, ezért a jövőbeni fejlesztések fókuszában a modellek finomhangolása és a komplexitás növelése áll.
