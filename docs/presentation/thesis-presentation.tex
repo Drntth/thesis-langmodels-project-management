@@ -1,4 +1,4 @@
-\documentclass[11pt]{beamer}
+\documentclass[aspectratio=169, 11pt]{beamer}
 
 \usepackage{fontawesome5}
 \usepackage[utf8]{inputenc}
@@ -131,7 +131,7 @@
 
 \section{Felhasznált technológiák}
 \begin{frame}{Felhasznált technológiák}
-    \vspace{-1em}
+    \vspace{-1.5em}
     \begin{columns}[T]
     \column{0.45\textwidth}
       \begin{block}{\faCode~Implementálás}
@@ -142,6 +142,7 @@
           \item Bootstrap
         \end{itemize}
       \end{block}
+      \vspace{-0.75em}
       \begin{block}{\faDatabase~Adatbázis}
         \small
         \begin{itemize}
@@ -156,6 +157,7 @@
           \item GitHub Issues
         \end{itemize}
       \end{block}
+      \vspace{-0.75em}
       \begin{block}{\faCodeBranch~Verziókövetés}
         \small
         \begin{itemize}
@@ -164,7 +166,7 @@
         \end{itemize}
       \end{block}
     \end{columns}
-    \vspace{0.5em}
+    \vspace{0.25em}
     \begin{columns}[T]
     \column{0.25\textwidth}
     \column{0.5\textwidth}
@@ -179,171 +181,172 @@
       \end{block}
     \column{0.25\textwidth}
     \end{columns}
-   		% Az implementáció során a Django és Python alapú backend, valamint a HTML, CSS, JavaScript és Bootstrap alapú frontend technológiák biztosítják a teljes funkcionalitást és felhasználói élményt.
-   		% Az adatbázis kezeléséhez az SQLite-ot választottam, amely egy könnyen használható, fájl alapú megoldás, így ideális kisebb alkalmazásokhoz.
-   		% A munkaszervezéshez és feladatkövetéshez olyan eszközöket használtam, mint a GitHub Projects és Issues, amelyek lehetővé teszik a projektek hatékony menedzselését és dokumentálását.
-   		% A verziókövetéshez Git és GitHub alapú megoldásokat használtam, amelyek biztosítják a kódbázis folyamatos verziókezelését és a kollaboráció támogatását.
-   		% A nyelvi modellek kiválasztása során olyan nyílt forráskódú modellek kerültek előtérbe, mint a DistilGPT2, GPT-Neo 125M, Facebook OPT 125M és 350M, valamint a közepes méretű GPT-2, amelyek különböző paraméterekkel és teljesítménnyel rendelkeznek, lehetővé téve a kísérletezést különböző szövegfeldolgozási feladatokkal.
+%   		 Az implementáció során a Django és Python alapú backend, valamint a HTML, CSS, JavaScript és Bootstrap alapú frontend technológiák biztosítják a teljes funkcionalitást és felhasználói élményt.
+%   		 Az adatbázis kezeléséhez az SQLite-ot választottam, amely egy könnyen használható, fájl alapú megoldás, így ideális kisebb alkalmazásokhoz.
+%   		 A munkaszervezéshez és feladatkövetéshez olyan eszközöket használtam, mint a GitHub Projects és Issues, amelyek lehetővé teszik a projektek hatékony menedzselését és dokumentálását.
+%   		 A verziókövetéshez Git és GitHub alapú megoldásokat használtam, amelyek biztosítják a kódbázis folyamatos verziókezelését és a kollaboráció támogatását.
+%   		 A nyelvi modellek kiválasztása során olyan nyílt forráskódú modellek kerültek előtérbe, mint a DistilGPT2, GPT-Neo 125M, Facebook OPT 125M és 350M, valamint a közepes méretű GPT-2, amelyek különböző paraméterekkel és teljesítménnyel rendelkeznek, lehetővé téve a kísérletezést különböző szövegfeldolgozási feladatokkal.
    		
 \end{frame}
 
 \section{Az elkészült projekt ismertetése}
 
-\begin{frame}{Adatbázis struktúra}
-    \vspace{-1em}
-    \begin{columns}[t]
-        \column{0.4\textwidth}
-        \begin{itemize}
-            \vspace{1em}
-            \item Entitás-kapcsolat diagram (ERD)
-            \vspace{1em}
-            \item Táblák közötti kapcsolatok
-            \vspace{1em}
-            \item Normalizálás (3NF)
-            \vspace{1em}
-            \item SQLite adatbázis
-        \end{itemize}
-        
-        \vspace{3em}
-        \scriptsize
-        Forrás: \textsc{DBML} dokumentáció alapján saját szerkesztés a \url{https://dbdiagram.io/} oldalon, 2025
-        
-        \column{0.6\textwidth}
-        \begin{figure}[ht!]
-            \centering
-            \includegraphics[width=\textwidth]{ERD.png}
-            \label{fig-erd}
-        \end{figure}
-    \end{columns}
-    % Az alkalmazás adatbázisának kialakítása során több táblát hoztam létre a különböző entitások tárolására.
-    % - Felhasználók (auth_user): A felhasználók adatait tartalmazza, mint például a felhasználónevet, e-mail címet és jelszót.
-    % - Projektek (Project): A létrehozott projektek adatait tárolja, beleértve a projekt nevét, leírását, határidejét, tulajdonosát és státuszát.
-    % - Státuszok (ProjectStatus): A projektek aktuális állapotait tárolja, mint például „Draft”, „In Progress”, „Completed”.
-    % - Szerepkörök (ProjectRole): A projektfeladatok során betöltött szerepköröket tartalmazza, mint például „Owner”, „Project Manager”, „Developer”, „Tester”, „Viewer”.
-    % - Tagok (ProjectMember): A felhasználók kapcsolatait a projekthez tárolja, minden projekthez egy felhasználót egy szerepkörrel rendel.
-    % - Dokumentum Típusok (DocumentType): A dokumentumok típusait és azokhoz tartozó sablonfájlok elérhetőségét tárolja, mint például „Specification” és „SRS”.
-    % - Mesterséges Intelligencia Modellek (AIModel): A használt nyelvi modellek nevét és elérhetőségét tartalmazza, lehetővé téve azok egyszerű meghívását.
-    % - Mesterséges Intelligencia Dokumentumok (AIDocument): A dokumentumok tartalmát és metaadatait, például címét, tartalmát és verzióját tárolja.
-    % - Dokumentum Szekciók (DocumentSection): A dokumentumtípusokhoz tartozó szekciók adatait tartalmazza, beleértve a generálás során használt promptokat és a szekciók közötti függőségeket.
-    
-    % Az adatbázis kapcsolatai az alábbi típusok szerint lettek kialakítva:
-    % - 1:N (egy-a-többhöz) kapcsolat: Például egy felhasználó több projektet is birtokolhat, de egy projektnek csak egy tulajdonosa lehet. Ehhez az auth_user és Project táblák közötti kapcsolatot használjuk, ahol az owner_id idegen kulcsként hivatkozik az auth_user táblában lévő elsődleges kulcsra (id).
-    % - N:M (több-a-többhöz) kapcsolat: Például a felhasználók és projektek között több-a-többhöz kapcsolat van, amelyet a ProjectMember kapcsolótábla valósít meg.
-    
-    % Az adatbázis normalizálása a harmadik normálformára (3NF) történt, amely biztosítja a redundancia csökkentését és az adatkezelés hatékonyságát. Ennek során minden táblának van elsődleges kulcsa, és nincsenek tranzitív vagy részleges függőségek. Az adatbázis biztosítja az 1NF, 2NF és 3NF követelményeit, elkerülve a duplikált adatokat és biztosítva a hatékony lekérdezést.
-    
-    % Az adatbázis SQLite formátumban készült, mivel ez a rendszer gyors, önállóan működő, és kis méretének köszönhetően ideális kisebb webalkalmazásokhoz. Az SQLite platformfüggetlen és nem igényel külön SQL konfigurálást, mivel az adatbázis egyetlen fájlként tárolódik. Ezáltal egyszerűvé válik a migrációk kezelése és a biztonsági mentések készítése. Kisebb adatforgalmú alkalmazások számára ideális, mivel nincs szükség külső adatbázis-szerverre. Nagyobb forgalmú rendszerek esetén viszont nem ajánlott, mivel nem biztosítja a nagy számú párhuzamos lekérdezések hatékony kezelését.
-\end{frame}
+%\begin{frame}{Adatbázis struktúra}
+%    \vspace{-1em}
+%    \begin{columns}[t]
+%        \column{0.4\textwidth}
+%        \begin{itemize}
+%            \vspace{1em}
+%            \item Entitás-kapcsolat diagram (ERD)
+%            \vspace{1em}
+%            \item Táblák közötti kapcsolatok
+%            \vspace{1em}
+%            \item Normalizálás (3NF)
+%            \vspace{1em}
+%            \item SQLite adatbázis
+%        \end{itemize}
+%        
+%        \vspace{3em}
+%        \scriptsize
+%        Forrás: \textsc{DBML} dokumentáció alapján saját szerkesztés a \url{https://dbdiagram.io/} oldalon, 2025
+%        
+%        \column{0.6\textwidth}
+%        \vspace{-3.5em}
+%        \begin{figure}[ht!]
+%            \centering
+%            \includegraphics[width=0.9\textwidth]{ERD.png}
+%            \label{fig-erd}
+%        \end{figure}
+%    \end{columns}
+%    % Az alkalmazás adatbázisának kialakítása során több táblát hoztam létre a különböző entitások tárolására.
+%    % - Felhasználók (auth_user): A felhasználók adatait tartalmazza, mint például a felhasználónevet, e-mail címet és jelszót.
+%    % - Projektek (Project): A létrehozott projektek adatait tárolja, beleértve a projekt nevét, leírását, határidejét, tulajdonosát és státuszát.
+%    % - Státuszok (ProjectStatus): A projektek aktuális állapotait tárolja, mint például „Draft”, „In Progress”, „Completed”.
+%    % - Szerepkörök (ProjectRole): A projektfeladatok során betöltött szerepköröket tartalmazza, mint például „Owner”, „Project Manager”, „Developer”, „Tester”, „Viewer”.
+%    % - Tagok (ProjectMember): A felhasználók kapcsolatait a projekthez tárolja, minden projekthez egy felhasználót egy szerepkörrel rendel.
+%    % - Dokumentum Típusok (DocumentType): A dokumentumok típusait és azokhoz tartozó sablonfájlok elérhetőségét tárolja, mint például „Specification” és „SRS”.
+%    % - Mesterséges Intelligencia Modellek (AIModel): A használt nyelvi modellek nevét és elérhetőségét tartalmazza, lehetővé téve azok egyszerű meghívását.
+%    % - Mesterséges Intelligencia Dokumentumok (AIDocument): A dokumentumok tartalmát és metaadatait, például címét, tartalmát és verzióját tárolja.
+%    % - Dokumentum Szekciók (DocumentSection): A dokumentumtípusokhoz tartozó szekciók adatait tartalmazza, beleértve a generálás során használt promptokat és a szekciók közötti függőségeket.
+%    
+%    % Az adatbázis kapcsolatai az alábbi típusok szerint lettek kialakítva:
+%    % - 1:N (egy-a-többhöz) kapcsolat: Például egy felhasználó több projektet is birtokolhat, de egy projektnek csak egy tulajdonosa lehet. Ehhez az auth_user és Project táblák közötti kapcsolatot használjuk, ahol az owner_id idegen kulcsként hivatkozik az auth_user táblában lévő elsődleges kulcsra (id).
+%    % - N:M (több-a-többhöz) kapcsolat: Például a felhasználók és projektek között több-a-többhöz kapcsolat van, amelyet a ProjectMember kapcsolótábla valósít meg.
+%    
+%    % Az adatbázis normalizálása a harmadik normálformára (3NF) történt, amely biztosítja a redundancia csökkentését és az adatkezelés hatékonyságát. Ennek során minden táblának van elsődleges kulcsa, és nincsenek tranzitív vagy részleges függőségek. Az adatbázis biztosítja az 1NF, 2NF és 3NF követelményeit, elkerülve a duplikált adatokat és biztosítva a hatékony lekérdezést.
+%    
+%    % Az adatbázis SQLite formátumban készült, mivel ez a rendszer gyors, önállóan működő, és kis méretének köszönhetően ideális kisebb webalkalmazásokhoz. Az SQLite platformfüggetlen és nem igényel külön SQL konfigurálást, mivel az adatbázis egyetlen fájlként tárolódik. Ezáltal egyszerűvé válik a migrációk kezelése és a biztonsági mentések készítése. Kisebb adatforgalmú alkalmazások számára ideális, mivel nincs szükség külső adatbázis-szerverre. Nagyobb forgalmú rendszerek esetén viszont nem ajánlott, mivel nem biztosítja a nagy számú párhuzamos lekérdezések hatékony kezelését.
+%\end{frame}
 
-\begin{frame}{Osztályhierarchia}
-    \vspace{-2em}
-    \begin{columns}[t]
-        \column{0.5\textwidth}
-        \begin{itemize}
-            \item Főbb osztályok:
-                \begin{itemize}
-                    \vspace{0.5em}
-                    \item \textbf{views.py}
-                    \vspace{0.5em}
-                    \item \textbf{models.py}
-                    \vspace{0.5em}
-                    \item \textbf{forms.py}
-                    \vspace{0.5em}
-                    \item \textbf{urls.py}
-                    \vspace{0.5em}
-                    \item \textbf{settings.py}
-                \end{itemize}
-            \vspace{1em}
-            \item Kapcsolatok:
-                \begin{itemize}
-                    \vspace{0.5em}
-                    \item \texttt{views.py} $\leftrightarrow$ \texttt{models.py}
-                    \vspace{0.5em}
-                    \item \texttt{views.py} $\leftrightarrow$ \texttt{forms.py}
-                    \vspace{0.5em}
-                    \item \texttt{urls.py} $\rightarrow$ \texttt{views.py}
-                \end{itemize}
-        \end{itemize}
-        % A \texttt{views.py} osztály kezeli a felhasználói kéréseket és válaszokat, az alkalmazás logikáját tartalmazza.
-        % A \texttt{models.py} az adatbázis struktúráját és a kapcsolódó műveleteket tartalmazza.
-        % A \texttt{forms.py} a felhasználói űrlapokat és azok validációját kezeli.
-        % A \texttt{urls.py} az alkalmazás URL útvonalait és azokhoz rendelt nézeteket tartalmazza.
-        % A \texttt{settings.py} az alkalmazás konfigurációját és beállításait kezeli.
-        % A \texttt{views.py} osztály interakcióba lép a \texttt{models.py}-val, hogy adatokat kérjen le az adatbázisból.
-        % A \texttt{views.py} osztály a \texttt{forms.py}-ban definiált űrlapokat használja a felhasználói adatbevitelhez.
-        % A \texttt{urls.py} rendeli hozzá a kéréseket a megfelelő \texttt{views.py} funkciókhoz.
-         \column{0.5\textwidth}
-         \begin{figure}[ht!]
-            \centering
-            \includegraphics[width=\textwidth]{class_hierarchy.png}
-            \label{fig-class-hierarchy}
-        \end{figure}
-        \vspace{-1.5em}
-        \scriptsize
-        Forrás: PlantUML alapú saját szerkesztés, a \url{https://plantuml.com/} oldalon, 2025
-    \end{columns}
-\end{frame}
+%\begin{frame}{Osztályhierarchia}
+%    \vspace{-2em}
+%    \begin{columns}[t]
+%        \column{0.4\textwidth}
+%        \begin{itemize}
+%            \item Főbb osztályok:
+%                \begin{itemize}
+%                    \vspace{0.5em}
+%                    \item \textbf{views.py}
+%                    \vspace{0.5em}
+%                    \item \textbf{models.py}
+%                    \vspace{0.5em}
+%                    \item \textbf{forms.py}
+%                    \vspace{0.5em}
+%                    \item \textbf{urls.py}
+%                    \vspace{0.5em}
+%                    \item \textbf{settings.py}
+%                \end{itemize}
+%            \vspace{1em}
+%            \item Kapcsolatok:
+%                \begin{itemize}
+%                    \vspace{0.5em}
+%                    \item \texttt{views.py} $\leftrightarrow$ \texttt{models.py}
+%                    \vspace{0.5em}
+%                    \item \texttt{views.py} $\leftrightarrow$ \texttt{forms.py}
+%                    \vspace{0.5em}
+%                    \item \texttt{urls.py} $\rightarrow$ \texttt{views.py}
+%                \end{itemize}
+%        \end{itemize}
+%         A \texttt{views.py} osztály kezeli a felhasználói kéréseket és válaszokat, az alkalmazás logikáját tartalmazza.
+%         A \texttt{models.py} az adatbázis struktúráját és a kapcsolódó műveleteket tartalmazza.
+%         A \texttt{forms.py} a felhasználói űrlapokat és azok validációját kezeli.
+%         A \texttt{urls.py} az alkalmazás URL útvonalait és azokhoz rendelt nézeteket tartalmazza.
+%         A \texttt{settings.py} az alkalmazás konfigurációját és beállításait kezeli.
+%         A \texttt{views.py} osztály interakcióba lép a \texttt{models.py}-val, hogy adatokat kérjen le az adatbázisból.
+%         A \texttt{views.py} osztály a \texttt{forms.py}-ban definiált űrlapokat használja a felhasználói adatbevitelhez.
+%         A \texttt{urls.py} rendeli hozzá a kéréseket a megfelelő \texttt{views.py} funkciókhoz.
+%         \column{0.6\textwidth}
+%         \begin{figure}[ht!]
+%            \centering
+%            \includegraphics[width=0.85\textwidth]{class_hierarchy.png}
+%            \label{fig-class-hierarchy}
+%        \end{figure}
+%        \vspace{-0.5em}
+%        \scriptsize
+%        Forrás: PlantUML alapú saját szerkesztés, a \url{https://plantuml.com/} oldalon, 2025
+%    \end{columns}
+%\end{frame}
 
-\begin{frame}{A program fő funkciói/moduljai}
-    \vspace{-2em}
-    \begin{figure}[ht!]
-        \centering
-        \includegraphics[width=\textwidth]{system_architecture.png}
-           \label{fig-system-architecture}
-    \end{figure}
-    \vspace{-2em}
-    \begin{center}
-        \scriptsize
-        Forrás: Graphviz dokumentáció alapján saját szerkesztés, 2025
-    \end{center}
-    \vspace{-1.5em}
-    \begin{columns}[t]
-        \column{0.5\textwidth}
-        \begin{itemize}
-            \item Fő funkciók
-            \begin{itemize}
-                \vspace{0.5em}
-                \item Projektek kezelése
-                \vspace{0.5em}
-                \item Dokumentációk kezelése
-                \vspace{0.5em}
-                \item MI funkciók
-                \vspace{0.5em}
-                \item Profilkezelés
-                \vspace{0.5em}
-                \item Adminisztráció
-            \end{itemize}
-        \end{itemize}
-        
-        \column{0.5\textwidth}
-        \begin{itemize}
-            \item Felhasználói szerepkörök
-            \begin{itemize}
-                \vspace{0.5em}
-                \item Vendég (Guest)
-                \vspace{0.5em}
-                \item Normál felhasználó (User)
-                \vspace{0.5em}
-                \item Moderátor (Staff)
-                \vspace{0.5em}
-                \item Adminisztrátor (Superuser)
-            \end{itemize}
-        \end{itemize}
-    \end{columns}
-    
-    % Felhasználói szerepkörök:
-    % - Vendég (Guest): Korlátozott hozzáférés, a regisztráció előtti tájékozódás céljából.
-    % - Normál felhasználó (User): Teljes körű projekt- és dokumentációkezelés.
-    % - Moderátor (Staff): Projektek és dokumentációk megtekintése, felhasználói támogatás.
-    % - Adminisztrátor (Superuser): Teljes hozzáférés, felhasználók és rendszermodulok kezelése.
-    
-    % Fő funkciók:
-    % - Projektek kezelése: Létrehozás, megtekintés, szerkesztés, törlés, tagok kezelése.
-    % - Dokumentációk kezelése: Létrehozás, listázás, megtekintés, szerkesztés, törlés.
-    % - MI funkciók: Cím- és leírásgenerálás, nyelvi modellek tesztelése.
-    % - Profilkezelés: Regisztráció, bejelentkezés, adatmódosítás, kijelentkezés.
-    % - Adminisztráció: Rendszeradminisztráció, felhasználók kezelése, adatbázis módosítása.
-\end{frame}
+%\begin{frame}{A program fő funkciói/moduljai}
+%	\vspace{-1em}
+%    \begin{figure}[ht!]
+%        \centering
+%        \includegraphics[width=0.8\textwidth]{system_architecture.png}
+%           \label{fig-system-architecture}
+%    \end{figure}
+%    \vspace{-1em}
+%    \begin{center}
+%        \scriptsize
+%        Forrás: Graphviz dokumentáció alapján saját szerkesztés, 2025
+%    \end{center}
+%    \vspace{-1.5em}
+%    \begin{columns}[t]
+%        \column{0.5\textwidth}
+%        \begin{itemize}
+%            \item Fő funkciók
+%            \begin{itemize}
+%                \vspace{0.5em}
+%                \item Projektek kezelése
+%                \vspace{0.5em}
+%                \item Dokumentációk kezelése
+%                \vspace{0.5em}
+%                \item MI funkciók
+%                \vspace{0.5em}
+%                \item Profilkezelés
+%                \vspace{0.5em}
+%                \item Adminisztráció
+%            \end{itemize}
+%        \end{itemize}
+%        
+%        \column{0.5\textwidth}
+%        \begin{itemize}
+%            \item Felhasználói szerepkörök
+%            \begin{itemize}
+%                \vspace{0.5em}
+%                \item Vendég (Guest)
+%                \vspace{0.5em}
+%                \item Normál felhasználó (User)
+%                \vspace{0.5em}
+%                \item Moderátor (Staff)
+%                \vspace{0.5em}
+%                \item Adminisztrátor (Superuser)
+%            \end{itemize}
+%        \end{itemize}
+%    \end{columns}
+%    
+%%     Felhasználói szerepkörök:
+%%     - Vendég (Guest): Korlátozott hozzáférés, a regisztráció előtti tájékozódás céljából.
+%%     - Normál felhasználó (User): Teljes körű projekt- és dokumentációkezelés.
+%%     - Moderátor (Staff): Projektek és dokumentációk megtekintése, felhasználói támogatás.
+%%     - Adminisztrátor (Superuser): Teljes hozzáférés, felhasználók és rendszermodulok kezelése.
+%%    
+%%     Fő funkciók:
+%%     - Projektek kezelése: Létrehozás, megtekintés, szerkesztés, törlés, tagok kezelése.
+%%     - Dokumentációk kezelése: Létrehozás, listázás, megtekintés, szerkesztés, törlés.
+%%     - MI funkciók: Cím- és leírásgenerálás, nyelvi modellek tesztelése.
+%%     - Profilkezelés: Regisztráció, bejelentkezés, adatmódosítás, kijelentkezés.
+%%     - Adminisztráció: Rendszeradminisztráció, felhasználók kezelése, adatbázis módosítása.
+%\end{frame}
 
 \begin{frame}{Tesztelés}
     \begin{block}{Tesztelési módszerek}
@@ -452,7 +455,7 @@
 
 \begin{frame}{Főoldal áttekintés}
   \begin{center}
-    \animategraphics[loop,autoplay,width=0.8\textwidth]{1}{gif/home/home_frame-}{0}{17}
+    \animategraphics[loop,autoplay,width=0.65\textwidth]{1}{gif/home/home_frame-}{0}{17}
   \end{center}
   \begin{itemize}
     \item \faHome~ Főmenü, gyorselérési csempék
@@ -463,10 +466,9 @@
   \end{center}
 \end{frame}
 
-
 \begin{frame}{Projektek kezelése}
     \begin{center}
-      \animategraphics[loop,autoplay,width=0.8\textwidth]{0.5}{gif/projects/projects_frame-}{0}{19}
+      \animategraphics[loop,autoplay,width=0.65\textwidth]{0.5}{gif/projects/projects_frame-}{0}{19}
     \end{center}
     \begin{itemize}
       \item \faPlusCircle~Létrehozás, megtekintés, szerkesztés, törlés
@@ -479,7 +481,7 @@
 
 \begin{frame}{Dokumentációk kezelése}
     \begin{center}
-        \animategraphics[loop,autoplay,width=0.8\textwidth]{0.5}{gif/documents/documents_frame-}{0}{23}
+        \animategraphics[loop,autoplay,width=0.65\textwidth]{0.5}{gif/documents/documents_frame-}{0}{23}
     \end{center}
     \begin{itemize}
       \item \faFileMedical~Új dokumentumok létrehozása
@@ -492,7 +494,7 @@
 
 \begin{frame}{Profilkezelés}
     \begin{center}
-        \animategraphics[loop,autoplay,width=0.8\textwidth]{0.5}{gif/profile_management/profile_management_frame-}{1}{32}
+        \animategraphics[loop,autoplay,width=0.65\textwidth]{0.5}{gif/profile_management/profile_management_frame-}{1}{32}
     \end{center}
     \begin{itemize}
       \item \faDoorOpen~Regisztráció, bejelentkezés, kijelentkezés
@@ -505,7 +507,7 @@
 
 \begin{frame}{Adminisztráció}
     \begin{center}
-      \animategraphics[loop,autoplay,width=0.8\textwidth]{0.5}{gif/admin/admin_frame-}{1}{8}
+      \animategraphics[loop,autoplay,width=0.65\textwidth]{0.5}{gif/admin/admin_frame-}{1}{8}
     \end{center}
     \begin{itemize}
       \item \faUserCog~Felhasználók kezelése
@@ -518,7 +520,7 @@
 
 \begin{frame}{MI funkciók}
     \begin{center}
-      \animategraphics[loop,autoplay,width=0.8\textwidth]{0.5}{gif/ai_function/ai_functions_frame-}{1}{51}
+      \animategraphics[loop,autoplay,width=0.65\textwidth]{0.5}{gif/ai_function/ai_functions_frame-}{1}{51}
     \end{center}
     \begin{itemize}
       \item \faPen~Cím- és leírásgenerálás
@@ -547,7 +549,7 @@
           \end{itemize}
         \end{block}
       \column{0.06\textwidth}
-        \vspace{8em}
+        \vspace{6em}
         \centering
         \includegraphics[width=0.8\textwidth]{arrow-right-arrow-left-solid.png}
       \column{0.42\textwidth}
@@ -594,21 +596,35 @@
     % Rendszer- és futási teljesítmény optimalizálása: A generálási folyamatok gyorsíthatók lokális \textsc{GPU} vagy felhőalapú megoldásokkal, illetve a sablonok és adatbázisok tartalmi bővítésével.
 \end{frame}
 
-\section{Opponens kérdései}
-\begin{frame}{Opponens kérdései}
-    \textcolor{gray}{\textbf{Dr. Tajti Tibor Gábor}}
-    \vspace{1em}
-    \begin{block}{Kérdés szöveg…}
-        \small
-        Válasz szöveg…
-    \end{block}
-    \vspace{1em}
-    \begin{block}{Kérdés szöveg…}
-        \small
-        Válasz szöveg…
-    \end{block}
+\section{Konzulens kérdései}
+\begin{frame}{Konzulens kérdései}
+	\begin{block}{\small Mi a különbség a \texttt{mixin} és az osztály között \textsc{Django}-ban?
+			Elkerülhető-e a többszörös öröklődéskor felmerülő ,,diamond problem''?}
+		\footnotesize A \textsc{Django}-ban az osztályok (pl. \texttt{ListView}) teljes funkcionalitású egységek, míg a \texttt{mixin}-ek (pl. \texttt{LoginRequiredMixin}) kiegészítő funkcionalitást biztosító, újrafelhasználható, de önállóan nem használható osztályok. A többszörös öröklődéskor felmerülő ,,diamond problem'' a \textsc{Python} C3 linearizációjával és \texttt{mixin}-ek (pl. \texttt{LoginRequiredMixin}) vagy kompozíció használatával elkerülhető, így biztosítva az átlátható és fenntartható kódot.
+%		A \textsc{Django}-ban az osztályok (pl. \texttt{ListView}) önálló, teljes funkcionalitású egységek, amelyek egy komponens alapvető működését határozzák meg, míg a \texttt{mixinek} (pl. \texttt{LoginRequiredMixin}, \texttt{UserPassesTestMixin}) öröklődést támogató, újrafelhasználható osztályok, amelyek kiegészítő funkcionalitást biztosítanak, de önállóan nem használhatók. Egy nézetosztály csak egy fő szülőosztályt örökölhet, a további örökléseknek \texttt{mixinnek} kell lennie.
+%		
+%		A többszörös öröklődéskor felmerülő,,diamond problem'' \textsc{Python}-ban elkerülhető \texttt{mixin}-ek alkalmazásával és a C3 linearizációt használó \textit{Method Resolution Order} (\textsc{MRO}) mechanizmus révén, amely egyértelmű metódusfeloldást biztosít. Az olyan gyakorlatok, mint a \textsc{Django}-ban használt \texttt{LoginRequiredMixin} vagy a kompozíció és interfészek használata, tovább csökkentik a kód komplexitását és növelik annak átláthatóságát.
+	\end{block}
+	\begin{block}{\small A dokumentumok generálására ingyenesen elérhető, kisebb LLM-eket használt, de a generált szövegek összehasonlítására és analizálására nem lett volna érdemes robusztus, akár kommerciális modelleket alkalmazni?}
+		\footnotesize Igen, jelentősen növelhette volna a minőségellenőrzés pontosságát és hatékonyságát, mivel fejlettebb megértési és értékelési képességeik pontosabb visszajelzést és alaposabb tartalmi ellenőrzést biztosítanának. Erősebb hardver hiányában azonban nem volt lehetőségem kipróbálni nagyobb modelleket.
+	\end{block}
+	\vfill
+	\hfill \footnotesize\textcolor{gray}{Konzulens: \textbf{Dr. Kovásznai Gergely}}
 \end{frame}
 
+\section{Opponens kérdései}
+\begin{frame}{Opponens kérdései}
+	\vspace{-0.5em}
+    \begin{block}{\small Miért választotta éppen a \textsc{DistilGPT2} és \textsc{GPT-Neo 125M} modelleket, és miben látta a legnagyobb különbséget köztük a generált dokumentumok minőségében? Milyen modellek jöhetnek szóba az újabb, fejlettebb modellek közül?}
+        \footnotesize A \textsc{DistilGPT2}-t és \textsc{GPT-Neo 125M}-et méretük és hatékonyságuk miatt választottam, előbbi gyorsabb és koherensebb, utóbbi modernebb architektúrára épül és változatosabb tanítóadatokon alapul.
+        Az újabb, fejlettebb nyelvi modellek közül a \textsc{GPT-4o} (OpenAI), \textsc{Claude 3.7 Sonnet} (Anthropic), \textsc{LLaMA 3} (Meta AI), \textsc{Qwen2.5-Max} (Alibaba) és \textsc{Grok 3} (xAI) említhető, amelyek fejlett szöveggenerálási, érvelési és multimodális képességekkel rendelkeznek.
+    \end{block}
+    \begin{block}{\small Hogyan biztosítaná a rendszer skálázhatóságát, ha több felhasználó egyszerre szeretne dokumentumot generáltatni?}
+        \footnotesize A rendszer skálázhatóságát Django projekt esetén horizontális skálázással, terheléselosztással és aszinkron feladatfeldolgozással (pl. Celery, Redis) biztosítanám, hogy több felhasználó egyidejű dokumentumgenerálását hatékonyan kezelje. Egy fejlettebb, gyorsabb lekérdezéseket kezelő adatbázis, például PostgreSQL használata tovább növelné a skálázhatóságot.
+    \end{block}
+    \vfill
+    \hfill \footnotesize\textcolor{gray}{Opponens: \textbf{Dr. Tajti Tibor Gábor}}
+\end{frame}
 
 \section*{}
 \begin{frame}
